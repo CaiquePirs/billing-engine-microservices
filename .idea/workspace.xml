@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="1a02d6da-f3c4-40e4-be64-fe6152ac1ed6" name="Changes" comment="refactor: Updated the flow architecture of the billing engine microservices">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/architecture-flow-billing-engine.png" beforeDir="false" afterPath="$PROJECT_DIR$/architecture-flow-billing-engine.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/architecture(c4)-billing-engine.png" beforeDir="false" afterPath="$PROJECT_DIR$/architecture(c4)-billing-engine.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,7 +142,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777418939417</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="refactor: Updated the flow architecture of the billing engine microservices">
+      <option name="closed" value="true" />
+      <created>1777474731514</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1777474731514</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
