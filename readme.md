@@ -5,7 +5,7 @@
 ## 🚀 Complete architecture of the billing engine's success workflow
 ![architecture-flow-billing-engine.png](architecture-flow-billing-engine.png)
 
-### 🚀 Entity diagram UML and of the billing engine.
+### 🚀 Entity diagram UML  of the billing engine.
 ![billing-engine-UML.png](billing-engine-UML.png)
 
 
