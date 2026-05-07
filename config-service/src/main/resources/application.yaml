@@ -7,7 +7,4 @@ spring:
         git:
           uri: https://github.com/CaiquePirs/billing-engine-config-service.git
 server:
-  port: 8088
-profiles:
-  active:
-    - native
+  port: 8888
