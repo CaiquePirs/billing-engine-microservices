@@ -1,7 +1,7 @@
 package com.billing.customers.controller;
 
+import com.billing.customers.controller.dto.CustomerCreatedResponseDTO;
 import com.billing.customers.controller.dto.CustomerRequestDTO;
-import com.billing.customers.controller.dto.CustomerResponseDTO;
 import com.billing.customers.mapper.CustomerMapper;
 import com.billing.customers.model.Customer;
 import com.billing.customers.service.CustomerService;
@@ -23,9 +23,10 @@ public class CustomerController {
     private final CustomerMapper customerMapper;
 
     @PostMapping
-    public ResponseEntity<CustomerResponseDTO> createCustomer(@RequestBody @Valid CustomerRequestDTO dto) {
+    public ResponseEntity<CustomerCreatedResponseDTO> createCustomer(@RequestBody @Valid CustomerRequestDTO dto) {
         Customer customer = customerService.createCustomer(dto);
-        return ResponseEntity.status(HttpStatus.SC_CREATED).body(customerMapper.toResponse(customer));
+        return ResponseEntity.status(HttpStatus.SC_CREATED)
+                .body(new CustomerCreatedResponseDTO(customer.getId(), customer.getEmail()));
     }
 
 }

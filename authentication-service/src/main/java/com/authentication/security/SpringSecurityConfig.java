@@ -1,4 +1,4 @@
-package com.authentication.authentication.security;
+package com.authentication.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +23,7 @@ public class SpringSecurityConfig {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/auth/**").permitAll()
+                    auth.requestMatchers("/api/v1/auth/**").permitAll()
                             .anyRequest().authenticated();
                 })
                 .build();
