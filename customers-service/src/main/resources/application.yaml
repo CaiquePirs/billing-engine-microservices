@@ -2,6 +2,6 @@ spring:
   application:
     name: customers-service
   config:
-    import: "optional:configserver:http://localhost:8888"
+    import:  "optional:configserver:"
   profiles:
     active: dev

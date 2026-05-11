@@ -1,6 +1,6 @@
 spring:
   application:
-    name: config-service
+    name: config-server
   cloud:
     config:
       server:
@@ -8,3 +8,7 @@ spring:
           uri: https://github.com/CaiquePirs/billing-engine-config-service.git
 server:
   port: 8888
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_ZONE_URL}

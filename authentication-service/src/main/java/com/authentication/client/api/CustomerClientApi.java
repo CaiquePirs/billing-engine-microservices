@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "customers-service", url = "localhost:8080/api/v1/customers" )
+@FeignClient(name = "customers-service")
 public interface CustomerClientApi {
 
     @PostMapping
