@@ -22,7 +22,7 @@ public class CustomerApiService {
             throw new AuthenticationRegisterFailException("Customer signup failed, user already exists");
 
         } catch (Exception e) {
-            throw new AuthenticationRegisterFailException("Error when try to register customer");
+            throw new AuthenticationRegisterFailException("Error when try to register customer: " + e.getMessage());
         }
     }
 

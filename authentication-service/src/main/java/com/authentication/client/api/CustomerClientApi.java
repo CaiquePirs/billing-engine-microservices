@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "customers-service")
 public interface CustomerClientApi {
 
-    @PostMapping
+    @PostMapping("/api/v1/customers")
     ResponseEntity<CreateCustomerResponseDTO> signupUser(@RequestBody @Valid CreateCustomerRequestDTO createCustomerRequestDTO);
 }

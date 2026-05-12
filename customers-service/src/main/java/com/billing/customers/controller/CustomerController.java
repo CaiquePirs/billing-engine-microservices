@@ -7,7 +7,7 @@ import com.billing.customers.model.Customer;
 import com.billing.customers.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.hc.core5.http.HttpStatus;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +25,7 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<CustomerCreatedResponseDTO> createCustomer(@RequestBody @Valid CustomerRequestDTO dto) {
         Customer customer = customerService.createCustomer(dto);
-        return ResponseEntity.status(HttpStatus.SC_CREATED)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new CustomerCreatedResponseDTO(customer.getId(), customer.getEmail()));
     }
 
