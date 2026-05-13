@@ -1,6 +1,8 @@
 package com.authentication.controller;
 
 import com.authentication.client.dto.CreateCustomerRequestDTO;
+import com.authentication.controller.dto.LoginRequestDTO;
+import com.authentication.controller.dto.LoginResponseDTO;
 import com.authentication.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +21,14 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> createCustomer(@RequestBody @Valid CreateCustomerRequestDTO createCustomerRequestDTO) {
+    public ResponseEntity<Void> signupCustomer(@RequestBody @Valid CreateCustomerRequestDTO createCustomerRequestDTO) {
         authenticationService.signupUser(createCustomerRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> signInCustomer(@RequestBody @Valid LoginRequestDTO loginRequestDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(authenticationService.signInUser(loginRequestDTO));
     }
 }
