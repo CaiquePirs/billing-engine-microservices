@@ -1,9 +1,11 @@
 package com.authentication.controller;
 
 import com.authentication.client.dto.CreateCustomerRequestDTO;
+import com.authentication.controller.dto.InternalLoginRequestDTO;
 import com.authentication.controller.dto.LoginRequestDTO;
 import com.authentication.controller.dto.LoginResponseDTO;
 import com.authentication.service.AuthenticationService;
+import com.authentication.service.InternalAuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final InternalAuthenticationService internalAuthenticationService;
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signupCustomer(@RequestBody @Valid CreateCustomerRequestDTO createCustomerRequestDTO) {
@@ -30,5 +33,11 @@ public class AuthenticationController {
     public ResponseEntity<LoginResponseDTO> signInCustomer(@RequestBody @Valid LoginRequestDTO loginRequestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(authenticationService.signInUser(loginRequestDTO));
+    }
+
+    @PostMapping("/internal-login")
+    public ResponseEntity<LoginResponseDTO> signIn(@RequestBody @Valid InternalLoginRequestDTO InternalLoginRequestDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(internalAuthenticationService.signInInternalUser(InternalLoginRequestDTO));
     }
 }

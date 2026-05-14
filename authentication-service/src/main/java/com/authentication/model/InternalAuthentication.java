@@ -4,6 +4,7 @@ import com.authentication.model.enums.AuthScope;
 import com.authentication.model.enums.AuthStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class InternalAuthentication {
 
     @Id
