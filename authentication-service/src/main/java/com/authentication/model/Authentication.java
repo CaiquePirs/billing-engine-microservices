@@ -1,16 +1,12 @@
 package com.authentication.model;
 
+import com.authentication.model.enums.AuthStatus;
 import jakarta.persistence.*;
-
-import java.time.LocalDateTime;
 import java.util.UUID;
-
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "authentication")
@@ -33,11 +29,10 @@ public class Authentication {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AuthStatus status;
 
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-    private LocalDateTime deletedAt;
+    @Embedded
+    private AuditEntity auditEntity;
 }

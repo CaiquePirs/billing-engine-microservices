@@ -6,7 +6,9 @@ import com.authentication.client.service.CustomerApiService;
 import com.authentication.controller.advice.exceptions.AuthLoginFailException;
 import com.authentication.controller.dto.LoginRequestDTO;
 import com.authentication.controller.dto.LoginResponseDTO;
+import com.authentication.model.AuditEntity;
 import com.authentication.model.Authentication;
+import com.authentication.model.enums.AuthStatus;
 import com.authentication.repository.AuthenticationRepository;
 import com.authentication.validation.AuthenticationValidator;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,8 @@ public class AuthenticationService {
                 .customerId(customerCreated.customerId())
                 .email(customerCreated.email())
                 .passwordHash(passwordEncoder.encode(createCustomerRequestDTO.password()))
+                .status(AuthStatus.ACTIVE)
+                .auditEntity(new AuditEntity())
                 .build();
 
         authenticationRepository.save(authentication);
