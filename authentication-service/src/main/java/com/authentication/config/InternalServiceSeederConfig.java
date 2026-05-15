@@ -18,7 +18,7 @@ public class InternalServiceSeederConfig implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        seedService("authentication-service", System.getenv("AUTHENTICATION_SERVICE_SECRET"));
+        seedService(System.getenv("AUTHENTICATION_SERVICE_CLIENT_ID"), System.getenv("AUTHENTICATION_SERVICE_SECRET"));
     }
 
     private void seedService(String clientId, String clientSecret) {

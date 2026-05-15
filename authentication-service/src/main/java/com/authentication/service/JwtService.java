@@ -39,7 +39,7 @@ public class JwtService {
         Instant tokenExpiration = Instant.now().plus(Duration.ofMinutes(30));
 
         var token = JWT.create()
-                .withSubject(authentication.getClientId())
+                .withSubject(authentication.getId().toString())
                 .withClaim("scope", authentication.getScope().toString())
                 .withClaim("client_id",  authentication.getClientId())
                 .withExpiresAt(tokenExpiration)
