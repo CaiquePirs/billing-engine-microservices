@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: subscription-service
+  config:
+    import: "optional:configserver:"
+  profiles:
+    active: dev

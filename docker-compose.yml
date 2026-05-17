@@ -1,4 +1,19 @@
 services:
+  subscriptions-postgres:
+    image: postgres:16.0
+    container_name: subscriptions-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${SUBSCRIPTION_DB}
+      POSTGRES_USER: ${SUBSCRIPTION_USER}
+      POSTGRES_PASSWORD: ${SUBSCRIPTION_PASSWORD}
+    ports:
+      - "5434:5432"
+    volumes:
+      - subscription_postgres_data:/var/lib/postgresql/data
+    networks:
+      - billing-network
+
   customers-postgres:
     image: postgres:16.0
     container_name: customers-postgres
@@ -49,6 +64,8 @@ volumes:
   postgres_data:
     driver: local
   authentication_postgres_data:
+    driver: local
+  subscription_postgres_data:
     driver: local
   pgadmin_data:
     driver: local
