@@ -1,6 +1,7 @@
 package com.authentication.model;
 
 import com.authentication.model.enums.AuthStatus;
+import com.authentication.model.enums.Role;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.Builder;
@@ -32,6 +33,10 @@ public class Authentication {
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private AuthStatus status;
+
+    @Column(name = "auth_role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Embedded
     private AuditEntity auditEntity;

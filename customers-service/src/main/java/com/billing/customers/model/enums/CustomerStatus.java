@@ -1,4 +1,4 @@
-package com.billing.customers.model;
+package com.billing.customers.model.enums;
 
 public enum CustomerStatus {
     ACTIVE,

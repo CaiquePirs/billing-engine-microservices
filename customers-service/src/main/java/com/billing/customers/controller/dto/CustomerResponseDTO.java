@@ -2,7 +2,7 @@ package com.billing.customers.controller.dto;
 
 import java.time.LocalDate;
 import java.util.UUID;
-import com.billing.customers.model.CustomerStatus;
+import com.billing.customers.model.enums.CustomerStatus;
 import lombok.Builder;
 
 @Builder

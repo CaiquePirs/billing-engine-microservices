@@ -33,6 +33,7 @@ public class AuthenticationService {
                 .email(customerCreated.email())
                 .passwordHash(passwordEncoder.encode(createCustomerRequestDTO.password()))
                 .status(AuthStatus.ACTIVE)
+                .role(createCustomerRequestDTO.role())
                 .auditEntity(new AuditEntity())
                 .build();
 

@@ -4,7 +4,7 @@ import com.billing.customers.controller.advice.exceptions.CustomerNotFoundExcept
 import com.billing.customers.controller.dto.CustomerRequestDTO;
 import com.billing.customers.mapper.CustomerMapper;
 import com.billing.customers.model.Customer;
-import com.billing.customers.model.CustomerStatus;
+import com.billing.customers.model.enums.CustomerStatus;
 import com.billing.customers.repository.CustomerRepository;
 import com.billing.customers.validator.CustomerValidator;
 import lombok.RequiredArgsConstructor;

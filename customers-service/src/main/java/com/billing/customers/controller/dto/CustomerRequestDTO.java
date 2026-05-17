@@ -1,5 +1,6 @@
 package com.billing.customers.controller.dto;
 
+import com.billing.customers.model.enums.Role;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
@@ -24,6 +25,9 @@ public record CustomerRequestDTO(
     @NotNull(message = "Date of birth is required")
     @PastOrPresent(message = "Date of birth cannot be in the future")
     LocalDate dateOfBirth,
+
+    @NotNull(message = "Customer role is required")
+    Role role,
 
     @NotNull(message = "Address is required")
     @Valid

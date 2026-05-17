@@ -6,7 +6,7 @@ import com.billing.customers.controller.dto.CustomerRequestDTO;
 import com.billing.customers.controller.dto.CustomerResponseDTO;
 import com.billing.customers.model.Address;
 import com.billing.customers.model.Customer;
-import com.billing.customers.model.CustomerStatus;
+import com.billing.customers.model.enums.CustomerStatus;
 import com.billing.customers.validator.CustomerValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -28,6 +28,7 @@ public class CustomerMapper {
                 .dateOfBirth(customerRequestDTO.dateOfBirth())
                 .address(toAddress(customerRequestDTO.address()))
                 .customerStatus(CustomerStatus.ACTIVE)
+                .role(customerRequestDTO.role())
                 .build();
     }
 

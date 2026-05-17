@@ -1,6 +1,7 @@
 package com.authentication.client.dto;
 
 
+import com.authentication.model.enums.Role;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -32,6 +33,9 @@ public record CreateCustomerRequestDTO(
         @NotNull(message = "Date of birth is required")
         @PastOrPresent(message = "Date of birth cannot be in the future")
         LocalDate dateOfBirth,
+
+        @NotNull(message = "Customer role is required")
+        Role role,
 
         @NotNull(message = "Address is required")
         @Valid

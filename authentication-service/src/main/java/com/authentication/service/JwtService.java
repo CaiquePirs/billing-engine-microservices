@@ -25,6 +25,7 @@ public class JwtService {
 
         var token = JWT.create()
                 .withSubject(authentication.getId().toString())
+                .withClaim("role", authentication.getRole().toString())
                 .withExpiresAt(tokenExpiration)
                 .sign(Algorithm.HMAC256(SECRET_KEY));
 
