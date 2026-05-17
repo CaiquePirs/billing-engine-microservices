@@ -33,7 +33,7 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('SCOPE_INTERNAL_SERVICE')")
-    public ResponseEntity<CustomerResponseDTO> getCustomer(@PathVariable(name = "id") UUID customerId){
+    public ResponseEntity<CustomerResponseDTO> findCustomerById(@PathVariable(name = "id") UUID customerId){
         Customer customer = customerService.findCustomerById(customerId);
         return ResponseEntity.ok(customerMapper.toResponse(customer));
     }

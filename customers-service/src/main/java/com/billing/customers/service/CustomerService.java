@@ -31,5 +31,4 @@ public class CustomerService {
                 .filter(customer -> customer.getCustomerStatus().equals(CustomerStatus.ACTIVE))
                 .orElseThrow(() -> new CustomerNotFoundException("Customer ID not found"));
     }
-
 }
