@@ -1,4 +1,4 @@
-package com.billing_engine.api_gateway.config;
+package com.billing.gateway.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

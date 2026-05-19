@@ -1,4 +1,4 @@
-package com.billing_engine.api_gateway;
+package com.billing.gateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

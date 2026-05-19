@@ -1,4 +1,4 @@
-package com.billing_engine.api_gateway;
+package com.billing.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
