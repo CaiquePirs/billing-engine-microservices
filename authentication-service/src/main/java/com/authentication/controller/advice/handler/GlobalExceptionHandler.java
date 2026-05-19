@@ -1,4 +1,4 @@
-package com.authentication.controller.handler;
+package com.authentication.controller.advice.handler;
 
 import com.authentication.controller.advice.dto.ErrorMessageDTO;
 import com.authentication.controller.advice.dto.ErrorResponseDTO;
