@@ -36,7 +36,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/internal-login")
-    public ResponseEntity<LoginResponseDTO> signIn(@RequestBody @Valid InternalLoginRequestDTO InternalLoginRequestDTO) {
+    public ResponseEntity<LoginResponseDTO> signInInternalService(@RequestBody @Valid InternalLoginRequestDTO InternalLoginRequestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(internalAuthenticationService.signInInternalUser(InternalLoginRequestDTO));
     }

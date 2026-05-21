@@ -2,7 +2,6 @@ package com.authentication.service;
 
 import com.authentication.client.dto.CreateCustomerRequestDTO;
 import com.authentication.client.dto.CreateCustomerResponseDTO;
-import com.authentication.client.service.CustomerApiService;
 import com.authentication.controller.advice.exceptions.AuthLoginFailException;
 import com.authentication.controller.dto.LoginRequestDTO;
 import com.authentication.controller.dto.LoginResponseDTO;

@@ -1,4 +1,4 @@
-package com.authentication.client.service;
+package com.authentication.service;
 
 import com.authentication.client.api.CustomerClientApi;
 import com.authentication.client.dto.CreateCustomerRequestDTO;
@@ -6,8 +6,10 @@ import com.authentication.client.dto.CreateCustomerResponseDTO;
 import com.authentication.controller.advice.exceptions.AuthRegisterFailException;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomerApiService {
@@ -22,8 +24,8 @@ public class CustomerApiService {
             throw new AuthRegisterFailException("Customer signup failed, user already exists");
 
         } catch (Exception e) {
-            throw new AuthRegisterFailException("Error when try to register customer: " + e.getMessage());
+            log.error("Error when signup the customer {} ", e.getMessage());
+            throw new AuthRegisterFailException("Customer signup failed.");
         }
     }
-
 }
