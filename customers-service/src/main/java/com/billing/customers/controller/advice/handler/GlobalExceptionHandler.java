@@ -4,6 +4,7 @@ import com.billing.customers.controller.advice.dto.ErrorMessageDTO;
 import com.billing.customers.controller.advice.dto.ErrorResponseDTO;
 import com.billing.customers.controller.advice.exceptions.CustomerExistException;
 import com.billing.customers.controller.advice.exceptions.CustomerNotFoundException;
+import com.billing.customers.controller.advice.exceptions.StripeIntegrationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,6 +18,16 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(StripeIntegrationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleStripeIntegrationException(StripeIntegrationException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDTO(
+                        HttpStatus.BAD_REQUEST.value(),
+                        e.getMessage(),
+                        LocalDateTime.now(),
+                        List.of(new ErrorMessageDTO("Internal error", e.getMessage()))
+                ));
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {

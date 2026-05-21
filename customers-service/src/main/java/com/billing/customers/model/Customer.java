@@ -59,6 +59,9 @@ public class Customer {
     @Column(name = "customer_status", nullable = false)
     private CustomerStatus customerStatus;
 
+    @Column(name = "stripe_customer_id", unique = true)
+    private String stripeCustomerId;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private Address address;

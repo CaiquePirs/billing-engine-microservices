@@ -19,10 +19,18 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerValidator customerValidator;
     private final CustomerMapper customerMapper;
+    private final StripeCustomerService stripeCustomerService;
 
     public Customer createCustomer(CustomerRequestDTO customerRequestDTO) {
         customerValidator.validate(customerRequestDTO);
         Customer customer = customerMapper.toCustomer(customerRequestDTO);
+
+        String stripeCustomerId = stripeCustomerService.createStripeCustomer(
+                customer.getEmail(),
+                customer.getName()
+        );
+
+        customer.setStripeCustomerId(stripeCustomerId);
         return customerRepository.save(customer);
     }
 
