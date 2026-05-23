@@ -33,8 +33,7 @@ public class BillingSubscriptionService {
 
         Subscription stripeSubscription = stripeSubscriptionService.createSubscription(
                 customer.stripeCustomerId(),
-                plan.getStripePriceId(),
-                subscriptionRequest.paymentMethodId()
+                plan.getStripePriceId()
         );
 
         BillingSubscription subscription = billingSubscriptionMapper.toEntity(
