@@ -16,5 +16,5 @@ public record CustomerResponseDTO(
     Integer age,
     LocalDate dateOfBirth,
     AddressResponseDTO address,
-    CustomerStatus customerStatus
-) {}
+    CustomerStatus customerStatus,
+    String stripeCustomerId) {}

@@ -55,6 +55,7 @@ public class CustomerMapper {
                 .dateOfBirth(customer.getDateOfBirth())
                 .address(toAddressResponse(customer.getAddress()))
                 .customerStatus(customer.getCustomerStatus())
+                .stripeCustomerId(customer.getStripeCustomerId())
                 .build();
     }
 
