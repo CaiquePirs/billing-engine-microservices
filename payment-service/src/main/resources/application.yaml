@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: payment-service
+  config:
+    import: "optional:configserver:"
+  profiles:
+    active: dev
