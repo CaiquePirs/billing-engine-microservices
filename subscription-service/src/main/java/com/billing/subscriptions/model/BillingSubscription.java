@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Subscription {
+public class BillingSubscription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

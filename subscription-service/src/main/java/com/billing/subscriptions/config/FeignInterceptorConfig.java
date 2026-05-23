@@ -1,0 +1,38 @@
+package com.billing.subscriptions.config;
+
+import com.billing.subscriptions.client.dto.LoginClientRequest;
+import com.billing.subscriptions.client.dto.LoginClientResponse;
+import com.billing.subscriptions.controller.advice.exception.ExternalServiceException;
+import com.billing.subscriptions.service.AuthenticationApiService;
+import feign.RequestInterceptor;
+import feign.RequestTemplate;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@RequiredArgsConstructor
+@Slf4j
+public class FeignInterceptorConfig implements RequestInterceptor {
+
+    private final AuthenticationApiService api;
+
+    @Value("${SUBSCRIPTION_SERVICE_CLIENT_ID}")
+    private String clientId;
+
+    @Value("${SUBSCRIPTION_SERVICE_SECRET}")
+    private String clientSecret;
+
+    @Override
+    public void apply(RequestTemplate template) {
+        try {
+            LoginClientResponse login = api.getAccessToken(new LoginClientRequest(clientId, clientSecret));
+            template.header("Authorization", "Bearer " + login.access_token());
+
+        } catch (Exception e){
+            log.error("Failed to authenticate service client", e);
+            throw new ExternalServiceException("Subscription failed. Try again later");
+        }
+    }
+}

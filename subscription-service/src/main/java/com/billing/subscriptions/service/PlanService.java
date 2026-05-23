@@ -1,5 +1,6 @@
 package com.billing.subscriptions.service;
 
+import com.billing.subscriptions.controller.advice.exception.NotFoundException;
 import com.billing.subscriptions.controller.dto.PlanRequestDTO;
 import com.billing.subscriptions.mapper.PlanMapper;
 import com.billing.subscriptions.model.Plan;
@@ -16,13 +17,13 @@ public class PlanService {
     private final PlanRepository planRepository;
     private final PlanMapper planMapper;
     private final SecurityService securityService;
-    private final PlanStripeService planStripeService;
+    private final StripePlanService stripePlanService;
 
     public Plan createPlan(PlanRequestDTO planRequestDTO) {
         Plan plan = planMapper.toEntity(planRequestDTO);
 
         UUID currentLoggedAdmin = securityService.getLoggedInAdmin();
-        String stripePriceId = planStripeService.createStripePrice(planRequestDTO);
+        String stripePriceId = stripePlanService.createStripePrice(planRequestDTO);
 
         plan.setCreatedBy(currentLoggedAdmin);
         plan.setStripePriceId(stripePriceId);
@@ -30,4 +31,9 @@ public class PlanService {
         return planRepository.save(plan);
     }
 
+    public Plan findPlanById(UUID planId) {
+        return planRepository.findById(planId)
+                .filter(plan -> plan.getActive().equals(true))
+                .orElseThrow(() -> new NotFoundException("Plan ID not found"));
+    }
 }
