@@ -1,4 +1,19 @@
 services:
+  payments-postgres:
+    image: postgres:16.0
+    container_name: payments-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PAYMENT_DB}
+      POSTGRES_USER: ${PAYMENT_USER}
+      POSTGRES_PASSWORD: ${PAYMENT_PASSWORD}
+    ports:
+      - "5435:5432"
+    volumes:
+      - payment_postgres_data:/var/lib/postgresql/data
+    networks:
+      - billing-network
+
   subscriptions-postgres:
     image: postgres:16.0
     container_name: subscriptions-postgres
@@ -66,6 +81,8 @@ volumes:
   authentication_postgres_data:
     driver: local
   subscription_postgres_data:
+    driver: local
+  payment_postgres_data:
     driver: local
   pgadmin_data:
     driver: local
