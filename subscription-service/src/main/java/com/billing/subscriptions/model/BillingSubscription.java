@@ -25,7 +25,7 @@ public class BillingSubscription {
     @Column(name = "customer_id", nullable = false)
     private UUID customerId;
 
-    @Column(name = "stripe_subscription_id", nullable = false, unique = true)
+    @Column(name = "stripe_subscription_id", unique = true)
     private String stripeSubscriptionId;
 
     @Column(name = "current_period_start", nullable = false)

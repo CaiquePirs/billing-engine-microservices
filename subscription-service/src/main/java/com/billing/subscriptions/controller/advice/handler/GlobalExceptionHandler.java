@@ -2,6 +2,7 @@ package com.billing.subscriptions.controller.advice.handler;
 
 import com.billing.subscriptions.controller.advice.dto.ErrorMessageDTO;
 import com.billing.subscriptions.controller.advice.dto.ErrorResponseDTO;
+import com.billing.subscriptions.controller.advice.exception.ExternalServiceException;
 import com.billing.subscriptions.controller.advice.exception.StripeIntegrationException;
 import com.billing.subscriptions.controller.advice.exception.UserUnauthorizedException;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,18 @@ public class GlobalExceptionHandler {
                         List.of(new ErrorMessageDTO("Internal Error", e.getMessage()))
                 ));
     }
+
+    @ExceptionHandler(ExternalServiceException.class)
+    public ResponseEntity<ErrorResponseDTO> handleExternalServiceException(ExternalServiceException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponseDTO(
+                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        e.getMessage(),
+                        LocalDateTime.now(),
+                        List.of(new ErrorMessageDTO("External Error", e.getMessage()))
+                ));
+    }
+
 
     @ExceptionHandler(UserUnauthorizedException.class)
     public ResponseEntity<ErrorResponseDTO> handleStripeIntegrationException(UserUnauthorizedException e) {

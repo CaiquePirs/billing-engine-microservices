@@ -2,6 +2,7 @@ package com.billing.subscriptions.service;
 
 import com.billing.subscriptions.client.dto.CustomerClientResponse;
 import com.billing.subscriptions.controller.dto.BillingSubscriptionRequestDTO;
+import com.billing.subscriptions.events.publisher.SubscriptionEventPublisher;
 import com.billing.subscriptions.mapper.BillingSubscriptionMapper;
 import com.billing.subscriptions.model.BillingSubscription;
 import com.billing.subscriptions.model.Plan;
@@ -16,12 +17,12 @@ import org.springframework.stereotype.Service;
 public class BillingSubscriptionService {
 
     private final PlanService planService;
-    private final StripePlanService stripePlanService;
     private final CustomerApiService customerApiService;
-    private final StripeCustomerService stripeCustomerService;
     private final BillingSubscriptionRepository billingSubscriptionRepository;
-    private final StripeSubscriptionService stripeSubscriptionService;
     private final BillingSubscriptionMapper billingSubscriptionMapper;
+    private final StripeCustomerService stripeCustomerService;
+    private final StripePlanService stripePlanService;
+    private final SubscriptionEventPublisher subscriptionEventPublisher;
 
     @Transactional
     public BillingSubscription createSubscription(BillingSubscriptionRequestDTO subscriptionRequest) {
@@ -31,17 +32,11 @@ public class BillingSubscriptionService {
         Plan plan = planService.findPlanById(subscriptionRequest.planId());
         stripePlanService.ensurePlanExistsOnStripe(plan.getStripePriceId());
 
-        Subscription stripeSubscription = stripeSubscriptionService.createSubscription(
-                customer.stripeCustomerId(),
-                plan.getStripePriceId()
-        );
+        BillingSubscription subscription = billingSubscriptionMapper.toEntity(plan, customer.id());
+        BillingSubscription subscriptionCreated = billingSubscriptionRepository.save(subscription);
 
-        BillingSubscription subscription = billingSubscriptionMapper.toEntity(
-                stripeSubscription,
-                plan,
-                customer.id()
-        );
+        subscriptionEventPublisher.publisherSubscriptionCreated(subscriptionCreated);
 
-        return billingSubscriptionRepository.save(subscription);
+        return subscriptionCreated;
     }
 }
