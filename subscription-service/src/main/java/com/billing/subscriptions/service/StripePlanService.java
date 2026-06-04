@@ -10,6 +10,8 @@ import com.stripe.param.PriceCreateParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.RoundingMode;
+
 @Slf4j
 @Service
 public class StripePlanService {
@@ -18,7 +20,10 @@ public class StripePlanService {
         try {
             PriceCreateParams params = PriceCreateParams.builder()
                     .setCurrency(request.currency().toLowerCase())
-                    .setUnitAmount(request.price().longValue())
+                    .setUnitAmount(request.price()
+                            .movePointRight(2)
+                            .setScale(0, RoundingMode.UNNECESSARY)
+                            .longValueExact())
                     .setRecurring(PriceCreateParams.Recurring.builder()
                             .setInterval(request.interval() == IntervalPlan.MONTHLY
                                     ? PriceCreateParams.Recurring.Interval.MONTH
