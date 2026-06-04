@@ -32,11 +32,11 @@ public class Payment {
     @Column(name = "stripe_payment_intent_id", nullable = false)
     private String stripePaymentIntentId;
 
-    @Column(name = "stripe_event_id", nullable = false, unique = true)
-    private String stripeEventId; // idempotência
+    @Column(name = "stripe_event_id", unique = true)
+    private String stripeEventId;
 
     @Column(name = "amount", nullable = false)
-    private Long amount; // em centavos
+    private Long amount;
 
     @Column(name = "currency", nullable = false, length = 3)
     private String currency;
@@ -46,7 +46,7 @@ public class Payment {
     private PaymentStatus paymentStatus;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "raw_payload", nullable = false, columnDefinition = "jsonb")
+    @Column(name = "raw_payload", columnDefinition = "jsonb")
     private String rawPayload;
 
     @Column(name = "processed_at")
