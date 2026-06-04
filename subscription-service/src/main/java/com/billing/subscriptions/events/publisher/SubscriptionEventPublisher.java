@@ -1,5 +1,6 @@
 package com.billing.subscriptions.events.publisher;
 
+import com.billing.subscriptions.client.dto.CustomerClientResponse;
 import com.billing.subscriptions.controller.advice.exception.ExternalServiceException;
 import com.billing.subscriptions.events.data.SubscriptionCreatedEvent;
 import com.billing.subscriptions.mapper.BillingSubscriptionMapper;
@@ -24,8 +25,12 @@ public class SubscriptionEventPublisher {
     @Value("${sns.topic.subscription-created}")
     private String snsTopicSubscriptionCreated;
 
-    public void publisherSubscriptionCreated(BillingSubscription billingSubscription) {
-        SubscriptionCreatedEvent subscriptionEventMessage = billingSubscriptionMapper.mapToSubscriptionCreatedEvent(billingSubscription);
+    public void publisherSubscriptionCreated(BillingSubscription billingSubscription, CustomerClientResponse customer, String paymentMethodId) {
+        SubscriptionCreatedEvent subscriptionEventMessage = billingSubscriptionMapper.mapToSubscriptionCreatedEvent(
+                billingSubscription,
+                customer,
+                paymentMethodId
+        );
 
         try {
             PublishRequest request = PublishRequest.builder()
@@ -34,6 +39,7 @@ public class SubscriptionEventPublisher {
                     .build();
 
             snsClient.publish(request);
+
         } catch (Exception e) {
             log.error("Subscription ID: {} event publisher failed", billingSubscription.getId(), e);
             throw new ExternalServiceException("Subscription failed. Try again later.");

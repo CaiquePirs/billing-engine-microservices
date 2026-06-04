@@ -12,7 +12,7 @@ public record CustomerClientResponse(
         String taxNumber,
         Integer age,
         LocalDate dateOfBirth,
-        CustomerAddressClientResponse address,
+        CustomerAddressResponse address,
         String customerStatus,
         String stripeCustomerId
 ) {

@@ -1,5 +1,6 @@
 package com.billing.subscriptions.mapper;
 
+import com.billing.subscriptions.client.dto.CustomerClientResponse;
 import com.billing.subscriptions.controller.dto.BillingSubscriptionResponseDTO;
 import com.billing.subscriptions.events.data.SubscriptionCreatedEvent;
 import com.billing.subscriptions.model.AuditLog;
@@ -42,14 +43,16 @@ public class BillingSubscriptionMapper {
                 .build();
     }
 
-    public SubscriptionCreatedEvent mapToSubscriptionCreatedEvent(BillingSubscription billingSubscription){
+    public SubscriptionCreatedEvent mapToSubscriptionCreatedEvent(BillingSubscription billingSubscription, CustomerClientResponse customer, String paymentMethodId){
         return SubscriptionCreatedEvent.builder()
                 .id(billingSubscription.getId())
                 .customerId(billingSubscription.getCustomerId())
-                .planResponseDTO(planMapper.toResponse(billingSubscription.getPlan()))
+                .plan(planMapper.toResponse(billingSubscription.getPlan()))
                 .currentPeriodStart(billingSubscription.getCurrentPeriodStart())
                 .currentPeriodEnd(billingSubscription.getCurrentPeriodEnd())
-                .subscriptionStatus(billingSubscription.getSubscriptionStatus())
+                .subscriptionStatus(billingSubscription.getSubscriptionStatus().toString())
+                .paymentMethodId(paymentMethodId)
+                .customer(customer)
                 .build();
     }
 

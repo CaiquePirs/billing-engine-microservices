@@ -26,7 +26,7 @@ public class PlanMapper {
                 .id(plan.getId())
                 .name(plan.getName())
                 .description(plan.getDescription())
-                .interval(plan.getInterval())
+                .interval(plan.getInterval().toString())
                 .stripePriceId(plan.getStripePriceId())
                 .currency(plan.getCurrency())
                 .active(plan.getActive())

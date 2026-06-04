@@ -13,7 +13,7 @@ public record PlanResponseDTO(
         String description,
         BigDecimal price,
         String currency,
-        IntervalPlan interval,
+        String interval,
         String stripePriceId,
         Boolean active) {
 }

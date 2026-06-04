@@ -35,7 +35,11 @@ public class BillingSubscriptionService {
         BillingSubscription subscription = billingSubscriptionMapper.toEntity(plan, customer.id());
         BillingSubscription subscriptionCreated = billingSubscriptionRepository.save(subscription);
 
-        subscriptionEventPublisher.publisherSubscriptionCreated(subscriptionCreated);
+        subscriptionEventPublisher.publisherSubscriptionCreated(
+                subscriptionCreated,
+                customer,
+                subscriptionRequest.paymentMethodId()
+        );
 
         return subscriptionCreated;
     }
