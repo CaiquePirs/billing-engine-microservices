@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color:#ffffff !important; color-scheme: light only; supported-color-schemes: light;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="color-scheme" content="light only">
+    <meta name="supported-color-schemes" content="light">
+    <title>New Subscription Created</title>
+</head>
+<body bgcolor="#ffffff" style="margin:0; padding:0; background-color:#ffffff !important; font-family:Arial, Helvetica, sans-serif; color:#1f2937 !important;">
+<table width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="background-color:#ffffff !important; padding:32px 0;">
+    <tr>
+        <td align="center" bgcolor="#ffffff" style="background-color:#ffffff !important;">
+            <table width="640" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="background-color:#ffffff !important; border-radius:16px; overflow:hidden; box-shadow:0 8px 24px rgba(15, 23, 42, 0.08);">
+
+                <tr>
+                    <td style="background:#4f46e5; background:linear-gradient(135deg, #4f46e5, #7c3aed); padding:32px 40px;">
+                        <h1 style="margin:0; color:#ffffff !important; font-size:28px; font-weight:700;">
+                            Subscription Created Successfully
+                        </h1>
+                        <p style="margin:12px 0 0; color:#e0e7ff !important; font-size:15px; line-height:24px;">
+                            Your new subscription has been created and is now waiting for payment processing.
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td bgcolor="#ffffff" style="padding:36px 40px 24px; background-color:#ffffff !important; color:#1f2937 !important;">
+                        <p style="margin:0 0 18px; font-size:16px; line-height:26px; color:#1f2937 !important;">
+                            Hello <strong style="color:#111827 !important;">{{customerFullName}}</strong>,
+                        </p>
+
+                        <p style="margin:0 0 24px; font-size:15px; line-height:24px; color:#4b5563 !important;">
+                            Thank you for subscribing. Below you can find the details of your new subscription.
+                        </p>
+
+                        <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="border-collapse:collapse; margin-bottom:28px; background-color:#ffffff !important;">
+                            <tr>
+                                <td bgcolor="#f8fafc" style="padding:16px; background-color:#f8fafc !important; border:1px solid #e5e7eb; border-radius:12px; color:#111827 !important;">
+                                    <h2 style="margin:0 0 14px; font-size:18px; color:#111827 !important;">
+                                        Subscription Details
+                                    </h2>
+
+                                    <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#f8fafc" style="background-color:#f8fafc !important;">
+                                        <tr>
+                                            <td style="padding:8px 0; color:#6b7280 !important; font-size:14px;">Subscription ID</td>
+                                            <td align="right" style="padding:8px 0; color:#111827 !important; font-size:14px; font-weight:600;">{{subscriptionId}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:8px 0; color:#6b7280 !important; font-size:14px;">Status</td>
+                                            <td align="right" style="padding:8px 0; color:#111827 !important; font-size:14px; font-weight:600;">{{subscriptionStatus}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:8px 0; color:#6b7280 !important; font-size:14px;">Current Period Start</td>
+                                            <td align="right" style="padding:8px 0; color:#111827 !important; font-size:14px; font-weight:600;">{{currentPeriodStart}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:8px 0; color:#6b7280 !important; font-size:14px;">Current Period End</td>
+                                            <td align="right" style="padding:8px 0; color:#111827 !important; font-size:14px; font-weight:600;">{{currentPeriodEnd}}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="border-collapse:collapse; margin-bottom:28px; background-color:#ffffff !important;">
+                            <tr>
+                                <td bgcolor="#f8fafc" style="padding:16px; background-color:#f8fafc !important; border:1px solid #e5e7eb; border-radius:12px; color:#111827 !important;">
+                                    <h2 style="margin:0 0 14px; font-size:18px; color:#111827 !important;">
+                                        Plan Details
+                                    </h2>
+
+                                    <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#f8fafc" style="background-color:#f8fafc !important;">
+                                        <tr>
+                                            <td style="padding:8px 0; color:#6b7280 !important; font-size:14px;">Plan</td>
+                                            <td align="right" style="padding:8px 0; color:#111827 !important; font-size:14px; font-weight:600;">{{planName}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:8px 0; color:#6b7280 !important; font-size:14px;">Description</td>
+                                            <td align="right" style="padding:8px 0; color:#111827 !important; font-size:14px; font-weight:600;">{{planDescription}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:8px 0; color:#6b7280 !important; font-size:14px;">Billing Interval</td>
+                                            <td align="right" style="padding:8px 0; color:#111827 !important; font-size:14px; font-weight:600;">{{planInterval}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:8px 0; color:#6b7280 !important; font-size:14px;">Price</td>
+                                            <td align="right" style="padding:8px 0; color:#111827 !important; font-size:14px; font-weight:700;">{{planPrice}}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="border-collapse:collapse; margin-bottom:28px; background-color:#ffffff !important;">
+                            <tr>
+                                <td bgcolor="#f8fafc" style="padding:16px; background-color:#f8fafc !important; border:1px solid #e5e7eb; border-radius:12px; color:#111827 !important;">
+                                    <h2 style="margin:0 0 14px; font-size:18px; color:#111827 !important;">
+                                        Customer Details
+                                    </h2>
+
+                                    <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#f8fafc" style="background-color:#f8fafc !important;">
+                                        <tr>
+                                            <td style="padding:8px 0; color:#6b7280 !important; font-size:14px;">Name</td>
+                                            <td align="right" style="padding:8px 0; color:#111827 !important; font-size:14px; font-weight:600;">{{customerFullName}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:8px 0; color:#6b7280 !important; font-size:14px;">Email</td>
+                                            <td align="right" style="padding:8px 0; color:#111827 !important; font-size:14px; font-weight:600;">{{customerEmail}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:8px 0; color:#6b7280 !important; font-size:14px;">Phone</td>
+                                            <td align="right" style="padding:8px 0; color:#111827 !important; font-size:14px; font-weight:600;">{{customerPhone}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:8px 0; color:#6b7280 !important; font-size:14px;">Tax Number</td>
+                                            <td align="right" style="padding:8px 0; color:#111827 !important; font-size:14px; font-weight:600;">{{customerTaxNumber}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:8px 0; color:#6b7280 !important; font-size:14px;">Age</td>
+                                            <td align="right" style="padding:8px 0; color:#111827 !important; font-size:14px; font-weight:600;">{{customerAge}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:8px 0; color:#6b7280 !important; font-size:14px;">Status</td>
+                                            <td align="right" style="padding:8px 0; color:#111827 !important; font-size:14px; font-weight:600;">{{customerStatus}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:8px 0; color:#6b7280 !important; font-size:14px;">Address</td>
+                                            <td align="right" style="padding:8px 0; color:#111827 !important; font-size:14px; font-weight:600;">{{customerAddress}}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <p style="margin:0; font-size:14px; line-height:22px; color:#6b7280 !important;">
+                            You will receive another notification once your payment is approved or if any action is required.
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td bgcolor="#f9fafb" style="padding:24px 40px; background-color:#f9fafb !important; border-top:1px solid #e5e7eb;">
+                        <p style="margin:0; font-size:13px; line-height:20px; color:#6b7280 !important;">
+                            This is an automated message from Billing Engine. Please do not reply to this email.
+                        </p>
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

@@ -1,4 +1,4 @@
-package com.billing.payment.events.data;
+package com.billing.notification.events.data;
 
 import java.math.BigDecimal;
 import java.util.UUID;

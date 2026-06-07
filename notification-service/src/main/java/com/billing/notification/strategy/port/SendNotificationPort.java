@@ -1,4 +1,7 @@
-package com.billing.notification.strategy;
+package com.billing.notification.strategy.port;
 
-public interface SendNoficationPort {
+import com.billing.notification.model.Notification;
+
+public interface SendNotificationPort {
+    void sendEmail(Notification notification);
 }

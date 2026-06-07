@@ -1,4 +1,4 @@
-package com.billing.notification.events.message;
+package com.billing.notification.events.data;
 
 public class NotificationEventMessage {
 }
