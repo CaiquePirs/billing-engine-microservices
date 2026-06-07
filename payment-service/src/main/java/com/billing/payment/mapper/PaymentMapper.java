@@ -1,6 +1,7 @@
 package com.billing.payment.mapper;
 
 import com.billing.payment.events.data.SubscriptionCreatedEvent;
+import com.billing.payment.events.data.SubscriptionPaymentEvent;
 import com.billing.payment.model.AuditLog;
 import com.billing.payment.model.Payment;
 import com.billing.payment.model.enums.PaymentStatus;
@@ -22,4 +23,12 @@ public class PaymentMapper {
                 .build();
     }
 
+    public SubscriptionPaymentEvent toEvent(Payment payment) {
+        return SubscriptionPaymentEvent.builder()
+                .subscriptionId(payment.getSubscriptionId())
+                .paymentId(payment.getId())
+                .paymentStatus(payment.getPaymentStatus().toString())
+                .processedAt(payment.getProcessedAt())
+                .build();
+    }
 }

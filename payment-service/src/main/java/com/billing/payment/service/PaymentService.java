@@ -10,7 +10,6 @@ import com.billing.payment.repository.PaymentRepository;
 import com.billing.payment.utils.PaymentUtils;
 import com.billing.payment.validator.PaymentValidator;
 import com.stripe.model.Event;
-import com.stripe.model.Invoice;
 import com.stripe.model.Subscription;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +50,7 @@ public class PaymentService {
                     processPaymentApproved(payload, event, subscriptionId);
 
                 }catch (Exception e) {
-                    log.error("Webhook payment eventID: {} could not be processed", event.getId(), e);
+                    log.error("Failed to process Stripe invoice.paid webhook event ID {}", event.getId(), e);
                 }
 
             }
@@ -62,13 +61,13 @@ public class PaymentService {
                     processPaymentFailed(payload, event, subscriptionId);
 
                 } catch (Exception e){
-                    log.error("Webhook payment event: {} could not be processed", event.getId(), e);
+                    log.error("Failed to process Stripe invoice.payment_failed webhook event ID {}", event.getId(), e);
                 }
             }
         }
     }
 
-    public void processPaymentApproved(String payload, Event webhookEvent, UUID subscriptionId) {
+    private void processPaymentApproved(String payload, Event webhookEvent, UUID subscriptionId) {
         Payment payment = findPaymentBySubscriptionId(subscriptionId);
 
         payment.setPaymentStatus(PaymentStatus.APPROVED);
@@ -81,7 +80,7 @@ public class PaymentService {
 
     }
 
-    public void processPaymentFailed(String payload, Event webhookEvent,  UUID subscriptionId) {
+    private void processPaymentFailed(String payload, Event webhookEvent,  UUID subscriptionId) {
         Payment payment = findPaymentBySubscriptionId(subscriptionId);
 
         payment.setPaymentStatus(PaymentStatus.FAILED);

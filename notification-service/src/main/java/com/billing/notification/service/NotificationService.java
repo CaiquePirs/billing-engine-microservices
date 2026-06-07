@@ -29,8 +29,6 @@ public class NotificationService {
                 .body(Map.of(NotificationTemplate.SUBSCRIPTION_CREATED, event))
                 .build();
 
-        log.info("Sending notification: {}", notification);
-
         sendNotificationPort.sendEmail(notification);
     }
 }
