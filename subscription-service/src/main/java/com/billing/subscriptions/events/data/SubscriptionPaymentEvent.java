@@ -1,4 +1,4 @@
-package com.billing.payment.events.data;
+package com.billing.subscriptions.events.data;
 
 import lombok.Builder;
 

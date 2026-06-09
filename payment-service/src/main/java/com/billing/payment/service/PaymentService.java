@@ -2,6 +2,7 @@ package com.billing.payment.service;
 
 import com.billing.payment.controller.advice.NotFoundException;
 import com.billing.payment.events.data.SubscriptionCreatedEvent;
+import com.billing.payment.events.data.SubscriptionPaymentEvent;
 import com.billing.payment.events.publisher.PaymentEventPublisher;
 import com.billing.payment.mapper.PaymentMapper;
 import com.billing.payment.model.Payment;
@@ -76,8 +77,9 @@ public class PaymentService {
         payment.setStripeEventId(webhookEvent.getId());
 
         paymentRepository.save(payment);
-        paymentEventPublisher.publisherPaymentApproved(payment);
 
+        SubscriptionPaymentEvent event = paymentMapper.toEvent(payment, webhookEvent);
+        paymentEventPublisher.publisherPaymentApproved(event);
     }
 
     private void processPaymentFailed(String payload, Event webhookEvent,  UUID subscriptionId) {
@@ -89,7 +91,9 @@ public class PaymentService {
         payment.setStripeEventId(webhookEvent.getId());
 
         paymentRepository.save(payment);
-        paymentEventPublisher.publisherPaymentFailed(payment);
+
+        SubscriptionPaymentEvent event = paymentMapper.toEvent(payment, webhookEvent);
+        paymentEventPublisher.publisherPaymentFailed(event);
     }
 
     public Payment findPaymentBySubscriptionId(UUID subscriptionId) {

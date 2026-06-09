@@ -27,7 +27,6 @@ public class AwsSqsConfig {
 
     @Bean
     public SqsClient sqsClient() {
-
         return SqsClient.builder()
                 .endpointOverride(URI.create(endpoint))
                 .region(Region.of(region))

@@ -34,9 +34,7 @@ public class PaymentEventPublisher {
     @Value("${PAYMENT_FAILED_TOPIC}")
     private String snsTopicPaymentFailed;
 
-    public void publisherPaymentApproved(Payment payment) {
-        SubscriptionPaymentEvent event = paymentMapper.toEvent(payment);
-
+    public void publisherPaymentApproved(SubscriptionPaymentEvent event) {
         try {
             PublishRequest request = PublishRequest.builder()
                     .topicArn(snsTopicPaymentApproved)
@@ -46,14 +44,12 @@ public class PaymentEventPublisher {
             snsClient.publish(request);
 
         } catch (Exception e) {
-            log.error("Failed to publish payment-approved event for subscription ID {}", payment.getSubscriptionId(), e);
+            log.error("Failed to publish payment-approved event for subscription ID {}", event.subscriptionId(), e);
             throw new InternalErrorException("Failed to publish payment-approved event");
         }
     }
 
-    public void publisherPaymentFailed(Payment payment){
-        SubscriptionPaymentEvent event = paymentMapper.toEvent(payment);
-
+    public void publisherPaymentFailed( SubscriptionPaymentEvent event){
         try {
             PublishRequest request = PublishRequest.builder()
                     .topicArn(snsTopicPaymentFailed)
@@ -63,7 +59,7 @@ public class PaymentEventPublisher {
             snsClient.publish(request);
 
         } catch (Exception e) {
-            log.error("Failed to publish payment-failed event for subscription ID {}", payment.getSubscriptionId(), e);
+            log.error("Failed to publish payment-failed event for subscription ID {}", event.subscriptionId(), e);
             throw new InternalErrorException("Failed to publish payment-failed event");
         }
     }
