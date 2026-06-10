@@ -12,9 +12,5 @@ public record CustomerResponseDTO(
     String lastName,
     String email,
     String phone,
-    String taxNumber,
-    Integer age,
-    LocalDate dateOfBirth,
     AddressResponseDTO address,
-    CustomerStatus customerStatus,
     String stripeCustomerId) {}

@@ -9,11 +9,6 @@ public record CustomerClientResponse(
         String lastName,
         String email,
         String phone,
-        String taxNumber,
-        Integer age,
-        LocalDate dateOfBirth,
         CustomerAddressResponse address,
-        String customerStatus,
-        String stripeCustomerId
-) {
+        String stripeCustomerId) {
 }

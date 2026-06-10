@@ -48,13 +48,9 @@ public class CustomerMapper {
                 .id(customer.getId())
                 .name(customer.getName())
                 .lastName(customer.getLastName())
-                .age(customer.getAge())
                 .phone(customer.getPhone())
                 .email(customer.getEmail())
-                .taxNumber(customer.getTaxNumber())
-                .dateOfBirth(customer.getDateOfBirth())
                 .address(toAddressResponse(customer.getAddress()))
-                .customerStatus(customer.getCustomerStatus())
                 .stripeCustomerId(customer.getStripeCustomerId())
                 .build();
     }

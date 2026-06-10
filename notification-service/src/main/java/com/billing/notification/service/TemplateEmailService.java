@@ -35,9 +35,6 @@ public class TemplateEmailService {
                 .replace("{{customerFullName}}", utils.buildCustomerFullName(customer))
                 .replace("{{customerEmail}}", utils.safeValue(customer.email()))
                 .replace("{{customerPhone}}", utils.safeValue(customer.phone()))
-                .replace("{{customerTaxNumber}}", utils.safeValue(customer.taxNumber()))
-                .replace("{{customerAge}}", utils.safeValue(customer.age()))
-                .replace("{{customerStatus}}", utils.safeValue(customer.customerStatus()))
                 .replace("{{customerAddress}}", utils.buildCustomerAddress(customer.address()));
 
         return utils.buildEmailRequest(notification, processedTemplate);
