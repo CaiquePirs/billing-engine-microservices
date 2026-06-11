@@ -1,6 +1,7 @@
 package com.billing.customers.service;
 
 import com.billing.customers.controller.advice.exceptions.StripeIntegrationException;
+import com.billing.customers.controller.dto.CustomerRequestDTO;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.param.CustomerCreateParams;
@@ -13,18 +14,27 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class StripeCustomerService {
 
-    public String createStripeCustomer(String email, String name) {
+    public String createStripeCustomer(CustomerRequestDTO dto) {
         try {
             CustomerCreateParams params = CustomerCreateParams.builder()
-                    .setEmail(email)
-                    .setName(name)
+                    .setEmail(dto.email())
+                    .setName(dto.name())
+                    .setPhone(dto.phone())
+                    .setAddress(CustomerCreateParams.Address.builder()
+                            .setCity(dto.address().city())
+                            .setCountry(dto.address().county())
+                            .setLine1(dto.address().street())
+                            .setLine2(dto.address().number())
+                            .setState(dto.address().state())
+                            .setPostalCode(dto.address().eircode())
+                            .build())
                     .build();
 
             Customer customer = Customer.create(params);
             return customer.getId();
 
         } catch (StripeException e) {
-            log.error("Failed to create customer email: {} on Stripe and error: {}", email, e.getMessage());
+            log.error("Failed to create customer email: {} on Stripe and error: {}", dto.email(), e.getMessage());
             throw new StripeIntegrationException("Failed to create a customer");
         }
     }

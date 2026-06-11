@@ -25,10 +25,7 @@ public class CustomerService {
         customerValidator.validate(customerRequestDTO);
         Customer customer = customerMapper.toCustomer(customerRequestDTO);
 
-        String stripeCustomerId = stripeCustomerService.createStripeCustomer(
-                customer.getEmail(),
-                customer.getName()
-        );
+        String stripeCustomerId = stripeCustomerService.createStripeCustomer(customerRequestDTO);
 
         customer.setStripeCustomerId(stripeCustomerId);
         return customerRepository.save(customer);
