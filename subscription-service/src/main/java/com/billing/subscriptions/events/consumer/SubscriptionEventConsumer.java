@@ -1,4 +1,4 @@
-package com.billing.subscriptions.events.publisher.consumer;
+package com.billing.subscriptions.events.consumer;
 
 import com.billing.subscriptions.controller.advice.exception.ExternalServiceException;
 import com.billing.subscriptions.events.data.SnsMessage;
@@ -26,7 +26,6 @@ public class SubscriptionEventConsumer {
                     snsMessage.Message(),
                     SubscriptionPaymentEvent.class
             );
-
             subscriptionService.activeSubscription(event);
 
         } catch (Exception e) {
@@ -43,7 +42,6 @@ public class SubscriptionEventConsumer {
                     snsMessage.Message(),
                     SubscriptionPaymentEvent.class
             );
-
             subscriptionService.cancelSubscription(event);
 
         } catch (Exception e) {

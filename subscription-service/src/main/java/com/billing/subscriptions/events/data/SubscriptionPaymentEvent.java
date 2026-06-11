@@ -1,5 +1,7 @@
 package com.billing.subscriptions.events.data;
 
+import com.billing.subscriptions.client.dto.CustomerClientResponse;
+import com.billing.subscriptions.controller.dto.PlanResponseDTO;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -12,7 +14,9 @@ public record SubscriptionPaymentEvent(
         UUID subscriptionId,
         String stripeSubscriptionId,
         String paymentStatus,
+        String subscriptionStatus,
         LocalDate currentPeriodStart,
         LocalDate currentPeriodEnd,
-        LocalDateTime processedAt) {
+        PlanResponseDTO plan,
+        CustomerClientResponse customer) {
 }

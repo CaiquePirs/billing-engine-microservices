@@ -3,6 +3,7 @@ package com.billing.subscriptions.service;
 import com.billing.subscriptions.client.dto.CustomerClientResponse;
 import com.billing.subscriptions.controller.advice.exception.NotFoundException;
 import com.billing.subscriptions.controller.dto.BillingSubscriptionRequestDTO;
+import com.billing.subscriptions.events.data.SubscriptionCreatedEvent;
 import com.billing.subscriptions.events.data.SubscriptionPaymentEvent;
 import com.billing.subscriptions.events.publisher.SubscriptionEventPublisher;
 import com.billing.subscriptions.mapper.BillingSubscriptionMapper;
@@ -10,7 +11,6 @@ import com.billing.subscriptions.model.BillingSubscription;
 import com.billing.subscriptions.model.Plan;
 import com.billing.subscriptions.model.enums.SubscriptionStatus;
 import com.billing.subscriptions.repository.BillingSubscriptionRepository;
-import com.stripe.model.Subscription;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,12 +43,13 @@ public class BillingSubscriptionService {
         BillingSubscription subscription = billingSubscriptionMapper.toEntity(plan, customer.id());
         BillingSubscription subscriptionCreated = billingSubscriptionRepository.save(subscription);
 
-        subscriptionEventPublisher.publisherSubscriptionCreated(
+        SubscriptionCreatedEvent subscriptionEventMessage = billingSubscriptionMapper.mapToSubscriptionCreatedEvent(
                 subscriptionCreated,
                 customer,
                 subscriptionRequest.paymentMethodId()
         );
 
+        subscriptionEventPublisher.publisherSubscriptionCreated(subscriptionEventMessage);
         return subscriptionCreated;
     }
 
