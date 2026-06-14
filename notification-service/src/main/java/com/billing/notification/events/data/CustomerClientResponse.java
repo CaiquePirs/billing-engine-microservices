@@ -1,6 +1,5 @@
 package com.billing.notification.events.data;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 public record CustomerClientResponse(
@@ -9,10 +8,6 @@ public record CustomerClientResponse(
         String lastName,
         String email,
         String phone,
-        String taxNumber,
-        Integer age,
-        LocalDate dateOfBirth,
         CustomerAddressResponse address,
-        String customerStatus,
         String stripeCustomerId) {
 }

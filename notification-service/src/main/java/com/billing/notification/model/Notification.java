@@ -15,5 +15,6 @@ public class Notification {
 
     private String from;
     private String to;
-    private Map<NotificationTemplate, Object> body;
+    private NotificationTemplate template;
+    private Object body;
 }

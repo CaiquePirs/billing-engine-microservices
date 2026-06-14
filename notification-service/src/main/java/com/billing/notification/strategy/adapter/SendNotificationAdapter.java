@@ -21,10 +21,7 @@ public class SendNotificationAdapter implements SendNotificationPort {
     @Override
     public void sendEmail(Notification notification) {
         try {
-            SendEmailRequest newSubscriptionEmail = templateEmailService.buildNewSubscriptionEmail(notification);
-
-            log.info("Sending email: {}", newSubscriptionEmail);
-
+            SendEmailRequest newSubscriptionEmail = templateEmailService.handlerNotificationTemplate(notification);
             sesClient.sendEmail(newSubscriptionEmail);
 
         } catch (Exception e) {
