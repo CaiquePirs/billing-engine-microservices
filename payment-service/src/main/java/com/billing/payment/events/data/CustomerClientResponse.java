@@ -1,8 +1,9 @@
 package com.billing.payment.events.data;
 
-import java.time.LocalDate;
+import lombok.Builder;
 import java.util.UUID;
 
+@Builder
 public record CustomerClientResponse(
         UUID id,
         String name,

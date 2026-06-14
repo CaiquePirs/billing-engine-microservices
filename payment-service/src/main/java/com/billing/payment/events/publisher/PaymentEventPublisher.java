@@ -3,8 +3,6 @@ package com.billing.payment.events.publisher;
 import com.billing.payment.controller.advice.InternalErrorException;
 import com.billing.payment.events.data.SubscriptionCreatedEvent;
 import com.billing.payment.events.data.SubscriptionPaymentEvent;
-import com.billing.payment.mapper.PaymentMapper;
-import com.billing.payment.model.Payment;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +18,6 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 @RequiredArgsConstructor
 public class PaymentEventPublisher {
 
-    private final PaymentMapper paymentMapper;
     private final SqsClient sqsClient;
     private final SnsClient snsClient;
     private final ObjectMapper objectMapper;

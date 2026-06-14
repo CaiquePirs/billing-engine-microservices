@@ -22,7 +22,7 @@ public class StripeSubscriptionService {
 
     @CircuitBreaker(name = "stripe", fallbackMethod = "handleSubscriptionCreationFailure")
     @Retry(name = "stripe", fallbackMethod = "handleSubscriptionCreationFailure")
-    public Subscription createSubscription(SubscriptionCreatedEvent subscriptionEvent, String stripePaymentMethodId) {
+    public void createSubscription(SubscriptionCreatedEvent subscriptionEvent, String stripePaymentMethodId) {
         try {
             SubscriptionCreateParams params = SubscriptionCreateParams
                     .builder()
@@ -31,13 +31,10 @@ public class StripeSubscriptionService {
                     .addItem(SubscriptionCreateParams.Item.builder()
                             .setPrice(subscriptionEvent.plan().stripePriceId())
                             .build())
-                    .putMetadata(
-                            "subscriptionId",
-                            subscriptionEvent.id().toString()
-                    )
+                    .putMetadata("subscriptionId", subscriptionEvent.id().toString())
                     .build();
 
-            return Subscription.create(params);
+            Subscription.create(params);
 
         } catch (StripeException e) {
             log.error("Failed to send payment to process subscription ID: {} on Stripe.", subscriptionEvent.id(), e);

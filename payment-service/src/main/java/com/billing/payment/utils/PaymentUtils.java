@@ -8,7 +8,6 @@ import com.stripe.model.Event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -114,7 +113,30 @@ public class PaymentUtils {
         }
     }
 
-    private JsonNode getFirstInvoiceLine(Event event) {
+    public JsonNode getEventRoot(Event event) {
+        try {
+            return objectMapper.readTree(event.getDataObjectDeserializer().getRawJson());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Failed to read Stripe event raw JSON: " + event.getId(), e);
+        }
+    }
+
+    public String getTextOrNull(JsonNode node, String fieldName) {
+        JsonNode value = node.path(fieldName);
+        return value.isMissingNode() || value.isNull() || value.asText().isBlank()
+                ? null
+                : value.asText();
+    }
+
+    public String extractPlanId(Event event) {
+        JsonNode firstLine = getFirstInvoiceLine(event);
+        return firstLine.path("pricing")
+               .path("price_details")
+               .path("price")
+               .asText(null);
+    }
+
+    public JsonNode getFirstInvoiceLine(Event event) {
         try {
             JsonNode root = objectMapper.readTree(event.getDataObjectDeserializer().getRawJson());
 

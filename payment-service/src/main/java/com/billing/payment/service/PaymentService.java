@@ -11,7 +11,6 @@ import com.billing.payment.repository.PaymentRepository;
 import com.billing.payment.utils.PaymentUtils;
 import com.billing.payment.validator.PaymentValidator;
 import com.stripe.model.Event;
-import com.stripe.model.Subscription;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,9 +35,9 @@ public class PaymentService {
         paymentValidator.validateIdempotencyKey(subscriptionEvent);
 
         String stripePaymentMethodId = stripePaymentMethodService.attachPaymentMethod(subscriptionEvent);
-        Subscription subscription = stripeSubscriptionService.createSubscription(subscriptionEvent, stripePaymentMethodId);
+        stripeSubscriptionService.createSubscription(subscriptionEvent, stripePaymentMethodId);
 
-        Payment payment = paymentMapper.toEntity(subscriptionEvent, subscription);
+        Payment payment = paymentMapper.toEntity(subscriptionEvent);
         paymentRepository.save(payment);
     }
 
