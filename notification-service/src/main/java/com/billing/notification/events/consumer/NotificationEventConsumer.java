@@ -48,4 +48,21 @@ public class NotificationEventConsumer {
             throw new InternalNotificationErrorException("Failed to process subscription notification event", e);
         }
     }
+
+    @SqsListener("${NOTIFY_PAYMENT_FAILED}")
+    public void processPaymentFailedEvent(SnsMessage snsMessage) {
+        log.info("Payment failed event received: {}", snsMessage.Message());
+        try {
+            SubscriptionPaymentEvent event = objectMapper.readValue(
+                    snsMessage.Message(),
+                    SubscriptionPaymentEvent.class);
+
+            notificationService.sendPaymentFailedNotification(event);
+
+        } catch (Exception e) {
+            log.error("Error processing notification event: {}", snsMessage.Message(), e);
+            throw new InternalNotificationErrorException("Failed to process subscription notification event", e);
+        }
+    }
+
 }

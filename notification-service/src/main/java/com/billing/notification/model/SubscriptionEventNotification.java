@@ -14,6 +14,5 @@ public record SubscriptionEventNotification(
         LocalDate currentPeriodEnd,
         String template,
         CustomerClientResponse customer,
-        PlanResponseDTO plan
-) {
+        PlanResponseDTO plan) {
 }

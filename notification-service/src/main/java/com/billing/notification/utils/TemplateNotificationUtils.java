@@ -25,6 +25,7 @@ public class TemplateNotificationUtils {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH);
     private static final String NEW_SUBSCRIPTION_TEMPLATE = "templates/new-subscription-email.html";
     private static final String PAID_SUBSCRIPTION_TEMPLATE = "templates/paid-subscription-email.html";
+    private static final String FAILED_SUBSCRIPTION_TEMPLATE = "templates/failed-subscription-email.html";
 
     public String loadTemplate(NotificationTemplate template) {
         ClassPathResource resource;
@@ -40,6 +41,12 @@ public class TemplateNotificationUtils {
                 resource = new ClassPathResource(PAID_SUBSCRIPTION_TEMPLATE);
                 templateContent = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
             }
+
+            if (Objects.requireNonNull(template) == NotificationTemplate.SUBSCRIPTION_CANCELLED) {
+                resource = new ClassPathResource(FAILED_SUBSCRIPTION_TEMPLATE);
+                templateContent = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
+            }
+
 
         } catch (Exception e) {
             throw new InternalNotificationErrorException("Failed to load email template: " + template, e);
@@ -60,7 +67,7 @@ public class TemplateNotificationUtils {
                 .replace("{{customerFullName}}", eventNotification.customer().name())
                 .replace("{{customerEmail}}", safeValue(eventNotification.customer().email()))
                 .replace("{{customerPhone}}", safeValue(eventNotification.customer().phone()))
-                .replace("{{customerAddress}}", buildCustomerAddress(eventNotification.customer().address()));
+                .replace("{{customerAddress}}", buildEmailCustomerAddress(eventNotification.customer().address()));
     }
 
     public SendEmailRequest buildEmailRequest(Notification notification, String template){
@@ -70,7 +77,7 @@ public class TemplateNotificationUtils {
                 .message(Message.builder()
                         .subject(Content.builder()
                                 .charset("UTF-8")
-                                .data(formatEmailTitle(notification.getTemplate()))
+                                .data(buildEmailTitle(notification.getTemplate()))
                                 .build())
                         .body(Body.builder()
                                 .html(Content.builder()
@@ -82,10 +89,23 @@ public class TemplateNotificationUtils {
                 .build();
     }
 
-    private String formatEmailTitle(NotificationTemplate template){
+    private String buildEmailCustomerAddress(CustomerAddressResponse address) {
+        if (address == null) return "-";
+        return String.join(", ",
+                safeValue(address.street()),
+                safeValue(address.number()),
+                safeValue(address.city()),
+                safeValue(address.state()),
+                safeValue(address.county()),
+                safeValue(address.eircode())
+        );
+    }
+
+    private String buildEmailTitle(NotificationTemplate template){
         return switch (template) {
             case SUBSCRIPTION_CREATED -> "Subscription confirmation";
             case SUBSCRIPTION_PAID -> "Subscription Paid";
+            case SUBSCRIPTION_CANCELLED -> "Subscription Cancelled";
             default -> throw new InternalNotificationErrorException("Template not supported: " + template);
         };
     }
@@ -107,18 +127,6 @@ public class TemplateNotificationUtils {
         } catch (IllegalArgumentException e) {
             throw new InternalNotificationErrorException("Invalid currency code for email template: " + currency, e);
         }
-    }
-
-    private String buildCustomerAddress(CustomerAddressResponse address) {
-        if (address == null) return "-";
-        return String.join(", ",
-                safeValue(address.street()),
-                safeValue(address.number()),
-                safeValue(address.city()),
-                safeValue(address.state()),
-                safeValue(address.county()),
-                safeValue(address.eircode())
-        );
     }
 
     private String formatDate(LocalDate date) {

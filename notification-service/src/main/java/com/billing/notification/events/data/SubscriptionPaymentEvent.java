@@ -1,5 +1,6 @@
 package com.billing.notification.events.data;
 
+import com.billing.notification.model.SubscriptionNotificationEvent;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -15,5 +16,5 @@ public record SubscriptionPaymentEvent(
         LocalDate currentPeriodStart,
         LocalDate currentPeriodEnd,
         PlanResponseDTO plan,
-        CustomerClientResponse customer) {
+        CustomerClientResponse customer) implements SubscriptionNotificationEvent {
 }
