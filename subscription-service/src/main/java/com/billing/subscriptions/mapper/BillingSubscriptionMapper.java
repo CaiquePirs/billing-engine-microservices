@@ -45,8 +45,7 @@ public class BillingSubscriptionMapper {
 
     public SubscriptionCreatedEvent mapToSubscriptionCreatedEvent(BillingSubscription billingSubscription, CustomerClientResponse customer, String paymentMethodId){
         return SubscriptionCreatedEvent.builder()
-                .id(billingSubscription.getId())
-                .customerId(billingSubscription.getCustomerId())
+                .subscriptionId(billingSubscription.getId())
                 .plan(planMapper.toResponse(billingSubscription.getPlan()))
                 .currentPeriodStart(billingSubscription.getCurrentPeriodStart())
                 .currentPeriodEnd(billingSubscription.getCurrentPeriodEnd())

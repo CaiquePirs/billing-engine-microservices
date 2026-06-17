@@ -24,7 +24,7 @@ public class PaymentMapper {
 
     public Payment toEntity(SubscriptionCreatedEvent subscriptionEvent) {
         return Payment.builder()
-                .subscriptionId(subscriptionEvent.id())
+                .subscriptionId(subscriptionEvent.subscriptionId())
                 .customerId(subscriptionEvent.customer().id())
                 .amount(subscriptionEvent.plan().price().longValue())
                 .currency(subscriptionEvent.plan().currency())
@@ -33,7 +33,7 @@ public class PaymentMapper {
                 .build();
     }
 
-    public SubscriptionPaymentEvent toEvent(Payment payment, Event event) {
+    public SubscriptionPaymentEvent toEvent(Payment payment, Event event, PaymentStatus paymentStatus) {
         JsonNode root = paymentUtils.getEventRoot(event);
 
         String customerStripeId = paymentUtils.getTextOrNull(root, "customer");
@@ -49,8 +49,7 @@ public class PaymentMapper {
                 .stripeSubscriptionId(paymentUtils.getStripeSubscriptionId(event))
                 .currentPeriodStart(paymentUtils.getCurrentPeriodStart(event))
                 .currentPeriodEnd(paymentUtils.getCurrentPeriodEnd(event))
-                .paymentStatus(PaymentStatus.APPROVED.toString())
-                .subscriptionStatus("ACTIVE")
+                .paymentStatus(paymentStatus.toString())
                 .plan(mapToPlan(price, product))
                 .customer(mapToCustomer(customer))
                 .build();
@@ -75,7 +74,7 @@ public class PaymentMapper {
     private PlanResponseDTO mapToPlan(Price price, Product product){
        return PlanResponseDTO.builder()
                 .name(product.getName())
-               .description(product.getDescription())
+                .description(product.getDescription())
                 .price(price.getUnitAmountDecimal())
                 .active(price.getActive())
                 .interval(price.getRecurring().getInterval())

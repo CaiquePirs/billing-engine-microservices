@@ -34,7 +34,7 @@ public class SubscriptionEventPublisher {
             snsClient.publish(request);
 
         } catch (Exception e) {
-            log.error("Subscription ID: {} event publisher failed", subscriptionCreatedEvent.id(), e);
+            log.error("Subscription ID: {} event publisher failed", subscriptionCreatedEvent.subscriptionId(), e);
             throw new ExternalServiceException("Subscription failed. Try again later.");
         }
     }

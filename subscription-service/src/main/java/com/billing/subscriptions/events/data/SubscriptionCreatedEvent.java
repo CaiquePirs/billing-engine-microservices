@@ -9,8 +9,7 @@ import java.util.UUID;
 
 @Builder
 public record SubscriptionCreatedEvent(
-        UUID id,
-        UUID customerId,
+        UUID subscriptionId,
         LocalDate currentPeriodStart,
         LocalDate currentPeriodEnd,
         String subscriptionStatus,

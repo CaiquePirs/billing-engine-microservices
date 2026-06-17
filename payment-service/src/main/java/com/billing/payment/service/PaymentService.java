@@ -1,6 +1,6 @@
 package com.billing.payment.service;
 
-import com.billing.payment.controller.advice.NotFoundException;
+import com.billing.payment.controller.advice.exceptions.NotFoundException;
 import com.billing.payment.events.data.SubscriptionCreatedEvent;
 import com.billing.payment.events.data.SubscriptionPaymentEvent;
 import com.billing.payment.events.publisher.PaymentEventPublisher;
@@ -24,7 +24,6 @@ import java.util.UUID;
 public class PaymentService {
 
     private final StripeSubscriptionService stripeSubscriptionService;
-    private final StripePaymentMethodService stripePaymentMethodService;
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final PaymentEventPublisher paymentEventPublisher;
@@ -34,11 +33,10 @@ public class PaymentService {
     public void processPayment(SubscriptionCreatedEvent subscriptionEvent) {
         paymentValidator.validateIdempotencyKey(subscriptionEvent);
 
-        String stripePaymentMethodId = stripePaymentMethodService.attachPaymentMethod(subscriptionEvent);
-        stripeSubscriptionService.createSubscription(subscriptionEvent, stripePaymentMethodId);
-
         Payment payment = paymentMapper.toEntity(subscriptionEvent);
         paymentRepository.save(payment);
+
+        stripeSubscriptionService.createSubscription(subscriptionEvent);
     }
 
     @Transactional
@@ -46,6 +44,8 @@ public class PaymentService {
         switch (event.getType()) {
             case "invoice.paid" -> {
                 try {
+                    log.info("Processing Stripe invoice.paid webhook event ID {}", event.getId());
+
                     UUID subscriptionId = paymentUtils.getInternalSubscriptionId(event);
                     processPaymentApproved(payload, event, subscriptionId);
 
@@ -57,6 +57,8 @@ public class PaymentService {
 
             case "invoice.payment_failed" -> {
                 try {
+                    log.info("Processing Stripe invoice.payment_failed webhook event ID {}", event.getId());
+
                     UUID subscriptionId = paymentUtils.getInternalSubscriptionId(event);
                     processPaymentFailed(payload, event, subscriptionId);
 
@@ -77,7 +79,7 @@ public class PaymentService {
 
         paymentRepository.save(payment);
 
-        SubscriptionPaymentEvent event = paymentMapper.toEvent(payment, webhookEvent);
+        SubscriptionPaymentEvent event = paymentMapper.toEvent(payment, webhookEvent, PaymentStatus.APPROVED);
         paymentEventPublisher.publisherPaymentApproved(event);
     }
 
@@ -91,7 +93,7 @@ public class PaymentService {
 
         paymentRepository.save(payment);
 
-        SubscriptionPaymentEvent event = paymentMapper.toEvent(payment, webhookEvent);
+        SubscriptionPaymentEvent event = paymentMapper.toEvent(payment, webhookEvent, PaymentStatus.FAILED);
         paymentEventPublisher.publisherPaymentFailed(event);
     }
 

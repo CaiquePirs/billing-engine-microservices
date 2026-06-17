@@ -1,6 +1,6 @@
 package com.billing.payment.service;
 
-import com.billing.payment.controller.advice.StripeIntegrationException;
+import com.billing.payment.controller.advice.exceptions.StripeIntegrationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import lombok.RequiredArgsConstructor;

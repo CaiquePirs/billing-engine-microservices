@@ -1,7 +1,7 @@
 package com.billing.payment.utils;
 
-import com.billing.payment.controller.advice.InternalErrorException;
-import com.billing.payment.controller.advice.NotFoundException;
+import com.billing.payment.controller.advice.exceptions.InternalErrorException;
+import com.billing.payment.controller.advice.exceptions.NotFoundException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.model.Event;

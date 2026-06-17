@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public record SubscriptionCreatedEvent(
-        UUID id,
+        UUID subscriptionId,
         LocalDate currentPeriodStart,
         LocalDate currentPeriodEnd,
         String subscriptionStatus,

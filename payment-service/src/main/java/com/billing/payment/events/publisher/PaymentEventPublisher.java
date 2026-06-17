@@ -1,6 +1,6 @@
 package com.billing.payment.events.publisher;
 
-import com.billing.payment.controller.advice.InternalErrorException;
+import com.billing.payment.controller.advice.exceptions.InternalErrorException;
 import com.billing.payment.events.data.SubscriptionCreatedEvent;
 import com.billing.payment.events.data.SubscriptionPaymentEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,7 +73,7 @@ public class PaymentEventPublisher {
             sqsClient.sendMessage(request);
 
         } catch (Exception e) {
-            log.error("Failed to publish subscriptionId {} to DLQ", event.id(), e);
+            log.error("Failed to publish subscriptionId {} to DLQ", event.subscriptionId(), e);
             throw new InternalErrorException("Failed to publish subscription-created event to DLQ");
         }
     }

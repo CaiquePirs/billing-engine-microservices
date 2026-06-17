@@ -1,4 +1,4 @@
-package com.billing.payment.controller.advice;
+package com.billing.payment.controller.advice.exceptions;
 
 public class StripeIntegrationException extends RuntimeException {
     public StripeIntegrationException(String message) {

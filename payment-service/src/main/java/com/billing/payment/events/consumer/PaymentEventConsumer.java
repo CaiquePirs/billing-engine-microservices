@@ -1,6 +1,6 @@
 package com.billing.payment.events.consumer;
 
-import com.billing.payment.controller.advice.InternalErrorException;
+import com.billing.payment.controller.advice.exceptions.InternalErrorException;
 import com.billing.payment.events.data.SnsMessage;
 import com.billing.payment.events.data.SubscriptionCreatedEvent;
 import com.billing.payment.service.PaymentService;

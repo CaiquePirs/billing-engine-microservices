@@ -3,7 +3,7 @@ package com.billing.subscriptions.model.enums;
 public enum SubscriptionStatus {
     PENDING,
     ACTIVE,
-    CANCELLED,
+    CANCELED,
     PAST_DUE,
     TRIALING,
     INCOMPLETE

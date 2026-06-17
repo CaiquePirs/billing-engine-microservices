@@ -83,9 +83,9 @@ public class BillingSubscriptionService {
     public void cancelSubscription(SubscriptionPaymentEvent event) {
         BillingSubscription subscription = findSubscriptionById(event.subscriptionId());
 
-        if(!subscription.getSubscriptionStatus().equals(SubscriptionStatus.CANCELLED)) {
+        if(!subscription.getSubscriptionStatus().equals(SubscriptionStatus.CANCELED)) {
 
-            subscription.setSubscriptionStatus(SubscriptionStatus.CANCELLED);
+            subscription.setSubscriptionStatus(SubscriptionStatus.CANCELED);
             subscription.setStripeSubscriptionId(event.stripeSubscriptionId());
             subscription.setCurrentPeriodStart(event.currentPeriodStart());
             subscription.setCurrentPeriodEnd(event.currentPeriodEnd());
