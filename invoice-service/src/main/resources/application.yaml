@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: invoice-service
+  config:
+    import: "optional:configserver:"
+  profiles:
+    active: dev

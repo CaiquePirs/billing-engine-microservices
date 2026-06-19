@@ -10,6 +10,21 @@ services:
     volumes:
       - "./init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh"
 
+  invoices-postgres:
+    image: postgres:16.0
+    container_name: invoices-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${INVOICE_DB}
+      POSTGRES_USER: ${INVOICE_USER}
+      POSTGRES_PASSWORD: ${INVOICE_PASSWORD}
+    ports:
+      - "5436:5432"
+    volumes:
+      - invoices_postgres_data:/var/lib/postgresql/data
+    networks:
+      - billing-network
+
   payments-postgres:
     image: postgres:16.0
     container_name: payments-postgres
@@ -94,6 +109,8 @@ volumes:
   subscription_postgres_data:
     driver: local
   payment_postgres_data:
+    driver: local
+  invoices_postgres_data:
     driver: local
   pgadmin_data:
     driver: local
