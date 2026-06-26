@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="color-scheme" content="light" />
     <meta name="supported-color-schemes" content="light" />
-    <title>Subscription Payment Confirmed</title>
+    <title>Subscription Payment Failed</title>
 
     <style>
         body {
@@ -18,7 +18,7 @@
         .email-wrapper {
             width: 100%;
             padding: 32px 0;
-            background-color: #f4f7fb;
+            background: #f4f7fb;
         }
 
         .email-container {
@@ -31,7 +31,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #16a34a, #22c55e);
+            background: linear-gradient(135deg, #dc2626, #ef4444);
             padding: 32px 40px;
             text-align: center;
             color: #ffffff;
@@ -46,7 +46,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 34px;
+            font-size: 36px;
             font-weight: bold;
         }
 
@@ -84,8 +84,8 @@
         }
 
         .summary-title {
-            padding: 16px 20px;
             margin: 0;
+            padding: 16px 20px;
             background: #f9fafb;
             border-bottom: 1px solid #e5e7eb;
             color: #111827;
@@ -115,17 +115,8 @@
         }
 
         .payment-status {
-            background: #dcfce7;
-            color: #166534;
-            padding: 6px 12px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .subscription-status {
-            background: #dcfce7;
-            color: #166534;
+            background: #fee2e2;
+            color: #991b1b;
             padding: 6px 12px;
             border-radius: 999px;
             font-size: 13px;
@@ -149,7 +140,7 @@
         .plan-price {
             font-size: 24px;
             font-weight: 800;
-            color: #16a34a;
+            color: #dc2626;
         }
 
         .footer {
@@ -171,18 +162,18 @@
     <div class="email-container" style="background:#ffffff;">
 
         <div class="header">
-            <div class="status-icon">✓</div>
-            <h1>Subscription Payment Approved</h1>
-            <p>Your subscription payment was successfully approved.</p>
+            <div class="status-icon">!</div>
+            <h1>Subscription Payment Failed</h1>
+            <p>Your subscription payment could not be processed.</p>
         </div>
 
         <div class="content">
             <p class="greeting">Hello {{customerFullName}},</p>
 
             <p class="message">
-                We are happy to confirm that your subscription payment
-                has been received successfully.
-                Your subscription is now active for the current billing period.
+                We were unable to process your subscription payment.
+                Your subscription may require a payment method update
+                to continue without interruption.
             </p>
 
             <div class="summary-card">
@@ -194,12 +185,12 @@
                     </tr>
                     <tr>
                         <td class="label">Subscription Status</td>
-                        <td class="value"><span class="subscription-status">ACTIVE</span></td>
+                        <td class="value">{{subscriptionStatus}}</td>
                     </tr>
                     <tr>
                         <td class="label">Payment Status</td>
                         <td class="value">
-                            <span class="payment-status">PAID</span>
+                            <span class="payment-status">FAILED</span>
                         </td>
                     </tr>
                     <tr>
@@ -244,9 +235,8 @@
             </div>
 
             <p class="message">
-                Thank you for your payment.
-                If you have any questions about your subscription,
-                please contact our support team.
+                Please update your payment method or contact support
+                if you believe this payment failure was unexpected.
             </p>
         </div>
 
