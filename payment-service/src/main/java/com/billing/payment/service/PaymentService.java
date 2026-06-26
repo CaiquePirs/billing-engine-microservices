@@ -44,8 +44,6 @@ public class PaymentService {
         switch (event.getType()) {
             case "invoice.paid" -> {
                 try {
-                    log.info("Processing Stripe invoice.paid webhook event ID {}", event.getId());
-
                     UUID subscriptionId = paymentUtils.getInternalSubscriptionId(event);
                     processPaymentApproved(payload, event, subscriptionId);
 
@@ -57,8 +55,6 @@ public class PaymentService {
 
             case "invoice.payment_failed" -> {
                 try {
-                    log.info("Processing Stripe invoice.payment_failed webhook event ID {}", event.getId());
-
                     UUID subscriptionId = paymentUtils.getInternalSubscriptionId(event);
                     processPaymentFailed(payload, event, subscriptionId);
 
