@@ -1,0 +1,35 @@
+package com.billing.invoice.events.consumer;
+
+import com.billing.invoice.advice.exceptions.InternalErrorException;
+import com.billing.invoice.events.data.SnsMessage;
+import com.billing.invoice.events.data.SubscriptionPaymentEvent;
+import com.billing.invoice.service.InvoiceService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.awspring.cloud.sqs.annotation.SqsListener;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class InvoiceEventConsumer {
+
+    private final ObjectMapper objectMapper;
+    private final InvoiceService invoiceService;
+
+    @SqsListener("${GENERATE_NEW_INVOICE_QUEUE}")
+    public void generateNewInvoiceQueue(SnsMessage snsMessage) {
+        try {
+            SubscriptionPaymentEvent event = objectMapper.readValue(
+                    snsMessage.Message(),
+                    SubscriptionPaymentEvent.class);
+
+            invoiceService.generateInvoice(event);
+
+        } catch (Exception e) {
+            log.error("Error processing invoice event: {}", snsMessage.Message(), e);
+            throw new InternalErrorException("Failed to process subscription invoice event", e);
+        }
+    }
+}

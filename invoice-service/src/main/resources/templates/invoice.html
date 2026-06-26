@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Invoice</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 12mm 14mm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #1e293b;
+            background: #fff;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #16a34a;
+            margin-bottom: 14px;
+        }
+
+        .brand h1 {
+            font-size: 20px;
+            color: #16a34a;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .brand p {
+            font-size: 10px;
+            color: #64748b;
+            margin-top: 3px;
+        }
+
+        .invoice-meta {
+            text-align: right;
+        }
+
+        .invoice-meta h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1e293b;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #dcfce7;
+            color: #16a34a;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin: 4px 0 6px;
+        }
+
+        .meta-row {
+            display: flex;
+            gap: 18px;
+            justify-content: flex-end;
+        }
+
+        .meta-item .lbl {
+            font-size: 9px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .meta-item .val {
+            font-size: 11px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* ── INFO GRID ── */
+        .info-grid {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .info-block {
+            flex: 1;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px 12px;
+        }
+
+        .info-block h3 {
+            font-size: 9px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-block .name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 3px;
+        }
+
+        .info-block p {
+            font-size: 10px;
+            color: #475569;
+            line-height: 1.7;
+        }
+
+        /* ── TABLE ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        thead tr {
+            background: #1e293b;
+        }
+
+        th {
+            padding: 8px 10px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: left;
+            color: #e2e8f0;
+        }
+
+        th.right { text-align: right; }
+
+        tbody tr {
+            background: #fff;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        td {
+            padding: 10px 10px;
+            font-size: 11px;
+            color: #475569;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        td.right {
+            text-align: right;
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 12px;
+        }
+
+        .item-desc {
+            font-size: 9px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* ── BOTTOM ROW ── */
+        .bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+
+        .paid-banner {
+            flex: 1;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 10px;
+            color: #166534;
+            font-weight: 500;
+            align-self: center;
+        }
+
+        .summary-box {
+            width: 260px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 7px 12px;
+            font-size: 10px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .summary-row .lbl { color: #64748b; }
+        .summary-row .val { font-weight: 600; color: #1e293b; }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 9px 12px;
+            background: #1e293b;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .summary-total .lbl { color: #94a3b8; }
+        .summary-total .val { color: #4ade80; font-size: 13px; }
+
+        /* ── FOOTER ── */
+        .footer {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .footer p {
+            font-size: 9px;
+            color: #94a3b8;
+            line-height: 1.7;
+        }
+
+        .footer .ref {
+            text-align: right;
+        }
+
+        .footer .ref .ref-lbl {
+            font-size: 9px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer .ref .ref-val {
+            font-size: 9px;
+            font-weight: 600;
+            color: #475569;
+            word-break: break-all;
+            max-width: 220px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="brand">
+        <h1>Billing Engine</h1>
+        <p>Premium Subscription Management · support@billing.example.com · +1 (555) 000-0000</p>
+    </div>
+    <div class="invoice-meta">
+        <h2>INVOICE</h2>
+        <div class="status-badge">{{paymentStatus}}</div>
+        <div class="meta-row">
+            <div class="meta-item">
+                <div class="lbl">Number</div>
+                <div class="val">#{{invoiceId}}</div>
+            </div>
+            <div class="meta-item">
+                <div class="lbl">Issued</div>
+                <div class="val">{{issueDate}}</div>
+            </div>
+            <div class="meta-item">
+                <div class="lbl">Due</div>
+                <div class="val">{{dueDate}}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- INFO GRID -->
+<div class="info-grid">
+    <div class="info-block">
+        <h3>Bill To</h3>
+        <p class="name">{{customerName}}</p>
+        <p>{{customerEmail}}</p>
+        <p>{{customerStreet}}, {{customerNumber}}</p>
+        <p>{{customerCity}}, {{customerState}}</p>
+        <p>{{customerCountry}} {{customerEircode}}</p>
+    </div>
+    <div class="info-block">
+        <h3>Subscription</h3>
+        <p class="name">{{planName}}</p>
+        <p>ID: {{subscriptionId}}</p>
+        <p>Cycle: {{billingInterval}}</p>
+        <p>Period: {{billingPeriodStart}} – {{billingPeriodEnd}}</p>
+    </div>
+    <div class="info-block">
+        <h3>Payment Info</h3>
+        <p class="name">Stripe</p>
+        <p>Method: Credit Card</p>
+        <p>Processed: {{issueDate}}</p>
+        <p>Ref: {{paymentId}}</p>
+    </div>
+</div>
+
+<!-- ITEMS TABLE -->
+<table>
+    <thead>
+    <tr>
+        <th>Description</th>
+        <th class="right">Qty</th>
+        <th class="right">Unit Price</th>
+        <th class="right">Amount</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <div class="item-name">{{planName}}</div>
+            <div class="item-desc">{{planDescription}} · {{billingPeriodStart}} – {{billingPeriodEnd}}</div>
+        </td>
+        <td class="right">1</td>
+        <td class="right">{{currency}} {{unitPrice}}</td>
+        <td class="right">{{currency}} {{amount}}</td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- BOTTOM ROW: banner + summary -->
+<div class="bottom-row">
+    <div class="paid-banner">
+        ✓ Payment received on {{issueDate}}. Thank you for your business!
+    </div>
+    <div class="summary-box">
+        <div class="summary-row">
+            <span class="lbl">Subtotal</span>
+            <span class="val">{{currency}} {{amount}}</span>
+        </div>
+        <div class="summary-row">
+            <span class="lbl">Tax (0%)</span>
+            <span class="val">{{currency}} 0.00</span>
+        </div>
+        <div class="summary-total">
+            <span class="lbl">Total Due</span>
+            <span class="val">{{currency}} {{amount}}</span>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    <p>
+        Billing Engine · support@billing.example.com · +1 (555) 000-0000<br />
+        This invoice is automatically generated. Your subscription is active and payment has been processed successfully.
+    </p>
+    <div class="ref">
+        <div class="ref-lbl">Payment Reference</div>
+        <div class="ref-val">{{paymentId}}</div>
+    </div>
+</div>
+
+</body>
+</html>

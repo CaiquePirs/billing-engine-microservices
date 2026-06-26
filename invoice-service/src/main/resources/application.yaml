@@ -5,3 +5,11 @@ spring:
     import: "optional:configserver:"
   profiles:
     active: dev
+
+aws:
+  s3:
+    bucket: ${AWS_S3_BUCKET:billing-invoices}
+    endpoint-override: ${AWS_URI:http://localhost:4566}
+    region: ${AWS_REGION:us-east-1}
+    access-key: ${AWS_ACCESS_KEY:test}
+    secret-key: ${AWS_SECRET_KEY:test}

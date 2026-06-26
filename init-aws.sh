@@ -96,4 +96,14 @@ awslocal sns subscribe \
   --notification-endpoint arn:aws:sqs:$REGION:$ACCOUNT_ID:desactivate-subscription-queue
 
 echo "SNS Subscriptions created."
+
+# ============================================================
+# S3 BUCKETS
+# ============================================================
+
+echo "Creating S3 Buckets..."
+
+awslocal s3 mb s3://billing-invoices
+
+echo "S3 Buckets created."
 echo "LocalStack infrastructure setup completed."
