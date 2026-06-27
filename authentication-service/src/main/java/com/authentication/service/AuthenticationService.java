@@ -48,6 +48,6 @@ public class AuthenticationService {
     private Authentication findUserAuthenticationByEmail(String email){
         return authenticationRepository.findByEmail(email)
                 .filter(auth -> auth.getStatus() == AuthStatus.ACTIVE)
-                .orElseThrow(() -> new AuthLoginFailException("User email not found"));
+                .orElseThrow(() -> new AuthLoginFailException("Authentication failed: no active account found for email: " + email));
     }
 }

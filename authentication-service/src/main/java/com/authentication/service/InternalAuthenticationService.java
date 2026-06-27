@@ -50,7 +50,7 @@ public class InternalAuthenticationService {
     private InternalAuthentication findIInternalUserByClientId(String clientId){
         return internalAuthenticationRepository.findByClientId(clientId)
                 .filter(auth -> auth.getStatus() == AuthStatus.ACTIVE)
-                .orElseThrow(() -> new AuthLoginFailException("ClientId not found"));
+                .orElseThrow(() -> new AuthLoginFailException("Internal service authentication failed: no active client found for ID: " + clientId));
     }
 
 }

@@ -17,14 +17,14 @@ public class AuthenticationValidator {
     public void validateIfExistsUserEmail(String email){
         boolean existByEmail = authenticationRepository.findByEmail(email).isPresent();
         if(existByEmail){
-            throw new AuthRegisterFailException("User email already exists");
+            throw new AuthRegisterFailException("Registration failed: the email address is already in use");
         }
     }
 
     public void validateMatchUserPassword(String rawPassword, String hashPassword){
         boolean matchPassword = passwordEncoder.matches(rawPassword, hashPassword);
         if(!matchPassword){
-            throw new AuthLoginFailException("Password does not match");
+            throw new AuthLoginFailException("Authentication failed: the provided password is incorrect");
         }
     }
 }
