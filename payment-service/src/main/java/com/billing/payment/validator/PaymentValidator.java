@@ -20,7 +20,7 @@ public class PaymentValidator {
                 .filter(payment -> !payment.getPaymentStatus().equals(PaymentStatus.PENDING))
                 .ifPresent(payment -> {
                     log.error("Payment already exists for subscription id {}", subscriptionEvent.subscriptionId());
-                    throw new InternalErrorException("Payment already exists for subscription Id: " + subscriptionEvent.subscriptionId());
+                    throw new InternalErrorException("Duplicate payment detected: a non-pending payment already exists for subscription ID: " + subscriptionEvent.subscriptionId());
                 });
     }
 }

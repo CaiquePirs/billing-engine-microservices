@@ -95,7 +95,7 @@ public class PaymentService {
 
     public Payment findPaymentBySubscriptionId(UUID subscriptionId) {
         return paymentRepository.findBySubscriptionId(subscriptionId)
-                .orElseThrow(() -> new NotFoundException("Payment not found for subscription id " + subscriptionId));
+                .orElseThrow(() -> new NotFoundException("No payment record found for subscription ID: " + subscriptionId));
     }
 
 }

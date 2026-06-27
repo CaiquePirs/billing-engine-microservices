@@ -38,7 +38,7 @@ public class StripeSubscriptionService {
 
         } catch (StripeException e) {
             log.error("Failed to create Stripe subscription for subscription ID: {}", subscriptionEvent.subscriptionId(), e);
-            throw new StripeIntegrationException("Failed to process the payment.", e);
+            throw new StripeIntegrationException("Failed to create Stripe subscription for subscription ID: " + subscriptionEvent.subscriptionId() + ". Stripe returned an error.", e);
         }
     }
 
@@ -50,6 +50,6 @@ public class StripeSubscriptionService {
         );
 
         paymentEventPublisher.sendPaymentToDlqQueue(event);
-        throw new StripeIntegrationException("Payment sent to DLQ after retries exhausted.", ex);
+        throw new StripeIntegrationException("Stripe subscription creation failed after all retry attempts for subscription ID: " + event.subscriptionId() + ". Event forwarded to DLQ.", ex);
     }
 }

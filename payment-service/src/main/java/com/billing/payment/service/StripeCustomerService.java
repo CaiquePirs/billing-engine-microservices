@@ -17,13 +17,13 @@ public class StripeCustomerService {
             Customer customer = Customer.retrieve(customerId);
 
             if(customer == null) {
-                throw new StripeIntegrationException(String.format("Customer ID: %s not found", customerId));
+                throw new StripeIntegrationException(String.format("Stripe customer not found for ID: %s", customerId));
             }
             return customer;
 
         } catch (StripeException e) {
-            log.error("Failed to fetching customer by ID {}", customerId, e);
-            throw new StripeIntegrationException("Subscription failed. Try again later");
+            log.error("Stripe API error while retrieving customer with ID {}", customerId, e);
+            throw new StripeIntegrationException("Failed to retrieve Stripe customer with ID: " + customerId + ". Subscription processing aborted.");
         }
     }
 

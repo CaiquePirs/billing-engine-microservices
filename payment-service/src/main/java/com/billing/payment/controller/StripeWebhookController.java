@@ -32,7 +32,7 @@ public class StripeWebhookController {
             paymentService.handlerPaymentEvent(event, payload);
 
         } catch (Exception e){
-            log.error("Error processing stripe webhook event", e);
+            log.error("Failed to construct or process Stripe webhook event. Signature validation or event parsing may have failed.", e);
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok().build();

@@ -19,7 +19,7 @@ public class StripePlanService {
 
         } catch (StripeException e) {
             log.error("Failed to fetch Stripe price by ID {}", priceId, e);
-            throw new StripeIntegrationException("Failed to fetch Stripe price.");
+            throw new StripeIntegrationException("Failed to retrieve Stripe price with ID: " + priceId);
         }
     }
 
@@ -30,7 +30,7 @@ public class StripePlanService {
 
         } catch (StripeException e) {
             log.error("Failed to fetch Stripe product by price ID {}", priceId, e);
-            throw new StripeIntegrationException("Failed to fetch Stripe product.");
+            throw new StripeIntegrationException("Failed to retrieve Stripe product associated with price ID: " + priceId);
         }
     }
 

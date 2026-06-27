@@ -29,8 +29,8 @@ public class PaymentEventConsumer {
             paymentService.processPayment(event);
 
         } catch (Exception e) {
-            log.error("Error to process the payment event: {}", snsMessage.Message(), e);
-            throw new InternalErrorException("Error to process the payment event.");
+            log.error("Failed to deserialize or process incoming SQS payment event. Raw message: {}", snsMessage.Message(), e);
+            throw new InternalErrorException("Failed to process incoming payment event from SQS. The message could not be deserialized or handled.");
         }
     }
 }

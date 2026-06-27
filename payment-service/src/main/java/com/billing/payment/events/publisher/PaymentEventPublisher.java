@@ -42,7 +42,7 @@ public class PaymentEventPublisher {
 
         } catch (Exception e) {
             log.error("Failed to publish payment-approved event for subscription ID {}", event.subscriptionId(), e);
-            throw new InternalErrorException("Failed to publish payment-approved event");
+            throw new InternalErrorException("Failed to publish payment-approved SNS event for subscription ID: " + event.subscriptionId());
         }
     }
 
@@ -57,7 +57,7 @@ public class PaymentEventPublisher {
 
         } catch (Exception e) {
             log.error("Failed to publish payment-failed event for subscription ID {}", event.subscriptionId(), e);
-            throw new InternalErrorException("Failed to publish payment-failed event");
+            throw new InternalErrorException("Failed to publish payment-failed SNS event for subscription ID: " + event.subscriptionId());
         }
     }
 
@@ -74,7 +74,7 @@ public class PaymentEventPublisher {
 
         } catch (Exception e) {
             log.error("Failed to publish subscriptionId {} to DLQ", event.subscriptionId(), e);
-            throw new InternalErrorException("Failed to publish subscription-created event to DLQ");
+            throw new InternalErrorException("Failed to forward subscription ID: " + event.subscriptionId() + " to DLQ after payment processing failure");
         }
     }
 
