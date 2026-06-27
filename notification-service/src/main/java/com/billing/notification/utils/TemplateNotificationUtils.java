@@ -26,6 +26,7 @@ public class TemplateNotificationUtils {
     private static final String NEW_SUBSCRIPTION_TEMPLATE = "templates/new-subscription-email.html";
     private static final String PAID_SUBSCRIPTION_TEMPLATE = "templates/paid-subscription-email.html";
     private static final String FAILED_SUBSCRIPTION_TEMPLATE = "templates/failed-subscription-email.html";
+    private static final String INVOICE_CREATED_TEMPLATE = "templates/invoice-created-subscription-email.html";
 
     public String loadTemplate(NotificationTemplate template) {
         ClassPathResource resource;
@@ -44,6 +45,11 @@ public class TemplateNotificationUtils {
 
             if (Objects.requireNonNull(template) == NotificationTemplate.SUBSCRIPTION_CANCELLED) {
                 resource = new ClassPathResource(FAILED_SUBSCRIPTION_TEMPLATE);
+                templateContent = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
+            }
+
+            if (Objects.requireNonNull(template) == NotificationTemplate.INVOICE_CREATED) {
+                resource = new ClassPathResource(INVOICE_CREATED_TEMPLATE);
                 templateContent = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
             }
 
@@ -101,11 +107,12 @@ public class TemplateNotificationUtils {
         );
     }
 
-    private String buildEmailTitle(NotificationTemplate template){
+    public String buildEmailTitle(NotificationTemplate template){
         return switch (template) {
             case SUBSCRIPTION_CREATED -> "Subscription confirmation";
             case SUBSCRIPTION_PAID -> "Subscription Paid";
             case SUBSCRIPTION_CANCELLED -> "Subscription Cancelled";
+            case INVOICE_CREATED -> "Your Invoice is Ready";
             default -> throw new InternalNotificationErrorException("Template not supported: " + template);
         };
     }

@@ -4,5 +4,6 @@ public enum NotificationTemplate {
     SUBSCRIPTION_CREATED,
     SUBSCRIPTION_PAID,
     subscription_ACTIVATED,
-    SUBSCRIPTION_CANCELLED
+    SUBSCRIPTION_CANCELLED,
+    INVOICE_CREATED
 }

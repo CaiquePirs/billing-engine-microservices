@@ -17,7 +17,7 @@ public class InvoiceS3Service {
 
     private final S3Client s3Client;
 
-    @Value("${AWS_S3_BUCKET:billing-invoices}")
+    @Value("${AWS_S3_BUCKET}")
     private String bucket;
 
     public byte[] downloadPdf(String s3Key) {
@@ -32,8 +32,7 @@ public class InvoiceS3Service {
 
         } catch (Exception e) {
             log.error("Failed to download invoice PDF from S3. Bucket: {}, Key: {}", bucket, s3Key, e);
-            throw new InternalNotificationErrorException(
-                    "Failed to retrieve invoice PDF from S3 for key: " + s3Key, e);
+            throw new InternalNotificationErrorException("Failed to retrieve invoice PDF from S3 for key: " + s3Key, e);
         }
     }
 }

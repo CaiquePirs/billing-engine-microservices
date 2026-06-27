@@ -17,4 +17,6 @@ public class Notification {
     private String to;
     private NotificationTemplate template;
     private Object body;
+    private byte[] attachmentBytes;
+    private String attachmentFileName;
 }

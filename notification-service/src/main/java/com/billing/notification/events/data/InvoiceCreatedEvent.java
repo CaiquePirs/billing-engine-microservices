@@ -1,8 +1,7 @@
-package com.billing.invoice.events.data;
+package com.billing.notification.events.data;
 
-import com.billing.invoice.model.InvoiceStatus;
+import com.billing.notification.model.SubscriptionNotificationEvent;
 import lombok.Builder;
-
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -11,11 +10,11 @@ public record InvoiceCreatedEvent(
         UUID invoiceId,
         String s3Key,
         UUID subscriptionId,
-        InvoiceStatus status,
+        String status,
         String paymentStatus,
         String subscriptionStatus,
         LocalDate currentPeriodStart,
         LocalDate currentPeriodEnd,
         PlanResponseDTO plan,
-        CustomerClientResponse customer) {
+        CustomerClientResponse customer) implements SubscriptionNotificationEvent {
 }
