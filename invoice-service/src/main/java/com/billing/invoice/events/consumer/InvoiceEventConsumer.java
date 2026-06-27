@@ -28,8 +28,8 @@ public class InvoiceEventConsumer {
             invoiceService.generateInvoice(event);
 
         } catch (Exception e) {
-            log.error("Error processing invoice event: {}", snsMessage.Message(), e);
-            throw new InternalErrorException("Failed to process subscription invoice event", e);
+            log.error("Failed to process invoice generation event from SQS. Raw message: {}", snsMessage.Message(), e);
+            throw new InternalErrorException("Failed to generate invoice from incoming payment-approved SQS event.", e);
         }
     }
 }
