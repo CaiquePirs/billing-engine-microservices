@@ -26,14 +26,14 @@ public class CustomerValidator {
     private void validateEmail(String email) {
         customerRepository.findByEmail(email)
                 .ifPresent(customer -> {
-                    throw new CustomerExistException("Customer already exists");
+                    throw new CustomerExistException("Registration failed: a customer with this email address is already registered");
                 });
     }
 
     private void validateTaxNumber(String taxNumber) {
         customerRepository.findByTaxNumber(taxNumber)
                 .ifPresent(customer -> {
-                    throw new CustomerExistException("Customer already exists");
+                    throw new CustomerExistException("Registration failed: a customer with this tax number is already registered");
                 });
     }
 

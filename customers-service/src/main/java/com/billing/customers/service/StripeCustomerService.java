@@ -35,7 +35,7 @@ public class StripeCustomerService {
 
         } catch (StripeException e) {
             log.error("Failed to create customer email: {} on Stripe and error: {}", dto.email(), e.getMessage());
-            throw new StripeIntegrationException("Failed to create a customer");
+            throw new StripeIntegrationException("Failed to create customer on Stripe for email: " + dto.email() + ". Please try again later.");
         }
     }
 }

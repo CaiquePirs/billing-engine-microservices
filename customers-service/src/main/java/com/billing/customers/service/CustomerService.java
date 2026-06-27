@@ -34,6 +34,6 @@ public class CustomerService {
     public Customer findCustomerById(UUID customerId) {
         return customerRepository.findById(customerId)
                 .filter(customer -> customer.getCustomerStatus().equals(CustomerStatus.ACTIVE))
-                .orElseThrow(() -> new CustomerNotFoundException("Customer ID not found"));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found or inactive for ID: " + customerId));
     }
 }
