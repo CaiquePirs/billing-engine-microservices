@@ -16,12 +16,12 @@ public class StripeCustomerService {
         try {
              Customer customer = Customer.retrieve(customerId);
              if(customer == null) {
-                 throw new StripeIntegrationException("Customer not found");
+                 throw new StripeIntegrationException("Stripe customer not found for ID: " + customerId);
              }
 
         } catch (StripeException e) {
-            log.error("Failed to fetching customer by ID {}", customerId, e);
-            throw new StripeIntegrationException("Subscription failed. Try again later");
+            log.error("Stripe API error while verifying customer with ID {}", customerId, e);
+            throw new StripeIntegrationException("Failed to verify Stripe customer with ID: " + customerId + ". Subscription creation aborted.");
         }
     }
 }

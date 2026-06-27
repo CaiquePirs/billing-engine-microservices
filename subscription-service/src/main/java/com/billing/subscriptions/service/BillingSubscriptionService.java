@@ -57,8 +57,8 @@ public class BillingSubscriptionService {
         return billingSubscriptionRepository
                 .findById(subscriptionId)
                 .orElseThrow(() -> {
-                    log.error("Could not active subscription with ID: {} it was not found", subscriptionId);
-                    return new NotFoundException("Subscription ID not found");
+                    log.error("Subscription lookup failed: no subscription found with ID: {}", subscriptionId);
+                    return new NotFoundException("No subscription found with ID: " + subscriptionId);
                 });
     }
 
@@ -75,7 +75,7 @@ public class BillingSubscriptionService {
 
             billingSubscriptionRepository.save(subscription);
         }else {
-            log.info("Subscription is already active, skipping activation");
+            log.info("Subscription ID: {} is already active, skipping re-activation", event.subscriptionId());
             return;
         }
     }
@@ -93,7 +93,7 @@ public class BillingSubscriptionService {
 
             billingSubscriptionRepository.save(subscription);
         }else {
-            log.info("Subscription status is already cancelled, skipping cancellation: {}", subscription.getSubscriptionStatus());
+            log.info("Subscription ID: {} is already cancelled, skipping cancellation", event.subscriptionId());
             return;
         }
     }

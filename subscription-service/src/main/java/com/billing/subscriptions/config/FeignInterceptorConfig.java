@@ -31,8 +31,8 @@ public class FeignInterceptorConfig implements RequestInterceptor {
             template.header("Authorization", "Bearer " + login.access_token());
 
         } catch (Exception e){
-            log.error("Failed to authenticate service client", e);
-            throw new ExternalServiceException("Subscription failed. Try again later");
+            log.error("Failed to obtain access token for internal service client ID '{}'. Feign requests will not be authorized.", clientId, e);
+            throw new ExternalServiceException("Internal service authentication failed for client ID: " + clientId + ". Could not obtain access token to authorize outbound requests.");
         }
     }
 }

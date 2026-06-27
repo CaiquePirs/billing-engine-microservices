@@ -23,11 +23,11 @@ public class CustomerApiService {
             return api.findCustomerById(customerId).getBody();
 
         } catch (FeignException.NotFound e){
-            throw new NotFoundException("Customer ID not found");
+            throw new NotFoundException("Customer not found with ID: " + customerId);
 
         } catch (FeignException e) {
-            log.error("Failed to fetching customer by ID {}", customerId, e);
-            throw new ExternalServiceException("Customer ID not found. Try again later");
+            log.error("Failed to retrieve customer from customer-service for ID {}", customerId, e);
+            throw new ExternalServiceException("Failed to retrieve customer with ID: " + customerId + ". The customer-service is temporarily unavailable.");
         }
     }
 

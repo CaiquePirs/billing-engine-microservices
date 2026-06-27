@@ -22,7 +22,7 @@ public class SecurityService {
         String currentAdminId = jwt.getClaimAsString("customer_id");
 
         if(currentAdminId.isBlank()){
-            throw new UserUnauthorizedException("Cound not find logged in user Id");
+            throw new UserUnauthorizedException("Authorization failed: could not extract user ID from the JWT token");
         }
         return UUID.fromString(currentAdminId);
     }

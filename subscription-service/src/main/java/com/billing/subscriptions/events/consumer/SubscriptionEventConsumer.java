@@ -29,8 +29,8 @@ public class SubscriptionEventConsumer {
             subscriptionService.activeSubscription(event);
 
         } catch (Exception e) {
-            log.error("Failed to process subscription payment event {}", snsMessage.Message(), e);
-            throw new ExternalServiceException("Failed to process subscription payment event.", e);
+            log.error("Failed to activate subscription from incoming SQS payment event. Raw message: {}", snsMessage.Message(), e);
+            throw new ExternalServiceException("Failed to activate subscription from incoming SQS payment event.", e);
         }
 
     }
@@ -45,8 +45,8 @@ public class SubscriptionEventConsumer {
             subscriptionService.cancelSubscription(event);
 
         } catch (Exception e) {
-            log.error("Failed to process subscription payment event {}", snsMessage.Message(), e);
-            throw new ExternalServiceException("Failed to process subscription payment event.", e);
+            log.error("Failed to cancel subscription from incoming SQS payment event. Raw message: {}", snsMessage.Message(), e);
+            throw new ExternalServiceException("Failed to cancel subscription from incoming SQS payment event.", e);
         }
 
     }

@@ -35,7 +35,7 @@ public class SubscriptionEventPublisher {
 
         } catch (Exception e) {
             log.error("Subscription ID: {} event publisher failed", subscriptionCreatedEvent.subscriptionId(), e);
-            throw new ExternalServiceException("Subscription failed. Try again later.");
+            throw new ExternalServiceException("Failed to publish subscription-created SNS event for subscription ID: " + subscriptionCreatedEvent.subscriptionId());
         }
     }
 }

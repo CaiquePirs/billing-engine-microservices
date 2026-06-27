@@ -34,6 +34,6 @@ public class PlanService {
     public Plan findPlanById(UUID planId) {
         return planRepository.findById(planId)
                 .filter(plan -> plan.getActive().equals(true))
-                .orElseThrow(() -> new NotFoundException("Plan ID not found"));
+                .orElseThrow(() -> new NotFoundException("No active plan found with ID: " + planId));
     }
 }

@@ -40,8 +40,8 @@ public class StripePlanService {
             return price.getId();
 
         } catch (StripeException e) {
-            log.error("Failed to create Stripe Price", e);
-            throw new StripeIntegrationException("Failed to create a plan. Try again later");
+            log.error("Failed to create Stripe price for plan '{}' with currency '{}'", request.name(), request.currency(), e);
+            throw new StripeIntegrationException("Failed to create Stripe price for plan '" + request.name() + "'. Check plan configuration and try again.");
         }
     }
 
@@ -49,12 +49,12 @@ public class StripePlanService {
         try {
             Plan plan = Plan.retrieve(planId);
             if(plan == null) {
-                throw new StripeIntegrationException("Plan not found");
+                throw new StripeIntegrationException("Stripe plan not found for ID: " + planId);
             }
 
         } catch (StripeException e) {
-            log.error("Failed to fetching plan by ID {}", planId, e);
-            throw new StripeIntegrationException("Subscription failed. Try again later.");
+            log.error("Stripe API error while verifying plan with ID {}", planId, e);
+            throw new StripeIntegrationException("Failed to verify Stripe plan with ID: " + planId + ". Subscription creation aborted.");
         }
     }
 
