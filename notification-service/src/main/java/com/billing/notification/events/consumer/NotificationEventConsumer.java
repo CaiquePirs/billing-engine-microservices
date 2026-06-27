@@ -29,8 +29,8 @@ public class NotificationEventConsumer {
             notificationService.sendNewSubscriptionNotification(event);
 
         } catch (Exception e) {
-            log.error("Error processing notification event: {}", snsMessage.Message(), e);
-            throw new InternalNotificationErrorException("Failed to process subscription notification event", e);
+            log.error("Failed to process new subscription notification event from SQS. Raw message: {}", snsMessage.Message(), e);
+            throw new InternalNotificationErrorException("Failed to send new subscription notification email. Check event payload and SES configuration.", e);
         }
     }
 
@@ -44,8 +44,8 @@ public class NotificationEventConsumer {
            notificationService.sendPaymentApprovedNotification(event);
 
         } catch (Exception e) {
-            log.error("Error processing notification event: {}", snsMessage.Message(), e);
-            throw new InternalNotificationErrorException("Failed to process subscription notification event", e);
+            log.error("Failed to process payment-approved notification event from SQS. Raw message: {}", snsMessage.Message(), e);
+            throw new InternalNotificationErrorException("Failed to send payment-approved notification email.", e);
         }
     }
 
@@ -60,8 +60,8 @@ public class NotificationEventConsumer {
             notificationService.sendPaymentFailedNotification(event);
 
         } catch (Exception e) {
-            log.error("Error processing notification event: {}", snsMessage.Message(), e);
-            throw new InternalNotificationErrorException("Failed to process subscription notification event", e);
+            log.error("Failed to process payment-failed notification event from SQS. Raw message: {}", snsMessage.Message(), e);
+            throw new InternalNotificationErrorException("Failed to send payment-failed notification email.", e);
         }
     }
 

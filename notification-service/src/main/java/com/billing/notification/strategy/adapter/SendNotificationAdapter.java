@@ -25,8 +25,8 @@ public class SendNotificationAdapter implements SendNotificationPort {
             sesClient.sendEmail(newSubscriptionEmail);
 
         } catch (Exception e) {
-            log.error("Error sending email: {}", notification, e);
-            throw new InternalNotificationErrorException("Failed to send email", e);
+            log.error("Failed to send email via AWS SES. Template: '{}', Recipient: '{}'", notification.getTemplate(), notification.getTo(), e);
+            throw new InternalNotificationErrorException("Failed to deliver email notification via AWS SES for recipient: " + notification.getTo(), e);
         }
     }
 }
