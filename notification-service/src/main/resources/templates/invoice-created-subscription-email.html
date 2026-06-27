@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="color-scheme" content="light" />
+    <meta name="supported-color-schemes" content="light" />
+    <title>Your Invoice is Ready</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fb;
+            color: #1f2937;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .email-wrapper {
+            width: 100%;
+            padding: 32px 0;
+            background-color: #f4f7fb;
+        }
+
+        .email-container {
+            max-width: 680px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, .08);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+            padding: 32px 40px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .status-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .header p {
+            margin: 10px 0 0;
+            font-size: 16px;
+            opacity: .9;
+        }
+
+        .content {
+            padding: 36px 40px;
+            background: #ffffff;
+        }
+
+        .greeting {
+            font-size: 18px;
+        }
+
+        .message {
+            color: #4b5563;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .attachment-banner {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #1e40af;
+            font-weight: 600;
+        }
+
+        .summary-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 28px;
+            background: #ffffff;
+        }
+
+        .summary-title {
+            padding: 16px 20px;
+            margin: 0;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            color: #111827;
+            font-size: 17px;
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .details-table td {
+            padding: 14px 20px;
+            font-size: 14px;
+        }
+
+        .label {
+            width: 42%;
+            color: #6b7280;
+            background: #fcfcfd;
+            font-weight: 600;
+        }
+
+        .value {
+            color: #111827;
+            font-weight: 500;
+        }
+
+        .plan-box {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 28px;
+        }
+
+        .plan-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .plan-price {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1d4ed8;
+        }
+
+        .footer {
+            padding: 24px 40px;
+            background: #f9fafb;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .footer p {
+            color: #6b7280;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body style="background:#f4f7fb;color:#1f2937;">
+<div class="email-wrapper">
+    <div class="email-container" style="background:#ffffff;">
+
+        <div class="header">
+            <div class="status-icon">🧾</div>
+            <h1>Your Invoice is Ready</h1>
+            <p>Your invoice has been generated and is attached to this email.</p>
+        </div>
+
+        <div class="content">
+            <p class="greeting">Hello {{customerFullName}},</p>
+
+            <p class="message">
+                Your invoice for the current billing period has been generated.
+                Please find the PDF attached to this email for your records.
+            </p>
+
+            <div class="attachment-banner">
+                📎 &nbsp; invoice-{{subscriptionId}}.pdf attached
+            </div>
+
+            <div class="summary-card">
+                <h2 class="summary-title">Invoice Summary</h2>
+                <table class="details-table">
+                    <tr>
+                        <td class="label">Subscription ID</td>
+                        <td class="value">{{subscriptionId}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Subscription Status</td>
+                        <td class="value">{{subscriptionStatus}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Billing Period Start</td>
+                        <td class="value">{{currentPeriodStart}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Billing Period End</td>
+                        <td class="value">{{currentPeriodEnd}}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="plan-box">
+                <p class="plan-name">{{planName}}</p>
+                <p class="plan-price">
+                    {{planPrice}}
+                    <span style="font-size:14px;color:#6b7280;">/ {{planInterval}}</span>
+                </p>
+            </div>
+
+            <div class="summary-card">
+                <h2 class="summary-title">Customer Details</h2>
+                <table class="details-table">
+                    <tr>
+                        <td class="label">Name</td>
+                        <td class="value">{{customerFullName}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Email</td>
+                        <td class="value">{{customerEmail}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Phone</td>
+                        <td class="value">{{customerPhone}}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Address</td>
+                        <td class="value">{{customerAddress}}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <p class="message">
+                If you have any questions about this invoice,
+                please contact our support team.
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>This is an automated invoice notification. Please do not reply directly to this email.</p>
+            <p>Billing System</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
