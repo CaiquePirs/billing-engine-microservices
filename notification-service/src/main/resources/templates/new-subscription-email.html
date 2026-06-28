@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" style="background-color:#ffffff !important; color-scheme: light only; supported-color-schemes: light;">
+<html lang="en" style="background-color:#ffffff !important; color-scheme: light only !important;">
 <head>
     <meta charset="UTF-8" />
     <meta name="color-scheme" content="light only" />
     <meta name="supported-color-schemes" content="light" />
     <title>New Subscription Created</title>
+    <style>
+        :root { color-scheme: light only; }
+        @media (prefers-color-scheme: dark) {
+            html, body { background-color: #ffffff !important; color: #1f2937 !important; }
+            table, td { background-color: inherit !important; color: inherit !important; }
+        }
+    </style>
 </head>
 <body bgcolor="#ffffff" style="margin:0; padding:0; background-color:#ffffff !important; font-family:Arial, Helvetica, sans-serif; color:#1f2937 !important;">
 <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="background-color:#ffffff !important; padding:32px 0;">

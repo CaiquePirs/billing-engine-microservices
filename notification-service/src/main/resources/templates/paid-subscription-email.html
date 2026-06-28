@@ -1,40 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="color-scheme: light only !important;">
 <head>
     <meta charset="UTF-8" />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light only" />
     <meta name="supported-color-schemes" content="light" />
     <title>Subscription Payment Confirmed</title>
 
     <style>
+        :root { color-scheme: light only; }
+
         body {
             margin: 0;
             padding: 0;
-            background-color: #f4f7fb;
-            color: #1f2937;
+            background-color: #f4f7fb !important;
+            color: #1f2937 !important;
             font-family: Arial, Helvetica, sans-serif;
         }
 
         .email-wrapper {
             width: 100%;
             padding: 32px 0;
-            background-color: #f4f7fb;
+            background-color: #f4f7fb !important;
         }
 
         .email-container {
             max-width: 680px;
             margin: 0 auto;
-            background: #ffffff;
+            background: #ffffff !important;
             border-radius: 14px;
             overflow: hidden;
             box-shadow: 0 8px 24px rgba(15, 23, 42, .08);
         }
 
         .header {
-            background: linear-gradient(135deg, #16a34a, #22c55e);
+            background: linear-gradient(135deg, #16a34a, #22c55e) !important;
             padding: 32px 40px;
             text-align: center;
-            color: #ffffff;
+            color: #ffffff !important;
         }
 
         .status-icon {
@@ -42,35 +44,40 @@
             height: 64px;
             margin: 0 auto 16px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, .2);
+            background: rgba(255, 255, 255, .2) !important;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             font-size: 34px;
             font-weight: bold;
+            color: #ffffff !important;
         }
 
         .header h1 {
             margin: 0;
             font-size: 28px;
+            color: #ffffff !important;
         }
 
         .header p {
             margin: 10px 0 0;
             font-size: 16px;
+            color: #ffffff !important;
         }
 
         .content {
             padding: 36px 40px;
-            background: #ffffff;
+            background: #ffffff !important;
+            color: #1f2937 !important;
         }
 
         .greeting {
             font-size: 18px;
+            color: #1f2937 !important;
         }
 
         .message {
-            color: #4b5563;
+            color: #4b5563 !important;
             font-size: 15px;
             line-height: 1.7;
         }
@@ -80,15 +87,15 @@
             border-radius: 12px;
             overflow: hidden;
             margin-bottom: 28px;
-            background: #ffffff;
+            background: #ffffff !important;
         }
 
         .summary-title {
             padding: 16px 20px;
             margin: 0;
-            background: #f9fafb;
+            background: #f9fafb !important;
             border-bottom: 1px solid #e5e7eb;
-            color: #111827;
+            color: #111827 !important;
             font-size: 17px;
         }
 
@@ -104,19 +111,20 @@
 
         .label {
             width: 42%;
-            color: #6b7280;
-            background: #fcfcfd;
+            color: #6b7280 !important;
+            background: #fcfcfd !important;
             font-weight: 600;
         }
 
         .value {
-            color: #111827;
+            color: #111827 !important;
             font-weight: 500;
+            background: #ffffff !important;
         }
 
         .payment-status {
-            background: #dcfce7;
-            color: #166534;
+            background: #dcfce7 !important;
+            color: #166534 !important;
             padding: 6px 12px;
             border-radius: 999px;
             font-size: 13px;
@@ -124,8 +132,8 @@
         }
 
         .subscription-status {
-            background: #dcfce7;
-            color: #166534;
+            background: #dcfce7 !important;
+            color: #166534 !important;
             padding: 6px 12px;
             border-radius: 999px;
             font-size: 13px;
@@ -133,7 +141,7 @@
         }
 
         .plan-box {
-            background: #f8fafc;
+            background: #f8fafc !important;
             border: 1px solid #e5e7eb;
             border-radius: 12px;
             padding: 20px;
@@ -143,30 +151,52 @@
         .plan-name {
             font-size: 20px;
             font-weight: 700;
-            color: #111827;
+            color: #111827 !important;
         }
 
         .plan-price {
             font-size: 24px;
             font-weight: 800;
-            color: #16a34a;
+            color: #16a34a !important;
         }
 
         .footer {
             padding: 24px 40px;
-            background: #f9fafb;
+            background: #f9fafb !important;
             text-align: center;
             border-top: 1px solid #e5e7eb;
         }
 
         .footer p {
-            color: #6b7280;
+            color: #6b7280 !important;
             font-size: 13px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body { background-color: #f4f7fb !important; color: #1f2937 !important; }
+            .email-wrapper { background-color: #f4f7fb !important; }
+            .email-container { background: #ffffff !important; }
+            .header { background: linear-gradient(135deg, #16a34a, #22c55e) !important; color: #ffffff !important; }
+            .header h1, .header p, .status-icon { color: #ffffff !important; }
+            .content { background: #ffffff !important; color: #1f2937 !important; }
+            .greeting { color: #1f2937 !important; }
+            .message { color: #4b5563 !important; }
+            .summary-card { background: #ffffff !important; border-color: #e5e7eb !important; }
+            .summary-title { background: #f9fafb !important; color: #111827 !important; border-color: #e5e7eb !important; }
+            .label { background: #fcfcfd !important; color: #6b7280 !important; }
+            .value { background: #ffffff !important; color: #111827 !important; }
+            .payment-status { background: #dcfce7 !important; color: #166534 !important; }
+            .subscription-status { background: #dcfce7 !important; color: #166534 !important; }
+            .plan-box { background: #f8fafc !important; border-color: #e5e7eb !important; }
+            .plan-name { color: #111827 !important; }
+            .plan-price { color: #16a34a !important; }
+            .footer { background: #f9fafb !important; border-color: #e5e7eb !important; }
+            .footer p { color: #6b7280 !important; }
         }
     </style>
 </head>
 
-<body style="background:#f4f7fb;color:#1f2937;">
+<body style="background:#f4f7fb !important; color:#1f2937 !important;">
 <div class="email-wrapper">
     <div class="email-container" style="background:#ffffff;">
 
