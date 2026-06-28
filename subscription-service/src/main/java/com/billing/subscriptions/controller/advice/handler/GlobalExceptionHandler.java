@@ -2,7 +2,9 @@ package com.billing.subscriptions.controller.advice.handler;
 
 import com.billing.subscriptions.controller.advice.dto.ErrorMessageDTO;
 import com.billing.subscriptions.controller.advice.dto.ErrorResponseDTO;
+import com.billing.subscriptions.controller.advice.exception.DuplicateSubscriptionException;
 import com.billing.subscriptions.controller.advice.exception.ExternalServiceException;
+import com.billing.subscriptions.controller.advice.exception.NotFoundException;
 import com.billing.subscriptions.controller.advice.exception.StripeIntegrationException;
 import com.billing.subscriptions.controller.advice.exception.UserUnauthorizedException;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,28 @@ public class GlobalExceptionHandler {
                 listErrors
         );
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error);
+    }
+
+    @ExceptionHandler(DuplicateSubscriptionException.class)
+    public ResponseEntity<ErrorResponseDTO> handleDuplicateSubscriptionException(DuplicateSubscriptionException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponseDTO(
+                        HttpStatus.CONFLICT.value(),
+                        e.getMessage(),
+                        LocalDateTime.now(),
+                        List.of(new ErrorMessageDTO("Duplicate Subscription", e.getMessage()))
+                ));
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleNotFoundException(NotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponseDTO(
+                        HttpStatus.NOT_FOUND.value(),
+                        e.getMessage(),
+                        LocalDateTime.now(),
+                        List.of(new ErrorMessageDTO("Not Found", e.getMessage()))
+                ));
     }
 
     @ExceptionHandler(StripeIntegrationException.class)

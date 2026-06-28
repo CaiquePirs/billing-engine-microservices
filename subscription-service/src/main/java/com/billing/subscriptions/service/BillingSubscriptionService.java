@@ -11,6 +11,7 @@ import com.billing.subscriptions.model.BillingSubscription;
 import com.billing.subscriptions.model.Plan;
 import com.billing.subscriptions.model.enums.SubscriptionStatus;
 import com.billing.subscriptions.repository.BillingSubscriptionRepository;
+import com.billing.subscriptions.validator.SubscriptionValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ public class BillingSubscriptionService {
     private final StripeCustomerService stripeCustomerService;
     private final StripePlanService stripePlanService;
     private final SubscriptionEventPublisher subscriptionEventPublisher;
+    private final SubscriptionValidator subscriptionValidator;
 
     @Transactional
     public BillingSubscription createSubscription(BillingSubscriptionRequestDTO subscriptionRequest) {
@@ -38,6 +40,8 @@ public class BillingSubscriptionService {
         stripeCustomerService.ensureCustomerExistsOnStripe(customer.stripeCustomerId());
 
         Plan plan = planService.findPlanById(subscriptionRequest.planId());
+
+        subscriptionValidator.validateSubscription(plan.getId(), customer.id());
         stripePlanService.ensurePlanExistsOnStripe(plan.getStripePriceId());
 
         BillingSubscription subscription = billingSubscriptionMapper.toEntity(plan, customer.id());
