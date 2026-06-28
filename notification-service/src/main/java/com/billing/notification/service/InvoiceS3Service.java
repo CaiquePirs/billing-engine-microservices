@@ -17,7 +17,7 @@ public class InvoiceS3Service {
 
     private final S3Client s3Client;
 
-    @Value("${AWS_S3_BUCKET}")
+    @Value("${aws.s3.bucket}")
     private String bucket;
 
     public byte[] downloadPdf(String s3Key) {

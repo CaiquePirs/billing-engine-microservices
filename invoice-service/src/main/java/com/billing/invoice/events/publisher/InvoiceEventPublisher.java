@@ -25,7 +25,7 @@ public class InvoiceEventPublisher {
     private final InvoiceRepository invoiceRepository;
     private final SqsClient sqsClient;
 
-    @Value("${INVOICE_CREATED_QUEUE}")
+    @Value("${aws.sqs.queue.invoice-created}")
     private String invoiceCreatedQueue;
 
     public void publishInvoiceCreatedEvent(Invoice invoice, SubscriptionPaymentEvent event) {

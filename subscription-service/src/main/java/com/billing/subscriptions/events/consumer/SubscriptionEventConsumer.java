@@ -19,7 +19,7 @@ public class SubscriptionEventConsumer {
     private final BillingSubscriptionService subscriptionService;
     private final ObjectMapper objectMapper;
 
-    @SqsListener("${ACTIVE_SUBSCRIPTION_QUEUE}")
+    @SqsListener("${aws.sqs.queue.active-subscription}")
     public void activeSubscriptionPaid(SnsMessage snsMessage){
         try {
             SubscriptionPaymentEvent event = objectMapper.readValue(
@@ -35,7 +35,7 @@ public class SubscriptionEventConsumer {
 
     }
 
-    @SqsListener("${DEACTIVATE_SUBSCRIPTION_QUEUE}")
+    @SqsListener("${aws.sqs.queue.deactivate-subscription}")
     public void desactiveSubscription(SnsMessage snsMessage){
         try {
             SubscriptionPaymentEvent event = objectMapper.readValue(
@@ -50,7 +50,4 @@ public class SubscriptionEventConsumer {
         }
 
     }
-
-
-
 }

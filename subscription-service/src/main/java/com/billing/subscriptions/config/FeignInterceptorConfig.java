@@ -18,10 +18,10 @@ public class FeignInterceptorConfig implements RequestInterceptor {
 
     private final AuthenticationApiService api;
 
-    @Value("${SUBSCRIPTION_SERVICE_CLIENT_ID}")
+    @Value("${subscription.service.client-id}")
     private String clientId;
 
-    @Value("${SUBSCRIPTION_SERVICE_SECRET}")
+    @Value("${subscription.service.client-secret}")
     private String clientSecret;
 
     @Override

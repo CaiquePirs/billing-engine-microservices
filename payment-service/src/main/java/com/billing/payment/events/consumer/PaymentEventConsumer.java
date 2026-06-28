@@ -18,7 +18,7 @@ public class PaymentEventConsumer {
     private final PaymentService paymentService;
     private final ObjectMapper objectMapper;
 
-    @SqsListener("${PROCESS_PAYMENT_QUEUE}")
+    @SqsListener("${aws.sqs.queue.process-payment}")
     private void processNewPaymentEvent(SnsMessage snsMessage) {
         try {
             SubscriptionCreatedEvent event = objectMapper.readValue(

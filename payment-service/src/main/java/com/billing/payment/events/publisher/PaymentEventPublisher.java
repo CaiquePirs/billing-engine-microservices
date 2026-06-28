@@ -22,13 +22,13 @@ public class PaymentEventPublisher {
     private final SnsClient snsClient;
     private final ObjectMapper objectMapper;
 
-    @Value("${PAYMENT_PROCESSING_DLQ}")
+    @Value("${aws.sqs.queue.payment-processing-dlq}")
     private String dlqQueue;
 
-    @Value("${PAYMENT_APPROVED_TOPIC}")
+    @Value("${aws.sns.topic.payment-approved}")
     private String snsTopicPaymentApproved;
 
-    @Value("${PAYMENT_FAILED_TOPIC}")
+    @Value("${aws.sns.topic.payment-failed}")
     private String snsTopicPaymentFailed;
 
     public void publisherPaymentApproved(SubscriptionPaymentEvent event) {

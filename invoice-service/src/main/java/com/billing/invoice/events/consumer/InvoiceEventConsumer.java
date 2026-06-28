@@ -18,7 +18,7 @@ public class InvoiceEventConsumer {
     private final ObjectMapper objectMapper;
     private final InvoiceService invoiceService;
 
-    @SqsListener("${GENERATE_NEW_INVOICE_QUEUE}")
+    @SqsListener("${aws.sqs.queue.generate-invoice}")
     public void generateNewInvoiceQueue(SnsMessage snsMessage) {
         try {
             SubscriptionPaymentEvent event = objectMapper.readValue(

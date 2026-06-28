@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class NotificationMapper {
 
-    @Value("${INTERNAL_SERVICE_EMAIL}")
+    @Value("${notification.sender-email}")
     private String internalEmail;
 
     public Notification mapToNotification(Object event, NotificationTemplate template){

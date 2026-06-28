@@ -17,10 +17,10 @@ public class RequestInterceptorConfig implements RequestInterceptor {
 
     private final InternalAuthenticationService service;
 
-    @Value("${AUTHENTICATION_SERVICE_CLIENT_ID}")
+    @Value("${auth.service.client-id}")
     private String clientId;
 
-    @Value("${AUTHENTICATION_SERVICE_SECRET}")
+    @Value("${auth.service.client-secret}")
     private String clientSecret;
 
     @Override

@@ -13,16 +13,16 @@ import java.net.URI;
 @Configuration
 public class AwsConfig {
 
-    @Value("${AWS_ACCESS_KEY}")
+    @Value("${aws.localstack.access-key}")
     private String accessKey;
 
-    @Value("${AWS_SECRET_KEY}")
+    @Value("${aws.localstack.secret-key}")
     private String secretKey;
 
-    @Value("${AWS_REGION}")
+    @Value("${aws.localstack.region}")
     private String region;
 
-    @Value("${AWS_URI}")
+    @Value("${aws.localstack.endpoint}")
     private String uri;
 
     @Bean

@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 @Configuration
 public class SecurityConfig {
 
-    @Value("${SECRET_KEY}")
+    @Value("${security.jwt.secret-key}")
     private String SECRET;
 
     @Bean

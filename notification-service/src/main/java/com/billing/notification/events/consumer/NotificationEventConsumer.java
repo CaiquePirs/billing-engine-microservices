@@ -20,7 +20,7 @@ public class NotificationEventConsumer {
     private final NotificationService notificationService;
     private final ObjectMapper objectMapper;
 
-    @SqsListener("${NOTIFY_SUBSCRIPTION_QUEUE}")
+    @SqsListener("${aws.sqs.queue.notify-subscription}")
     public void processNewSubscriptionEvent(SnsMessage snsMessage) {
         try {
             SubscriptionCreatedEvent event = objectMapper.readValue(
@@ -35,7 +35,7 @@ public class NotificationEventConsumer {
         }
     }
 
-    @SqsListener("${NOTIFY_PAYMENT_APPROVED}")
+    @SqsListener("${aws.sqs.queue.notify-payment-approved}")
     public void processPaymentApprovedEvent(SnsMessage snsMessage) {
         try {
             SubscriptionPaymentEvent event = objectMapper.readValue(
@@ -50,7 +50,7 @@ public class NotificationEventConsumer {
         }
     }
 
-    @SqsListener("${NOTIFY_PAYMENT_FAILED}")
+    @SqsListener("${aws.sqs.queue.notify-payment-failed}")
     public void processPaymentFailedEvent(SnsMessage snsMessage) {
         try {
             SubscriptionPaymentEvent event = objectMapper.readValue(
@@ -65,7 +65,7 @@ public class NotificationEventConsumer {
         }
     }
 
-    @SqsListener("${INVOICE_CREATED_QUEUE}")
+    @SqsListener("${aws.sqs.queue.invoice-created}")
     public void processInvoiceCreatedEvent(String rawMessage) {
         try {
             InvoiceCreatedEvent event = objectMapper.readValue(
