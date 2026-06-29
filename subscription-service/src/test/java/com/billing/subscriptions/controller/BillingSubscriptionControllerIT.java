@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -46,8 +46,8 @@ class BillingSubscriptionControllerIT {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
 
-    @MockBean private BillingSubscriptionService billingSubscriptionService;
-    @MockBean private BillingSubscriptionMapper billingSubscriptionMapper;
+    @MockitoBean private BillingSubscriptionService billingSubscriptionService;
+    @MockitoBean private BillingSubscriptionMapper billingSubscriptionMapper;
 
     private static final String BASE_URL = "/api/v1/subscriptions";
 

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.TestPropertySource;
 
 import java.math.BigDecimal;
@@ -43,8 +43,8 @@ class NotificationServiceIT {
 
     @Autowired private NotificationService notificationService;
 
-    @MockBean private SendNotificationPort sendNotificationPort;
-    @MockBean private InvoiceS3Service invoiceS3Service;
+    @MockitoBean private SendNotificationPort sendNotificationPort;
+    @MockitoBean private InvoiceS3Service invoiceS3Service;
 
     private CustomerClientResponse buildCustomer() {
         CustomerAddressResponse address = new CustomerAddressResponse(

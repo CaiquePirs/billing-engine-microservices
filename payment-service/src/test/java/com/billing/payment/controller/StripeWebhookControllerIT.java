@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -32,7 +32,7 @@ class StripeWebhookControllerIT {
 
     @Autowired private MockMvc mockMvc;
 
-    @MockBean private PaymentService paymentService;
+    @MockitoBean private PaymentService paymentService;
 
     private static final String BASE_URL = "/api/v1/webhooks/stripe";
     private static final String PAYLOAD = "{\"id\":\"evt_test\",\"type\":\"invoice.paid\"}";
