@@ -5,6 +5,7 @@ import com.authentication.client.dto.CreateCustomerResponseDTO;
 import com.authentication.controller.advice.exceptions.AuthLoginFailException;
 import com.authentication.controller.dto.LoginRequestDTO;
 import com.authentication.controller.dto.LoginResponseDTO;
+import com.authentication.metrics.AuthenticationMetrics;
 import com.authentication.model.Authentication;
 import com.authentication.model.enums.AuthStatus;
 import com.authentication.model.enums.Role;
@@ -33,6 +34,7 @@ class AuthenticationServiceTest {
     @Mock private CustomerApiService customerApiService;
     @Mock private AuthenticationValidator authenticationValidator;
     @Mock private JwtService jwtService;
+    @Mock private AuthenticationMetrics authenticationMetrics;
 
     @InjectMocks
     private AuthenticationService authenticationService;
@@ -53,6 +55,7 @@ class AuthenticationServiceTest {
         verify(customerApiService).signupCustomer(request);
         verify(passwordEncoder).encode("rawPassword");
         verify(authenticationRepository).save(any(Authentication.class));
+        verify(authenticationMetrics).recordSignup();
     }
 
     @Test
@@ -65,6 +68,7 @@ class AuthenticationServiceTest {
                 .hasMessageContaining("Customer service unavailable");
 
         verify(authenticationRepository, never()).save(any());
+        verify(authenticationMetrics, never()).recordSignup();
     }
 
     @Test
@@ -93,6 +97,7 @@ class AuthenticationServiceTest {
         assertThat(result.access_token()).isEqualTo("jwt-token");
         verify(authenticationValidator).validateMatchUserPassword("rawPassword", "hashedPassword");
         verify(jwtService).generateAccessToken(auth);
+        verify(authenticationMetrics).recordLogin(true);
     }
 
     @Test
@@ -105,6 +110,7 @@ class AuthenticationServiceTest {
                 .hasMessageContaining("no active account found for email");
 
         verify(jwtService, never()).generateAccessToken(any());
+        verify(authenticationMetrics).recordLogin(false);
     }
 
     @Test
@@ -126,5 +132,6 @@ class AuthenticationServiceTest {
                 .hasMessageContaining("no active account found for email");
 
         verify(jwtService, never()).generateAccessToken(any());
+        verify(authenticationMetrics).recordLogin(false);
     }
 }

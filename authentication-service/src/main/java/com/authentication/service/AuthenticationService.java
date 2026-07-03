@@ -5,6 +5,7 @@ import com.authentication.client.dto.CreateCustomerResponseDTO;
 import com.authentication.controller.advice.exceptions.AuthLoginFailException;
 import com.authentication.controller.dto.LoginRequestDTO;
 import com.authentication.controller.dto.LoginResponseDTO;
+import com.authentication.metrics.AuthenticationMetrics;
 import com.authentication.model.AuditEntity;
 import com.authentication.model.Authentication;
 import com.authentication.model.enums.AuthStatus;
@@ -23,6 +24,7 @@ public class AuthenticationService {
     private final CustomerApiService customerApiService;
     private final AuthenticationValidator authenticationValidator;
     private final JwtService jwtService;
+    private final AuthenticationMetrics authenticationMetrics;
 
     public void signupUser(CreateCustomerRequestDTO createCustomerRequestDTO){
         CreateCustomerResponseDTO customerCreated = customerApiService.signupCustomer(createCustomerRequestDTO);
@@ -37,12 +39,20 @@ public class AuthenticationService {
                 .build();
 
         authenticationRepository.save(authentication);
+        authenticationMetrics.recordSignup();
     }
 
     public LoginResponseDTO signInUser(LoginRequestDTO loginRequestDTO){
-        Authentication authentication = findUserAuthenticationByEmail(loginRequestDTO.email());
-        authenticationValidator.validateMatchUserPassword(loginRequestDTO.password(), authentication.getPasswordHash());
-        return jwtService.generateAccessToken(authentication);
+        try {
+            Authentication authentication = findUserAuthenticationByEmail(loginRequestDTO.email());
+            authenticationValidator.validateMatchUserPassword(loginRequestDTO.password(), authentication.getPasswordHash());
+            LoginResponseDTO response = jwtService.generateAccessToken(authentication);
+            authenticationMetrics.recordLogin(true);
+            return response;
+        } catch (AuthLoginFailException ex) {
+            authenticationMetrics.recordLogin(false);
+            throw ex;
+        }
     }
 
     private Authentication findUserAuthenticationByEmail(String email){
