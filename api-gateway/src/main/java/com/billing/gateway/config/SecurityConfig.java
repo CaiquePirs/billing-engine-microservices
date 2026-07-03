@@ -32,6 +32,7 @@ public class SecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers("/actuator/**", "/*/actuator/**").permitAll()
                         .pathMatchers("/api/v1/auth/**").permitAll()
                         .pathMatchers("/api/v1/webhooks/stripe", "/payment-service/api/v1/webhooks/stripe").permitAll()
                         .anyExchange().authenticated()
