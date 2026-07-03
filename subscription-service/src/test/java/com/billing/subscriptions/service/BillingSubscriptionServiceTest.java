@@ -7,6 +7,7 @@ import com.billing.subscriptions.events.data.SubscriptionCreatedEvent;
 import com.billing.subscriptions.events.data.SubscriptionPaymentEvent;
 import com.billing.subscriptions.events.publisher.SubscriptionEventPublisher;
 import com.billing.subscriptions.mapper.BillingSubscriptionMapper;
+import com.billing.subscriptions.metrics.BillingSubscriptionMetrics;
 import com.billing.subscriptions.model.AuditLog;
 import com.billing.subscriptions.model.BillingSubscription;
 import com.billing.subscriptions.model.Plan;
@@ -42,6 +43,7 @@ class BillingSubscriptionServiceTest {
     @Mock private StripePlanService stripePlanService;
     @Mock private SubscriptionEventPublisher subscriptionEventPublisher;
     @Mock private SubscriptionValidator subscriptionValidator;
+    @Mock private BillingSubscriptionMetrics billingSubscriptionMetrics;
 
     @InjectMocks
     private BillingSubscriptionService billingSubscriptionService;

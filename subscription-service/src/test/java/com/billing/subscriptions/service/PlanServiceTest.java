@@ -3,6 +3,7 @@ package com.billing.subscriptions.service;
 import com.billing.subscriptions.controller.advice.exception.NotFoundException;
 import com.billing.subscriptions.controller.dto.PlanRequestDTO;
 import com.billing.subscriptions.mapper.PlanMapper;
+import com.billing.subscriptions.metrics.BillingSubscriptionMetrics;
 import com.billing.subscriptions.model.AuditLog;
 import com.billing.subscriptions.model.Plan;
 import com.billing.subscriptions.model.enums.IntervalPlan;
@@ -29,6 +30,7 @@ class PlanServiceTest {
     @Mock private PlanMapper planMapper;
     @Mock private SecurityService securityService;
     @Mock private StripePlanService stripePlanService;
+    @Mock private BillingSubscriptionMetrics billingSubscriptionMetrics;
 
     @InjectMocks
     private PlanService planService;
@@ -67,6 +69,7 @@ class PlanServiceTest {
         assertThat(result.getStripePriceId()).isEqualTo("price_abc123");
         assertThat(result.getCreatedBy()).isEqualTo(adminId);
         verify(planRepository).save(mappedPlan);
+        verify(billingSubscriptionMetrics).recordSubscriptionPlanCreated(mappedPlan.getName());
     }
 
     @Test

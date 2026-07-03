@@ -7,6 +7,7 @@ import com.billing.subscriptions.events.data.SubscriptionCreatedEvent;
 import com.billing.subscriptions.events.data.SubscriptionPaymentEvent;
 import com.billing.subscriptions.events.publisher.SubscriptionEventPublisher;
 import com.billing.subscriptions.mapper.BillingSubscriptionMapper;
+import com.billing.subscriptions.metrics.BillingSubscriptionMetrics;
 import com.billing.subscriptions.model.BillingSubscription;
 import com.billing.subscriptions.model.Plan;
 import com.billing.subscriptions.model.enums.SubscriptionStatus;
@@ -33,6 +34,7 @@ public class BillingSubscriptionService {
     private final StripePlanService stripePlanService;
     private final SubscriptionEventPublisher subscriptionEventPublisher;
     private final SubscriptionValidator subscriptionValidator;
+    private final BillingSubscriptionMetrics billingSubscriptionMetrics;
 
     @Transactional
     public BillingSubscription createSubscription(BillingSubscriptionRequestDTO subscriptionRequest) {
@@ -78,6 +80,8 @@ public class BillingSubscriptionService {
             subscription.getAuditLog().setUpdatedAt(LocalDateTime.now());
 
             billingSubscriptionRepository.save(subscription);
+            billingSubscriptionMetrics.recordSubscriptionCreated(SubscriptionStatus.ACTIVE.toString());
+
         }else {
             log.info("Subscription ID: {} is already active, skipping re-activation", event.subscriptionId());
             return;
@@ -96,6 +100,7 @@ public class BillingSubscriptionService {
             subscription.getAuditLog().setUpdatedAt(LocalDateTime.now());
 
             billingSubscriptionRepository.save(subscription);
+            billingSubscriptionMetrics.recordSubscriptionCreated(SubscriptionStatus.CANCELED.toString());
         }else {
             log.info("Subscription ID: {} is already cancelled, skipping cancellation", event.subscriptionId());
             return;

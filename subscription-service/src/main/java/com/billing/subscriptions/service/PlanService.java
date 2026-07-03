@@ -3,6 +3,7 @@ package com.billing.subscriptions.service;
 import com.billing.subscriptions.controller.advice.exception.NotFoundException;
 import com.billing.subscriptions.controller.dto.PlanRequestDTO;
 import com.billing.subscriptions.mapper.PlanMapper;
+import com.billing.subscriptions.metrics.BillingSubscriptionMetrics;
 import com.billing.subscriptions.model.Plan;
 import com.billing.subscriptions.repository.PlanRepository;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ public class PlanService {
     private final PlanMapper planMapper;
     private final SecurityService securityService;
     private final StripePlanService stripePlanService;
+    private final BillingSubscriptionMetrics billingSubscriptionMetrics;
 
     public Plan createPlan(PlanRequestDTO planRequestDTO) {
         Plan plan = planMapper.toEntity(planRequestDTO);
@@ -28,7 +30,10 @@ public class PlanService {
         plan.setCreatedBy(currentLoggedAdmin);
         plan.setStripePriceId(stripePriceId);
 
-        return planRepository.save(plan);
+        Plan planCreated = planRepository.save(plan);
+        billingSubscriptionMetrics.recordSubscriptionPlanCreated(planCreated.getName());
+
+        return planCreated;
     }
 
     public Plan findPlanById(UUID planId) {
