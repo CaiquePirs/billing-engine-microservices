@@ -2,10 +2,6 @@ package com.billing.subscriptions.controller;
 
 import com.billing.subscriptions.config.SecurityConfig;
 import com.billing.subscriptions.controller.dto.BillingSubscriptionRequestDTO;
-import com.billing.subscriptions.controller.dto.BillingSubscriptionResponseDTO;
-import com.billing.subscriptions.mapper.BillingSubscriptionMapper;
-import com.billing.subscriptions.model.BillingSubscription;
-import com.billing.subscriptions.model.enums.SubscriptionStatus;
 import com.billing.subscriptions.service.BillingSubscriptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -20,7 +16,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -47,7 +42,6 @@ class BillingSubscriptionControllerIT {
     @Autowired private ObjectMapper objectMapper;
 
     @MockitoBean private BillingSubscriptionService billingSubscriptionService;
-    @MockitoBean private BillingSubscriptionMapper billingSubscriptionMapper;
 
     private static final String BASE_URL = "/api/v1/subscriptions";
 
@@ -55,25 +49,17 @@ class BillingSubscriptionControllerIT {
         return new BillingSubscriptionRequestDTO(UUID.randomUUID(), UUID.randomUUID(), "pm_test123");
     }
 
-    private BillingSubscriptionResponseDTO buildResponse() {
-        return BillingSubscriptionResponseDTO.builder()
-                .id(UUID.randomUUID()).customerId(UUID.randomUUID())
-                .currentPeriodStart(LocalDate.now()).currentPeriodEnd(LocalDate.now().plusMonths(1))
-                .subscriptionStatus(SubscriptionStatus.PENDING).build();
-    }
-
     @Test
     void createSubscription_shouldReturn201_whenAuthenticatedAsCustomer() throws Exception {
-        BillingSubscription subscription = mock(BillingSubscription.class);
-        when(billingSubscriptionService.createSubscription(any())).thenReturn(subscription);
-        when(billingSubscriptionMapper.toResponse(subscription)).thenReturn(buildResponse());
+        doNothing().when(billingSubscriptionService).createSubscription(any());
 
         mockMvc.perform(post(BASE_URL)
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_CUSTOMER")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildRequest())))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.subscriptionStatus").value("PENDING"));
+                .andExpect(status().isCreated());
+
+        verify(billingSubscriptionService).createSubscription(any());
     }
 
     @Test

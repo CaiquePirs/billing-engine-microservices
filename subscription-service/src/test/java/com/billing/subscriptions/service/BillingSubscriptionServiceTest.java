@@ -83,7 +83,7 @@ class BillingSubscriptionServiceTest {
     }
 
     @Test
-    void createSubscription_shouldReturnSavedSubscription_whenDataIsValid() {
+    void createSubscription_shouldPublishSubscriptionCreatedEvent_whenDataIsValid() {
         UUID planId = UUID.randomUUID();
         UUID customerId = UUID.randomUUID();
         BillingSubscriptionRequestDTO request = new BillingSubscriptionRequestDTO(planId, customerId, "pm_test123");
@@ -104,10 +104,8 @@ class BillingSubscriptionServiceTest {
         when(billingSubscriptionMapper.mapToSubscriptionCreatedEvent(subscription, customer, "pm_test123")).thenReturn(event);
         doNothing().when(subscriptionEventPublisher).publisherSubscriptionCreated(event);
 
-        BillingSubscription result = billingSubscriptionService.createSubscription(request);
+        billingSubscriptionService.createSubscription(request);
 
-        assertThat(result).isNotNull();
-        assertThat(result.getSubscriptionStatus()).isEqualTo(SubscriptionStatus.PENDING);
         verify(subscriptionEventPublisher).publisherSubscriptionCreated(event);
     }
 

@@ -1,9 +1,6 @@
 package com.billing.subscriptions.controller;
 
 import com.billing.subscriptions.controller.dto.BillingSubscriptionRequestDTO;
-import com.billing.subscriptions.controller.dto.BillingSubscriptionResponseDTO;
-import com.billing.subscriptions.mapper.BillingSubscriptionMapper;
-import com.billing.subscriptions.model.BillingSubscription;
 import com.billing.subscriptions.service.BillingSubscriptionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class BillingSubscriptionController {
 
     private final BillingSubscriptionService billingSubscriptionService;
-    private final BillingSubscriptionMapper billingSubscriptionMapper;
 
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<BillingSubscriptionResponseDTO> createSubscription(@RequestBody @Valid BillingSubscriptionRequestDTO billingSubscriptionRequestDTO) {
-        BillingSubscription billingSubscription = billingSubscriptionService.createSubscription(billingSubscriptionRequestDTO);
-        BillingSubscriptionResponseDTO billingResponse = billingSubscriptionMapper.toResponse(billingSubscription);
-        return ResponseEntity.status(HttpStatus.CREATED).body(billingResponse);
+    public ResponseEntity<Void> createSubscription(@RequestBody @Valid BillingSubscriptionRequestDTO billingSubscriptionRequestDTO) {
+        billingSubscriptionService.createSubscription(billingSubscriptionRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

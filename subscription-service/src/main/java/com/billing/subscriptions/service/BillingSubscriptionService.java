@@ -37,7 +37,7 @@ public class BillingSubscriptionService {
     private final BillingSubscriptionMetrics billingSubscriptionMetrics;
 
     @Transactional
-    public BillingSubscription createSubscription(BillingSubscriptionRequestDTO subscriptionRequest) {
+    public void createSubscription(BillingSubscriptionRequestDTO subscriptionRequest) {
         CustomerClientResponse customer = customerApiService.findCustomer(subscriptionRequest.customerId());
         stripeCustomerService.ensureCustomerExistsOnStripe(customer.stripeCustomerId());
 
@@ -56,7 +56,6 @@ public class BillingSubscriptionService {
         );
 
         subscriptionEventPublisher.publisherSubscriptionCreated(subscriptionEventMessage);
-        return subscriptionCreated;
     }
 
     public BillingSubscription findSubscriptionById(UUID subscriptionId) {
