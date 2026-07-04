@@ -139,7 +139,32 @@ class BillingSubscriptionMapperTest {
         assertThat(result.subscriptionId()).isEqualTo(subscriptionId);
         assertThat(result.paymentMethodId()).isEqualTo("pm_test123");
         assertThat(result.customer()).isEqualTo(customer);
-        assertThat(result.plan()).isEqualTo(planResponse);
+        assertThat(result.plan().name()).isEqualTo(planResponse.name());
+        assertThat(result.plan().currency()).isEqualTo(planResponse.currency());
+        assertThat(result.plan().interval()).isEqualTo(planResponse.interval());
+    }
+
+    @Test
+    void mapToSubscriptionCreatedEvent_shouldConvertPlanPriceToCents_whenDataIsValid() {
+        Plan plan = buildPlan(IntervalPlan.MONTHLY);
+        PlanResponseDTO planResponse = buildPlanResponse();
+        CustomerClientResponse customer = buildCustomer();
+
+        BillingSubscription subscription = BillingSubscription.builder()
+                .id(UUID.randomUUID())
+                .customerId(customer.id())
+                .plan(plan)
+                .subscriptionStatus(SubscriptionStatus.PENDING)
+                .currentPeriodStart(LocalDate.now())
+                .currentPeriodEnd(LocalDate.now().plusMonths(1))
+                .auditLog(new AuditLog())
+                .build();
+
+        when(planMapper.toResponse(plan)).thenReturn(planResponse);
+
+        SubscriptionCreatedEvent result = billingSubscriptionMapper.mapToSubscriptionCreatedEvent(subscription, customer, "pm_test123");
+
+        assertThat(result.plan().price()).isEqualByComparingTo(new BigDecimal("9900"));
     }
 
     @Test
