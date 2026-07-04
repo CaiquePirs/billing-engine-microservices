@@ -7,6 +7,7 @@ import com.billing.invoice.events.data.InvoiceCreatedEvent;
 import com.billing.invoice.events.data.PlanResponseDTO;
 import com.billing.invoice.events.data.SubscriptionPaymentEvent;
 import com.billing.invoice.mapper.InvoiceMapper;
+import com.billing.invoice.metrics.InvoiceMetrics;
 import com.billing.invoice.model.Invoice;
 import com.billing.invoice.model.InvoiceStatus;
 import com.billing.invoice.repository.InvoiceRepository;
@@ -37,6 +38,7 @@ class InvoiceEventPublisherTest {
     @Mock private ObjectMapper objectMapper;
     @Mock private InvoiceRepository invoiceRepository;
     @Mock private SqsClient sqsClient;
+    @Mock private InvoiceMetrics invoiceMetrics;
 
     @InjectMocks
     private InvoiceEventPublisher invoiceEventPublisher;
@@ -87,6 +89,7 @@ class InvoiceEventPublisherTest {
         verify(sqsClient).sendMessage(any(SendMessageRequest.class));
         assertThat(invoice.getInvoiceStatus()).isEqualTo(InvoiceStatus.SENT);
         verify(invoiceRepository).save(invoice);
+        verify(invoiceMetrics).recordInvoiceCreatedQueueMessageSentTotal();
     }
 
     @Test
@@ -104,6 +107,7 @@ class InvoiceEventPublisherTest {
                 .hasMessageContaining("Failed to publish invoice-created SQS event");
 
         verify(invoiceRepository, never()).save(invoice);
+        verify(invoiceMetrics).recordInvoiceCreatedQueueMessageSendFailedTotal();
     }
 
     @Test
@@ -118,5 +122,7 @@ class InvoiceEventPublisherTest {
         assertThatThrownBy(() -> invoiceEventPublisher.publishInvoiceCreatedEvent(invoice, event))
                 .isInstanceOf(InternalErrorException.class)
                 .hasMessageContaining("Failed to publish invoice-created SQS event");
+
+        verify(invoiceMetrics).recordInvoiceCreatedQueueMessageSendFailedTotal();
     }
 }

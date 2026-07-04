@@ -1,6 +1,7 @@
 package com.billing.invoice.service;
 
 import com.billing.invoice.advice.exceptions.InternalErrorException;
+import com.billing.invoice.metrics.InvoiceMetrics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import java.util.UUID;
 public class InvoiceStorageService {
 
     private final S3Client s3Client;
+    private final InvoiceMetrics invoiceMetrics;
 
     @Value("${aws.s3.bucket}")
     private String bucket;
@@ -32,10 +34,12 @@ public class InvoiceStorageService {
                     .build();
 
             s3Client.putObject(request, RequestBody.fromBytes(pdfBytes));
+            invoiceMetrics.recordInvoicePdfUploadedToS3Total();
 
             return s3Key;
 
         } catch (Exception e) {
+            invoiceMetrics.recordInvoicePdfUploadToS3FailedTotal();
             throw new InternalErrorException("Failed to upload invoice PDF to S3 for invoiceId: " + invoiceId, e);
         }
     }

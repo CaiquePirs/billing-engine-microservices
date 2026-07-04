@@ -4,6 +4,7 @@ import com.billing.invoice.advice.exceptions.InternalErrorException;
 import com.billing.invoice.events.data.InvoiceCreatedEvent;
 import com.billing.invoice.events.data.SubscriptionPaymentEvent;
 import com.billing.invoice.mapper.InvoiceMapper;
+import com.billing.invoice.metrics.InvoiceMetrics;
 import com.billing.invoice.model.Invoice;
 import com.billing.invoice.model.InvoiceStatus;
 import com.billing.invoice.repository.InvoiceRepository;
@@ -24,6 +25,7 @@ public class InvoiceEventPublisher {
     private final ObjectMapper objectMapper;
     private final InvoiceRepository invoiceRepository;
     private final SqsClient sqsClient;
+    private final InvoiceMetrics invoiceMetrics;
 
     @Value("${aws.sqs.queue.invoice-created}")
     private String invoiceCreatedQueue;
@@ -39,9 +41,11 @@ public class InvoiceEventPublisher {
 
             invoice.setInvoiceStatus(InvoiceStatus.SENT);
             invoiceRepository.save(invoice);
+            invoiceMetrics.recordInvoiceCreatedQueueMessageSentTotal();
 
         } catch (Exception e) {
             log.error("Failed to publish invoice-created event for invoice ID {}", invoice.getId(), e);
+            invoiceMetrics.recordInvoiceCreatedQueueMessageSendFailedTotal();
             throw new InternalErrorException("Failed to publish invoice-created SQS event for invoice ID: " + invoice.getId());
         }
     }

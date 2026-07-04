@@ -6,6 +6,7 @@ import com.billing.invoice.events.data.PlanResponseDTO;
 import com.billing.invoice.events.data.SubscriptionPaymentEvent;
 import com.billing.invoice.events.publisher.InvoiceEventPublisher;
 import com.billing.invoice.mapper.InvoiceMapper;
+import com.billing.invoice.metrics.InvoiceMetrics;
 import com.billing.invoice.model.Invoice;
 import com.billing.invoice.model.InvoiceStatus;
 import com.billing.invoice.repository.InvoiceRepository;
@@ -32,6 +33,7 @@ class InvoiceServiceTest {
     @Mock private InvoiceStorageService invoiceStorageService;
     @Mock private InvoiceMapper invoiceMapper;
     @Mock private InvoiceEventPublisher invoiceEventPublisher;
+    @Mock private InvoiceMetrics invoiceMetrics;
 
     @InjectMocks
     private InvoiceService invoiceService;
@@ -86,6 +88,7 @@ class InvoiceServiceTest {
         verify(invoiceStorageService).uploadInvoicePdf(event.paymentId(), pdfBytes);
         verify(invoiceRepository).save(invoice);
         verify(invoiceEventPublisher).publishInvoiceCreatedEvent(invoice, event);
+        verify(invoiceMetrics).recordInvoiceGeneratedTotal();
     }
 
     @Test
@@ -100,6 +103,7 @@ class InvoiceServiceTest {
 
         verify(invoiceRepository, never()).save(any());
         verify(invoiceEventPublisher, never()).publishInvoiceCreatedEvent(any(), any());
+        verify(invoiceMetrics).recordInvoiceGenerationFailedTotal();
     }
 
     @Test
@@ -117,5 +121,6 @@ class InvoiceServiceTest {
 
         verify(invoiceRepository, never()).save(any());
         verify(invoiceEventPublisher, never()).publishInvoiceCreatedEvent(any(), any());
+        verify(invoiceMetrics).recordInvoiceGenerationFailedTotal();
     }
 }
