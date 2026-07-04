@@ -1,5 +1,7 @@
 package com.billing.payment.controller;
 
+import com.billing.payment.mapper.PaymentMapper;
+import com.billing.payment.metrics.PaymentMetrics;
 import com.billing.payment.service.PaymentService;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class StripeWebhookController {
 
     private final PaymentService paymentService;
+    private final PaymentMetrics paymentMetrics;
 
     @Value("${STRIPE_WEBHOOK_SIGN}")
     private String webhookSecret;
@@ -30,9 +33,12 @@ public class StripeWebhookController {
             );
 
             paymentService.handlerPaymentEvent(event, payload);
+            paymentMetrics.recordStripeWebhookRequestHandledTotal();
+
 
         } catch (Exception e){
             log.error("Failed to construct or process Stripe webhook event. Signature validation or event parsing may have failed.", e);
+            paymentMetrics.recordStripeWebhookRequestHandlingFailedTotal();
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok().build();

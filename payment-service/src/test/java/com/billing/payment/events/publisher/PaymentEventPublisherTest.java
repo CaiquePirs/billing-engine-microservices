@@ -5,6 +5,7 @@ import com.billing.payment.events.data.CustomerClientResponse;
 import com.billing.payment.events.data.PlanResponseDTO;
 import com.billing.payment.events.data.SubscriptionCreatedEvent;
 import com.billing.payment.events.data.SubscriptionPaymentEvent;
+import com.billing.payment.metrics.PaymentMetrics;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ class PaymentEventPublisherTest {
     @Mock private SqsClient sqsClient;
     @Mock private SnsClient snsClient;
     @Mock private ObjectMapper objectMapper;
+    @Mock private PaymentMetrics paymentMetrics;
 
     @InjectMocks
     private PaymentEventPublisher paymentEventPublisher;

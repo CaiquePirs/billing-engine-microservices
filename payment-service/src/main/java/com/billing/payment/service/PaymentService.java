@@ -5,6 +5,7 @@ import com.billing.payment.events.data.SubscriptionCreatedEvent;
 import com.billing.payment.events.data.SubscriptionPaymentEvent;
 import com.billing.payment.events.publisher.PaymentEventPublisher;
 import com.billing.payment.mapper.PaymentMapper;
+import com.billing.payment.metrics.PaymentMetrics;
 import com.billing.payment.model.Payment;
 import com.billing.payment.model.enums.PaymentStatus;
 import com.billing.payment.repository.PaymentRepository;
@@ -29,6 +30,7 @@ public class PaymentService {
     private final PaymentEventPublisher paymentEventPublisher;
     private final PaymentValidator paymentValidator;
     private final PaymentUtils paymentUtils;
+    private final PaymentMetrics paymentMetrics;
 
     public void processPayment(SubscriptionCreatedEvent subscriptionEvent) {
         paymentValidator.validateIdempotencyKey(subscriptionEvent);
@@ -37,6 +39,7 @@ public class PaymentService {
         paymentRepository.save(payment);
 
         stripeSubscriptionService.createSubscription(subscriptionEvent);
+        paymentMetrics.recordStripeSubscriptionChargeSubmittedTotal();
     }
 
     @Transactional
@@ -47,10 +50,12 @@ public class PaymentService {
                     UUID subscriptionId = paymentUtils.getInternalSubscriptionId(event);
                     processPaymentApproved(payload, event, subscriptionId);
 
+                    paymentMetrics.recordInvoicePaidWebhookHandledTotal();
+
                 }catch (Exception e) {
+                    paymentMetrics.recordInvoicePaidWebhookHandlingFailedTotal();
                     log.error("Failed to process Stripe invoice.paid webhook event ID {}", event.getId(), e);
                 }
-
             }
 
             case "invoice.payment_failed" -> {
@@ -58,7 +63,10 @@ public class PaymentService {
                     UUID subscriptionId = paymentUtils.getInternalSubscriptionId(event);
                     processPaymentFailed(payload, event, subscriptionId);
 
+                    paymentMetrics.recordInvoicePaymentFailedWebhookHandledTotal();
+
                 } catch (Exception e){
+                    paymentMetrics.recordInvoicePaymentFailedWebhookHandlingFailedTotal();
                     log.error("Failed to process Stripe invoice.payment_failed webhook event ID {}", event.getId(), e);
                 }
             }
@@ -77,6 +85,8 @@ public class PaymentService {
 
         SubscriptionPaymentEvent event = paymentMapper.toEvent(payment, webhookEvent, PaymentStatus.APPROVED);
         paymentEventPublisher.publisherPaymentApproved(event);
+
+        paymentMetrics.recordPaymentApprovedOutcomeTotal();
     }
 
     private void processPaymentFailed(String payload, Event webhookEvent,  UUID subscriptionId) {
@@ -91,6 +101,8 @@ public class PaymentService {
 
         SubscriptionPaymentEvent event = paymentMapper.toEvent(payment, webhookEvent, PaymentStatus.FAILED);
         paymentEventPublisher.publisherPaymentFailed(event);
+
+        paymentMetrics.recordPaymentFailedOutcomeTotal();
     }
 
     public Payment findPaymentBySubscriptionId(UUID subscriptionId) {

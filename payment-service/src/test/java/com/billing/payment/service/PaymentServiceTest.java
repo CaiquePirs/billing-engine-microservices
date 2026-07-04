@@ -7,6 +7,7 @@ import com.billing.payment.events.data.SubscriptionCreatedEvent;
 import com.billing.payment.events.data.SubscriptionPaymentEvent;
 import com.billing.payment.events.publisher.PaymentEventPublisher;
 import com.billing.payment.mapper.PaymentMapper;
+import com.billing.payment.metrics.PaymentMetrics;
 import com.billing.payment.model.AuditLog;
 import com.billing.payment.model.Payment;
 import com.billing.payment.model.enums.PaymentStatus;
@@ -39,6 +40,7 @@ class PaymentServiceTest {
     @Mock private PaymentEventPublisher paymentEventPublisher;
     @Mock private PaymentValidator paymentValidator;
     @Mock private PaymentUtils paymentUtils;
+    @Mock private PaymentMetrics paymentMetrics;
 
     @InjectMocks
     private PaymentService paymentService;
