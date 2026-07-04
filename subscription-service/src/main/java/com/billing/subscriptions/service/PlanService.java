@@ -6,6 +6,8 @@ import com.billing.subscriptions.mapper.PlanMapper;
 import com.billing.subscriptions.metrics.BillingSubscriptionMetrics;
 import com.billing.subscriptions.model.Plan;
 import com.billing.subscriptions.repository.PlanRepository;
+import io.micrometer.core.instrument.distribution.Histogram;
+import io.micrometer.core.instrument.distribution.HistogramGauges;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +33,7 @@ public class PlanService {
         plan.setStripePriceId(stripePriceId);
 
         Plan planCreated = planRepository.save(plan);
-        billingSubscriptionMetrics.recordSubscriptionPlanCreated(planCreated.getName());
+        billingSubscriptionMetrics.recordPlanCreatedTotal(planCreated.getName());
 
         return planCreated;
     }

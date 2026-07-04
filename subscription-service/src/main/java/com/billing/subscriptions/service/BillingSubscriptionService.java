@@ -56,6 +56,7 @@ public class BillingSubscriptionService {
         );
 
         subscriptionEventPublisher.publisherSubscriptionCreated(subscriptionEventMessage);
+        billingSubscriptionMetrics.recordSubscriptionCreatedTotal();
     }
 
     public BillingSubscription findSubscriptionById(UUID subscriptionId) {
@@ -79,7 +80,7 @@ public class BillingSubscriptionService {
             subscription.getAuditLog().setUpdatedAt(LocalDateTime.now());
 
             billingSubscriptionRepository.save(subscription);
-            billingSubscriptionMetrics.recordSubscriptionCreated(SubscriptionStatus.ACTIVE.toString());
+            billingSubscriptionMetrics.recordSubscriptionActivatedTotal();
 
         }else {
             log.info("Subscription ID: {} is already active, skipping re-activation", event.subscriptionId());
@@ -99,7 +100,7 @@ public class BillingSubscriptionService {
             subscription.getAuditLog().setUpdatedAt(LocalDateTime.now());
 
             billingSubscriptionRepository.save(subscription);
-            billingSubscriptionMetrics.recordSubscriptionCreated(SubscriptionStatus.CANCELED.toString());
+            billingSubscriptionMetrics.recordSubscriptionCancelledTotal();
         }else {
             log.info("Subscription ID: {} is already cancelled, skipping cancellation", event.subscriptionId());
             return;

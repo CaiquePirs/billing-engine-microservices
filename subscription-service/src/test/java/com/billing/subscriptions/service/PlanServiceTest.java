@@ -69,7 +69,7 @@ class PlanServiceTest {
         assertThat(result.getStripePriceId()).isEqualTo("price_abc123");
         assertThat(result.getCreatedBy()).isEqualTo(adminId);
         verify(planRepository).save(mappedPlan);
-        verify(billingSubscriptionMetrics).recordSubscriptionPlanCreated(mappedPlan.getName());
+        verify(billingSubscriptionMetrics).recordPlanCreatedTotal(mappedPlan.getName());
     }
 
     @Test

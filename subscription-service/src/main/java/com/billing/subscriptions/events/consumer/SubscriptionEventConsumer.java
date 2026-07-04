@@ -3,6 +3,7 @@ package com.billing.subscriptions.events.consumer;
 import com.billing.subscriptions.controller.advice.exception.ExternalServiceException;
 import com.billing.subscriptions.events.data.SnsMessage;
 import com.billing.subscriptions.events.data.SubscriptionPaymentEvent;
+import com.billing.subscriptions.metrics.BillingSubscriptionMetrics;
 import com.billing.subscriptions.service.BillingSubscriptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.service.SubscriptionService;
@@ -18,6 +19,7 @@ public class SubscriptionEventConsumer {
 
     private final BillingSubscriptionService subscriptionService;
     private final ObjectMapper objectMapper;
+    private final BillingSubscriptionMetrics billingSubscriptionMetrics;
 
     @SqsListener("${aws.sqs.queue.active-subscription}")
     public void activeSubscriptionPaid(SnsMessage snsMessage){
@@ -27,6 +29,7 @@ public class SubscriptionEventConsumer {
                     SubscriptionPaymentEvent.class
             );
             subscriptionService.activeSubscription(event);
+            billingSubscriptionMetrics.recordActiveSubscriptionQueueMessageConsumedTotal();
 
         } catch (Exception e) {
             log.error("Failed to activate subscription from incoming SQS payment event. Raw message: {}", snsMessage.Message(), e);
@@ -46,6 +49,7 @@ public class SubscriptionEventConsumer {
 
         } catch (Exception e) {
             log.error("Failed to cancel subscription from incoming SQS payment event. Raw message: {}", snsMessage.Message(), e);
+            billingSubscriptionMetrics.recordDeactivateSubscriptionQueueMessageFailedTotal();
             throw new ExternalServiceException("Failed to cancel subscription from incoming SQS payment event.", e);
         }
 

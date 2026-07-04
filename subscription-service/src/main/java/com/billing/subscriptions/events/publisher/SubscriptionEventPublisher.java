@@ -1,10 +1,8 @@
 package com.billing.subscriptions.events.publisher;
 
-import com.billing.subscriptions.client.dto.CustomerClientResponse;
 import com.billing.subscriptions.controller.advice.exception.ExternalServiceException;
 import com.billing.subscriptions.events.data.SubscriptionCreatedEvent;
-import com.billing.subscriptions.mapper.BillingSubscriptionMapper;
-import com.billing.subscriptions.model.BillingSubscription;
+import com.billing.subscriptions.metrics.BillingSubscriptionMetrics;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +18,7 @@ public class SubscriptionEventPublisher {
 
     private final SnsClient snsClient;
     private final ObjectMapper objectMapper;
+    private final BillingSubscriptionMetrics billingSubscriptionMetrics;
 
     @Value("${sns.topic.subscription-created}")
     private String snsTopicSubscriptionCreated;
@@ -32,9 +31,11 @@ public class SubscriptionEventPublisher {
                     .build();
 
             snsClient.publish(request);
+            billingSubscriptionMetrics.recordSubscriptionCreatedSnsPublishedTotal();
 
         } catch (Exception e) {
             log.error("Subscription ID: {} event publisher failed", subscriptionCreatedEvent.subscriptionId(), e);
+            billingSubscriptionMetrics.recordSubscriptionCreatedSnsPublishFailedTotal();
             throw new ExternalServiceException("Failed to publish subscription-created SNS event for subscription ID: " + subscriptionCreatedEvent.subscriptionId());
         }
     }

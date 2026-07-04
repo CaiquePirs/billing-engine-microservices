@@ -2,6 +2,7 @@ package com.billing.subscriptions.events.publisher;
 
 import com.billing.subscriptions.controller.advice.exception.ExternalServiceException;
 import com.billing.subscriptions.events.data.SubscriptionCreatedEvent;
+import com.billing.subscriptions.metrics.BillingSubscriptionMetrics;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ class SubscriptionEventPublisherTest {
 
     @Mock private SnsClient snsClient;
     @Mock private ObjectMapper objectMapper;
+    @Mock private BillingSubscriptionMetrics billingSubscriptionMetrics;
 
     @InjectMocks
     private SubscriptionEventPublisher subscriptionEventPublisher;
