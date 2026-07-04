@@ -7,6 +7,7 @@ import com.billing.notification.events.data.PlanResponseDTO;
 import com.billing.notification.events.data.SubscriptionCreatedEvent;
 import com.billing.notification.events.data.SubscriptionPaymentEvent;
 import com.billing.notification.mapper.NotificationMapper;
+import com.billing.notification.metrics.NotificationMetrics;
 import com.billing.notification.model.Notification;
 import com.billing.notification.model.NotificationTemplate;
 import com.billing.notification.strategy.port.SendNotificationPort;
@@ -28,6 +29,7 @@ class NotificationServiceTest {
     @Mock private SendNotificationPort sendNotificationPort;
     @Mock private NotificationMapper notificationMapper;
     @Mock private InvoiceS3Service invoiceS3Service;
+    @Mock private NotificationMetrics notificationMetrics;
 
     @InjectMocks
     private NotificationService notificationService;
@@ -63,6 +65,7 @@ class NotificationServiceTest {
 
         verify(notificationMapper).mapToNotification(event, NotificationTemplate.SUBSCRIPTION_CREATED);
         verify(sendNotificationPort).sendEmail(notification);
+        verify(notificationMetrics).recordSubscriptionCreatedEmailSentTotal();
     }
 
     @Test
@@ -91,6 +94,7 @@ class NotificationServiceTest {
 
         verify(notificationMapper).mapToNotification(event, NotificationTemplate.SUBSCRIPTION_PAID);
         verify(sendNotificationPort).sendEmail(notification);
+        verify(notificationMetrics).recordPaymentApprovedEmailSentTotal();
     }
 
     @Test
@@ -119,6 +123,7 @@ class NotificationServiceTest {
 
         verify(notificationMapper).mapToNotification(event, NotificationTemplate.SUBSCRIPTION_CANCELLED);
         verify(sendNotificationPort).sendEmail(notification);
+        verify(notificationMetrics).recordPaymentFailedEmailSentTotal();
     }
 
     @Test
@@ -153,6 +158,7 @@ class NotificationServiceTest {
 
         verify(invoiceS3Service).downloadPdf(s3Key);
         verify(sendNotificationPort).sendEmail(notification);
+        verify(notificationMetrics).recordInvoiceCreatedEmailSentTotal();
         assert notification.getAttachmentBytes() == pdfBytes;
         assert notification.getAttachmentFileName().equals("invoice-" + invoiceId + ".pdf");
     }

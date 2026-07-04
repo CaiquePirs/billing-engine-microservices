@@ -5,6 +5,7 @@ import com.billing.notification.events.data.InvoiceCreatedEvent;
 import com.billing.notification.events.data.SnsMessage;
 import com.billing.notification.events.data.SubscriptionCreatedEvent;
 import com.billing.notification.events.data.SubscriptionPaymentEvent;
+import com.billing.notification.metrics.NotificationMetrics;
 import com.billing.notification.service.NotificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ class NotificationEventConsumerTest {
 
     @Mock private NotificationService notificationService;
     @Mock private ObjectMapper objectMapper;
+    @Mock private NotificationMetrics notificationMetrics;
 
     @InjectMocks
     private NotificationEventConsumer notificationEventConsumer;
@@ -38,6 +40,7 @@ class NotificationEventConsumerTest {
         notificationEventConsumer.processNewSubscriptionEvent(snsMessage);
 
         verify(notificationService).sendNewSubscriptionNotification(event);
+        verify(notificationMetrics).recordNewSubscriptionQueueMessageConsumedTotal();
     }
 
     @Test
@@ -53,6 +56,7 @@ class NotificationEventConsumerTest {
                 .hasMessageContaining("Failed to send new subscription notification email");
 
         verify(notificationService, never()).sendNewSubscriptionNotification(any());
+        verify(notificationMetrics).recordNewSubscriptionQueueMessageConsumptionFailedTotal();
     }
 
     @Test
@@ -66,6 +70,7 @@ class NotificationEventConsumerTest {
         notificationEventConsumer.processPaymentApprovedEvent(snsMessage);
 
         verify(notificationService).sendPaymentApprovedNotification(event);
+        verify(notificationMetrics).recordPaymentApprovedQueueMessageConsumedTotal();
     }
 
     @Test
@@ -80,6 +85,8 @@ class NotificationEventConsumerTest {
         assertThatThrownBy(() -> notificationEventConsumer.processPaymentApprovedEvent(snsMessage))
                 .isInstanceOf(InternalNotificationErrorException.class)
                 .hasMessageContaining("Failed to send payment-approved notification email");
+
+        verify(notificationMetrics).recordPaymentApprovedQueueMessageConsumptionFailedTotal();
     }
 
     @Test
@@ -93,6 +100,7 @@ class NotificationEventConsumerTest {
         notificationEventConsumer.processPaymentFailedEvent(snsMessage);
 
         verify(notificationService).sendPaymentFailedNotification(event);
+        verify(notificationMetrics).recordPaymentFailedQueueMessageConsumedTotal();
     }
 
     @Test
@@ -108,6 +116,7 @@ class NotificationEventConsumerTest {
                 .hasMessageContaining("Failed to send payment-failed notification email");
 
         verify(notificationService, never()).sendPaymentFailedNotification(any());
+        verify(notificationMetrics).recordPaymentFailedQueueMessageConsumptionFailedTotal();
     }
 
     @Test
@@ -120,6 +129,7 @@ class NotificationEventConsumerTest {
         notificationEventConsumer.processInvoiceCreatedEvent(rawMessage);
 
         verify(notificationService).sendInvoiceCreatedNotification(event);
+        verify(notificationMetrics).recordInvoiceCreatedQueueMessageConsumedTotal();
     }
 
     @Test
@@ -134,5 +144,6 @@ class NotificationEventConsumerTest {
                 .hasMessageContaining("Failed to send invoice-created notification email");
 
         verify(notificationService, never()).sendInvoiceCreatedNotification(any());
+        verify(notificationMetrics).recordInvoiceCreatedQueueMessageConsumptionFailedTotal();
     }
 }

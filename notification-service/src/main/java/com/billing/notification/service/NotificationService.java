@@ -4,6 +4,7 @@ import com.billing.notification.events.data.InvoiceCreatedEvent;
 import com.billing.notification.events.data.SubscriptionCreatedEvent;
 import com.billing.notification.events.data.SubscriptionPaymentEvent;
 import com.billing.notification.mapper.NotificationMapper;
+import com.billing.notification.metrics.NotificationMetrics;
 import com.billing.notification.model.Notification;
 import com.billing.notification.model.NotificationTemplate;
 import com.billing.notification.strategy.port.SendNotificationPort;
@@ -19,20 +20,24 @@ public class NotificationService {
     private final SendNotificationPort sendNotificationPort;
     private final NotificationMapper notificationMapper;
     private final InvoiceS3Service invoiceS3Service;
+    private final NotificationMetrics notificationMetrics;
 
     public void sendNewSubscriptionNotification(SubscriptionCreatedEvent event) {
         Notification notification = notificationMapper.mapToNotification(event, NotificationTemplate.SUBSCRIPTION_CREATED);
         sendNotificationPort.sendEmail(notification);
+        notificationMetrics.recordSubscriptionCreatedEmailSentTotal();
     }
 
     public void sendPaymentApprovedNotification(SubscriptionPaymentEvent event) {
         Notification notification = notificationMapper.mapToNotification(event, NotificationTemplate.SUBSCRIPTION_PAID);
         sendNotificationPort.sendEmail(notification);
+        notificationMetrics.recordPaymentApprovedEmailSentTotal();
     }
 
     public void sendPaymentFailedNotification(SubscriptionPaymentEvent event) {
         Notification notification = notificationMapper.mapToNotification(event, NotificationTemplate.SUBSCRIPTION_CANCELLED);
         sendNotificationPort.sendEmail(notification);
+        notificationMetrics.recordPaymentFailedEmailSentTotal();
     }
 
     public void sendInvoiceCreatedNotification(InvoiceCreatedEvent event) {
@@ -43,5 +48,6 @@ public class NotificationService {
         notification.setAttachmentFileName("invoice-" + event.invoiceId() + ".pdf");
 
         sendNotificationPort.sendEmail(notification);
+        notificationMetrics.recordInvoiceCreatedEmailSentTotal();
     }
 }

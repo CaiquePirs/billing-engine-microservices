@@ -5,6 +5,7 @@ import com.billing.notification.events.data.InvoiceCreatedEvent;
 import com.billing.notification.events.data.SnsMessage;
 import com.billing.notification.events.data.SubscriptionCreatedEvent;
 import com.billing.notification.events.data.SubscriptionPaymentEvent;
+import com.billing.notification.metrics.NotificationMetrics;
 import com.billing.notification.service.NotificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.sqs.annotation.SqsListener;
@@ -19,6 +20,7 @@ public class NotificationEventConsumer {
 
     private final NotificationService notificationService;
     private final ObjectMapper objectMapper;
+    private final NotificationMetrics notificationMetrics;
 
     @SqsListener("${aws.sqs.queue.notify-subscription}")
     public void processNewSubscriptionEvent(SnsMessage snsMessage) {
@@ -28,9 +30,11 @@ public class NotificationEventConsumer {
                     SubscriptionCreatedEvent.class);
 
             notificationService.sendNewSubscriptionNotification(event);
+            notificationMetrics.recordNewSubscriptionQueueMessageConsumedTotal();
 
         } catch (Exception e) {
             log.error("Failed to process new subscription notification event from SQS. Raw message: {}", snsMessage.Message(), e);
+            notificationMetrics.recordNewSubscriptionQueueMessageConsumptionFailedTotal();
             throw new InternalNotificationErrorException("Failed to send new subscription notification email. Check event payload and SES configuration.", e);
         }
     }
@@ -43,9 +47,11 @@ public class NotificationEventConsumer {
                     SubscriptionPaymentEvent.class);
 
             notificationService.sendPaymentApprovedNotification(event);
+            notificationMetrics.recordPaymentApprovedQueueMessageConsumedTotal();
 
         } catch (Exception e) {
             log.error("Failed to process payment-approved notification event from SQS. Raw message: {}", snsMessage.Message(), e);
+            notificationMetrics.recordPaymentApprovedQueueMessageConsumptionFailedTotal();
             throw new InternalNotificationErrorException("Failed to send payment-approved notification email.", e);
         }
     }
@@ -58,9 +64,11 @@ public class NotificationEventConsumer {
                     SubscriptionPaymentEvent.class);
 
             notificationService.sendPaymentFailedNotification(event);
+            notificationMetrics.recordPaymentFailedQueueMessageConsumedTotal();
 
         } catch (Exception e) {
             log.error("Failed to process payment-failed notification event from SQS. Raw message: {}", snsMessage.Message(), e);
+            notificationMetrics.recordPaymentFailedQueueMessageConsumptionFailedTotal();
             throw new InternalNotificationErrorException("Failed to send payment-failed notification email.", e);
         }
     }
@@ -73,9 +81,11 @@ public class NotificationEventConsumer {
                             InvoiceCreatedEvent.class);
 
             notificationService.sendInvoiceCreatedNotification(event);
+            notificationMetrics.recordInvoiceCreatedQueueMessageConsumedTotal();
 
         } catch (Exception e) {
             log.error("Failed to process invoice-created notification event from SQS. Raw message: {}", rawMessage, e);
+            notificationMetrics.recordInvoiceCreatedQueueMessageConsumptionFailedTotal();
             throw new InternalNotificationErrorException("Failed to send invoice-created notification email.", e);
         }
     }

@@ -1,6 +1,7 @@
 package com.billing.notification.strategy.adapter;
 
 import com.billing.notification.advice.exceptions.InternalNotificationErrorException;
+import com.billing.notification.metrics.NotificationMetrics;
 import com.billing.notification.model.Notification;
 import com.billing.notification.service.TemplateEmailService;
 import com.billing.notification.strategy.port.SendNotificationPort;
@@ -33,6 +34,7 @@ public class SendNotificationAdapter implements SendNotificationPort {
     private final SesClient sesClient;
     private final TemplateEmailService templateEmailService;
     private final TemplateNotificationUtils utils;
+    private final NotificationMetrics notificationMetrics;
 
     @Override
     public void sendEmail(Notification notification) {
@@ -47,9 +49,11 @@ public class SendNotificationAdapter implements SendNotificationPort {
         try {
             SendEmailRequest request = templateEmailService.handlerNotificationTemplate(notification);
             sesClient.sendEmail(request);
+            notificationMetrics.recordEmailDeliverySucceededTotal();
 
         } catch (Exception e) {
             log.error("Failed to send email via AWS SES. Template: '{}', Recipient: '{}'", notification.getTemplate(), notification.getTo(), e);
+            notificationMetrics.recordEmailDeliveryFailedTotal();
             throw new InternalNotificationErrorException("Failed to deliver email notification via AWS SES for recipient: " + notification.getTo(), e);
         }
     }
@@ -87,9 +91,12 @@ public class SendNotificationAdapter implements SendNotificationPort {
                             .data(SdkBytes.fromByteArray(outputStream.toByteArray()))
                             .build())
                     .build());
+            notificationMetrics.recordEmailDeliverySucceededTotal();
+            notificationMetrics.recordEmailWithAttachmentSentTotal();
 
         } catch (Exception e) {
             log.error("Failed to send email with attachment via AWS SES. Template: '{}', Recipient: '{}'", notification.getTemplate(), notification.getTo(), e);
+            notificationMetrics.recordEmailDeliveryFailedTotal();
             throw new InternalNotificationErrorException("Failed to deliver invoice email with PDF attachment via AWS SES for recipient: " + notification.getTo(), e);
         }
     }
