@@ -31,6 +31,7 @@ public class NotificationEventConsumer {
 
             notificationService.sendNewSubscriptionNotification(event);
             notificationMetrics.recordNewSubscriptionQueueMessageConsumedTotal();
+            log.info("New-subscription notification event consumed from SQS (subscriptionId={})", event.subscriptionId());
 
         } catch (Exception e) {
             log.error("Failed to process new subscription notification event from SQS. Raw message: {}", snsMessage.Message(), e);
@@ -48,6 +49,7 @@ public class NotificationEventConsumer {
 
             notificationService.sendPaymentApprovedNotification(event);
             notificationMetrics.recordPaymentApprovedQueueMessageConsumedTotal();
+            log.info("Payment-approved notification event consumed from SQS (subscriptionId={})", event.subscriptionId());
 
         } catch (Exception e) {
             log.error("Failed to process payment-approved notification event from SQS. Raw message: {}", snsMessage.Message(), e);
@@ -65,6 +67,7 @@ public class NotificationEventConsumer {
 
             notificationService.sendPaymentFailedNotification(event);
             notificationMetrics.recordPaymentFailedQueueMessageConsumedTotal();
+            log.info("Payment-failed notification event consumed from SQS (subscriptionId={})", event.subscriptionId());
 
         } catch (Exception e) {
             log.error("Failed to process payment-failed notification event from SQS. Raw message: {}", snsMessage.Message(), e);
@@ -82,6 +85,7 @@ public class NotificationEventConsumer {
 
             notificationService.sendInvoiceCreatedNotification(event);
             notificationMetrics.recordInvoiceCreatedQueueMessageConsumedTotal();
+            log.info("Invoice-created notification event consumed from SQS (invoiceId={})", event.invoiceId());
 
         } catch (Exception e) {
             log.error("Failed to process invoice-created notification event from SQS. Raw message: {}", rawMessage, e);

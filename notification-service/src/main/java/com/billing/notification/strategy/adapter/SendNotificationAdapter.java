@@ -50,6 +50,7 @@ public class SendNotificationAdapter implements SendNotificationPort {
             SendEmailRequest request = templateEmailService.handlerNotificationTemplate(notification);
             sesClient.sendEmail(request);
             notificationMetrics.recordEmailDeliverySucceededTotal();
+            log.info("Email delivered via SES (template={}, recipient={})", notification.getTemplate(), notification.getTo());
 
         } catch (Exception e) {
             log.error("Failed to send email via AWS SES. Template: '{}', Recipient: '{}'", notification.getTemplate(), notification.getTo(), e);
@@ -93,6 +94,7 @@ public class SendNotificationAdapter implements SendNotificationPort {
                     .build());
             notificationMetrics.recordEmailDeliverySucceededTotal();
             notificationMetrics.recordEmailWithAttachmentSentTotal();
+            log.info("Email with attachment delivered via SES (template={}, recipient={})", notification.getTemplate(), notification.getTo());
 
         } catch (Exception e) {
             log.error("Failed to send email with attachment via AWS SES. Template: '{}', Recipient: '{}'", notification.getTemplate(), notification.getTo(), e);
