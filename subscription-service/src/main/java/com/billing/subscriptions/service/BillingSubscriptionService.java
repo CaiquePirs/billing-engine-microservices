@@ -56,14 +56,19 @@ public class BillingSubscriptionService {
         );
 
         subscriptionEventPublisher.publisherSubscriptionCreated(subscriptionEventMessage);
+
         billingSubscriptionMetrics.recordSubscriptionCreatedTotal();
+        log.info("Subscription created successfully (subscriptionId={}, customerId={}, status={})",
+                subscriptionCreated.getId(),
+                customer.id(),
+                subscriptionCreated.getSubscriptionStatus());
     }
 
     public BillingSubscription findSubscriptionById(UUID subscriptionId) {
         return billingSubscriptionRepository
                 .findById(subscriptionId)
                 .orElseThrow(() -> {
-                    log.error("Subscription lookup failed: no subscription found with ID: {}", subscriptionId);
+                    log.warn("Subscription lookup failed: no subscription found (subscriptionId={})", subscriptionId);
                     return new NotFoundException("No subscription found with ID: " + subscriptionId);
                 });
     }
@@ -81,9 +86,10 @@ public class BillingSubscriptionService {
 
             billingSubscriptionRepository.save(subscription);
             billingSubscriptionMetrics.recordSubscriptionActivatedTotal();
+            log.info("Subscription activated (subscriptionId={}, customerId={})", subscription.getId(), subscription.getCustomerId());
 
         }else {
-            log.info("Subscription ID: {} is already active, skipping re-activation", event.subscriptionId());
+            log.info("Subscription already active, skipping re-activation (subscriptionId={})", event.subscriptionId());
             return;
         }
     }
@@ -100,9 +106,11 @@ public class BillingSubscriptionService {
             subscription.getAuditLog().setUpdatedAt(LocalDateTime.now());
 
             billingSubscriptionRepository.save(subscription);
+
             billingSubscriptionMetrics.recordSubscriptionCancelledTotal();
+            log.info("Subscription cancelled (subscriptionId={}, customerId={})", subscription.getId(), subscription.getCustomerId());
         }else {
-            log.info("Subscription ID: {} is already cancelled, skipping cancellation", event.subscriptionId());
+            log.info("Subscription already cancelled, skipping cancellation (subscriptionId={})", event.subscriptionId());
             return;
         }
     }

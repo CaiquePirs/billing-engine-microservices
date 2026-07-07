@@ -30,6 +30,7 @@ public class SubscriptionEventConsumer {
             );
             subscriptionService.activeSubscription(event);
             billingSubscriptionMetrics.recordActiveSubscriptionQueueMessageConsumedTotal();
+            log.info("Activate-subscription event consumed from SQS (subscriptionId={})", event.subscriptionId());
 
         } catch (Exception e) {
             log.error("Failed to activate subscription from incoming SQS payment event. Raw message: {}", snsMessage.Message(), e);
@@ -46,6 +47,7 @@ public class SubscriptionEventConsumer {
                     SubscriptionPaymentEvent.class
             );
             subscriptionService.cancelSubscription(event);
+            log.info("Deactivate-subscription event consumed from SQS (subscriptionId={})", event.subscriptionId());
 
         } catch (Exception e) {
             log.error("Failed to cancel subscription from incoming SQS payment event. Raw message: {}", snsMessage.Message(), e);

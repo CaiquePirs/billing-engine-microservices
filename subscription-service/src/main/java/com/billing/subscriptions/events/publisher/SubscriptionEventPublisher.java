@@ -32,9 +32,10 @@ public class SubscriptionEventPublisher {
 
             snsClient.publish(request);
             billingSubscriptionMetrics.recordSubscriptionCreatedSnsPublishedTotal();
+            log.info("Published subscription-created event to SNS (subscriptionId={})", subscriptionCreatedEvent.subscriptionId());
 
         } catch (Exception e) {
-            log.error("Subscription ID: {} event publisher failed", subscriptionCreatedEvent.subscriptionId(), e);
+            log.error("Failed to publish subscription-created event to SNS (subscriptionId={})", subscriptionCreatedEvent.subscriptionId(), e);
             billingSubscriptionMetrics.recordSubscriptionCreatedSnsPublishFailedTotal();
             throw new ExternalServiceException("Failed to publish subscription-created SNS event for subscription ID: " + subscriptionCreatedEvent.subscriptionId());
         }
