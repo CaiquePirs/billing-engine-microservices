@@ -35,6 +35,7 @@ public class StripeSubscriptionService {
                     .build();
 
             Subscription.create(params);
+            log.info("Stripe subscription created (subscriptionId={})", subscriptionEvent.subscriptionId());
 
         } catch (StripeException e) {
             log.error("Failed to create Stripe subscription for subscription ID: {}", subscriptionEvent.subscriptionId(), e);

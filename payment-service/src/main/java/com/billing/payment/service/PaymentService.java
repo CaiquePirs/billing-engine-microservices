@@ -40,6 +40,7 @@ public class PaymentService {
 
         stripeSubscriptionService.createSubscription(subscriptionEvent);
         paymentMetrics.recordStripeSubscriptionChargeSubmittedTotal();
+        log.info("Payment charge submitted to Stripe (subscriptionId={})", subscriptionEvent.subscriptionId());
     }
 
     @Transactional
@@ -87,6 +88,7 @@ public class PaymentService {
         paymentEventPublisher.publisherPaymentApproved(event);
 
         paymentMetrics.recordPaymentApprovedOutcomeTotal();
+        log.info("Payment approved (subscriptionId={}, paymentId={})", subscriptionId, payment.getId());
     }
 
     private void processPaymentFailed(String payload, Event webhookEvent,  UUID subscriptionId) {
@@ -103,11 +105,15 @@ public class PaymentService {
         paymentEventPublisher.publisherPaymentFailed(event);
 
         paymentMetrics.recordPaymentFailedOutcomeTotal();
+        log.warn("Payment failed (subscriptionId={}, paymentId={})", subscriptionId, payment.getId());
     }
 
     public Payment findPaymentBySubscriptionId(UUID subscriptionId) {
         return paymentRepository.findBySubscriptionId(subscriptionId)
-                .orElseThrow(() -> new NotFoundException("No payment record found for subscription ID: " + subscriptionId));
+                .orElseThrow(() -> {
+                    log.warn("Payment lookup failed: no payment record found (subscriptionId={})", subscriptionId);
+                    return new NotFoundException("No payment record found for subscription ID: " + subscriptionId);
+                });
     }
 
 }

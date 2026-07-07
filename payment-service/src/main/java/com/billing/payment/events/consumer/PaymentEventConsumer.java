@@ -30,6 +30,7 @@ public class PaymentEventConsumer {
 
             paymentService.processPayment(event);
             paymentMetrics.recordProcessPaymentQueueMessageConsumedTotal();
+            log.info("Payment event consumed from SQS (subscriptionId={})", event.subscriptionId());
 
         } catch (Exception e) {
             log.error("Failed to deserialize or process incoming SQS payment event. Raw message: {}", snsMessage.Message(), e);

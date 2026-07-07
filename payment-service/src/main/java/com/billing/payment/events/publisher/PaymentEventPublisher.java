@@ -42,6 +42,7 @@ public class PaymentEventPublisher {
 
             snsClient.publish(request);
             paymentMetrics.recordPaymentOutcomeSnsPublishedTotal(true);
+            log.info("Published payment-approved event to SNS (subscriptionId={})", event.subscriptionId());
 
         } catch (Exception e) {
             log.error("Failed to publish payment-approved event for subscription ID {}", event.subscriptionId(), e);
@@ -59,6 +60,7 @@ public class PaymentEventPublisher {
 
             snsClient.publish(request);
             paymentMetrics.recordPaymentOutcomeSnsPublishedTotal(false);
+            log.info("Published payment-failed event to SNS (subscriptionId={})", event.subscriptionId());
 
         } catch (Exception e) {
             log.error("Failed to publish payment-failed event for subscription ID {}", event.subscriptionId(), e);
@@ -78,6 +80,7 @@ public class PaymentEventPublisher {
 
             sqsClient.sendMessage(request);
             paymentMetrics.recordPaymentDlqMessageSentTotal();
+            log.warn("Forwarded subscription to DLQ after payment processing failure (subscriptionId={})", event.subscriptionId());
 
         } catch (Exception e) {
             log.error("Failed to publish subscriptionId {} to DLQ", event.subscriptionId(), e);
