@@ -31,10 +31,11 @@ public class StripeCustomerService {
                     .build();
 
             Customer customer = Customer.create(params);
+            log.info("Stripe customer created (stripeCustomerId={})", customer.getId());
             return customer.getId();
 
         } catch (StripeException e) {
-            log.error("Failed to create customer email: {} on Stripe and error: {}", dto.email(), e.getMessage());
+            log.error("Failed to create Stripe customer for email={}", dto.email(), e);
             throw new StripeIntegrationException("Failed to create customer on Stripe for email: " + dto.email() + ". Please try again later.");
         }
     }

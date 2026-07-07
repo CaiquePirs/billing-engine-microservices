@@ -8,10 +8,12 @@ import com.billing.customers.model.enums.CustomerStatus;
 import com.billing.customers.repository.CustomerRepository;
 import com.billing.customers.validator.CustomerValidator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
@@ -28,12 +30,20 @@ public class CustomerService {
         String stripeCustomerId = stripeCustomerService.createStripeCustomer(customerRequestDTO);
 
         customer.setStripeCustomerId(stripeCustomerId);
-        return customerRepository.save(customer);
+        Customer customerCreated = customerRepository.save(customer);
+
+        log.info("Customer created successfully (customerId={}, stripeCustomerId={})",
+                customerCreated.getId(), stripeCustomerId);
+
+        return customerCreated;
     }
 
     public Customer findCustomerById(UUID customerId) {
         return customerRepository.findById(customerId)
                 .filter(customer -> customer.getCustomerStatus().equals(CustomerStatus.ACTIVE))
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found or inactive for ID: " + customerId));
+                .orElseThrow(() -> {
+                    log.warn("Customer lookup failed: not found or inactive (customerId={})", customerId);
+                    return new CustomerNotFoundException("Customer not found or inactive for ID: " + customerId);
+                });
     }
 }
