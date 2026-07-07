@@ -107,7 +107,7 @@ class AuthenticationServiceTest {
 
         assertThatThrownBy(() -> authenticationService.signInUser(loginRequest))
                 .isInstanceOf(AuthLoginFailException.class)
-                .hasMessageContaining("no active account found for email");
+                .hasMessageContaining("invalid email or password");
 
         verify(jwtService, never()).generateAccessToken(any());
         verify(authenticationMetrics).recordLogin(false);
@@ -129,7 +129,7 @@ class AuthenticationServiceTest {
 
         assertThatThrownBy(() -> authenticationService.signInUser(loginRequest))
                 .isInstanceOf(AuthLoginFailException.class)
-                .hasMessageContaining("no active account found for email");
+                .hasMessageContaining("invalid email or password");
 
         verify(jwtService, never()).generateAccessToken(any());
         verify(authenticationMetrics).recordLogin(false);

@@ -28,9 +28,10 @@ public class RequestInterceptorConfig implements RequestInterceptor {
         try {
             LoginResponseDTO login = service.signInInternalUser(new InternalLoginRequestDTO(clientId, clientSecret));
             template.header("Authorization", "Bearer " + login.access_token());
+            log.debug("Internal service token attached to outbound request (tokenType={})", login.token_type());
 
         } catch (Exception e){
-            log.error("Exception occurred while processing request", e);
+            log.error("Failed to obtain internal service token for outbound request", e);
         }
     }
 }

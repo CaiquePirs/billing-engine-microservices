@@ -1,9 +1,12 @@
 package com.authentication.controller;
 
 import com.authentication.client.dto.CreateCustomerRequestDTO;
+import com.authentication.controller.dto.AuthenticationResponseDTO;
 import com.authentication.controller.dto.InternalLoginRequestDTO;
 import com.authentication.controller.dto.LoginRequestDTO;
 import com.authentication.controller.dto.LoginResponseDTO;
+import com.authentication.mapper.AuthenticationMapper;
+import com.authentication.model.Authentication;
 import com.authentication.service.AuthenticationService;
 import com.authentication.service.InternalAuthenticationService;
 import jakarta.validation.Valid;
@@ -22,11 +25,12 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final InternalAuthenticationService internalAuthenticationService;
+    private final AuthenticationMapper mapper;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signupCustomer(@RequestBody @Valid CreateCustomerRequestDTO createCustomerRequestDTO) {
-        authenticationService.signupUser(createCustomerRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<AuthenticationResponseDTO> signupCustomer(@RequestBody @Valid CreateCustomerRequestDTO createCustomerRequestDTO) {
+        Authentication authentication = authenticationService.signupUser(createCustomerRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.mapToResponse(authentication));
     }
 
     @PostMapping("/login")

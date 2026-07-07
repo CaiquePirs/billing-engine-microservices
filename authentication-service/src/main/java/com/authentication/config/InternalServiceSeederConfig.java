@@ -1,14 +1,15 @@
 package com.authentication.config;
 
 import com.authentication.model.InternalAuthentication;
-import com.authentication.repository.AuthenticationRepository;
 import com.authentication.repository.InternalAuthenticationRepository;
 import com.authentication.service.InternalAuthenticationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Configuration;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class InternalServiceSeederConfig implements ApplicationRunner {
@@ -29,7 +30,10 @@ public class InternalServiceSeederConfig implements ApplicationRunner {
         InternalAuthentication authentication = internalAuthenticationService.signUpInternalUser(
                 clientId, clientSecret
         );
+
         internalAuthenticationRepository.save(authentication);
+        log.info("Internal service credentials seeded successfully (authId={}, scope={})",
+                authentication.getId(), authentication.getScope());
     }
 
 }

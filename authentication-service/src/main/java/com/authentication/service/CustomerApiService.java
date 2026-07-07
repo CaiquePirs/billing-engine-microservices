@@ -21,10 +21,11 @@ public class CustomerApiService {
             return customerClientApi.signupUser(createCustomerRequestDTO).getBody();
 
         } catch (FeignException.Conflict e){
-            throw new AuthRegisterFailException("Registration failed: an account with this email address already exists");
+            log.warn("Customer registration conflict: an account with this email or tax number already exists");
+            throw new AuthRegisterFailException("Registration failed: an account with this email or tax number already exists");
 
         } catch (Exception e) {
-            log.error("Unexpected error during customer registration. Cause: {}", e.getMessage());
+            log.error("Unexpected error during customer registration", e);
             throw new AuthRegisterFailException("Registration failed due to an unexpected error. Please try again later.");
         }
     }
