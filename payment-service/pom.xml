@@ -38,6 +38,17 @@
 			<artifactId>micrometer-registry-otlp</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>io.opentelemetry</groupId>
+			<artifactId>opentelemetry-exporter-otlp</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.opentelemetry.instrumentation</groupId>
+			<artifactId>opentelemetry-logback-appender-1.0</artifactId>
+			<version>2.15.0-alpha</version>
+		</dependency>
+
 		<!-- Stripe -->
 		<dependency>
 			<groupId>com.stripe</groupId>
