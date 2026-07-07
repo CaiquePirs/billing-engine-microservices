@@ -33,7 +33,8 @@ public class CustomerService {
         Customer customerCreated = customerRepository.save(customer);
 
         log.info("Customer created successfully (customerId={}, stripeCustomerId={})",
-                customerCreated.getId(), stripeCustomerId);
+                customerCreated.getId(),
+                stripeCustomerId);
 
         return customerCreated;
     }

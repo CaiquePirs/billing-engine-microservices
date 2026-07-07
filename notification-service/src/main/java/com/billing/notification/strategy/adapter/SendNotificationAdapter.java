@@ -49,6 +49,7 @@ public class SendNotificationAdapter implements SendNotificationPort {
         try {
             SendEmailRequest request = templateEmailService.handlerNotificationTemplate(notification);
             sesClient.sendEmail(request);
+
             notificationMetrics.recordEmailDeliverySucceededTotal();
             log.info("Email delivered via SES (template={}, recipient={})", notification.getTemplate(), notification.getTo());
 
@@ -92,6 +93,7 @@ public class SendNotificationAdapter implements SendNotificationPort {
                             .data(SdkBytes.fromByteArray(outputStream.toByteArray()))
                             .build())
                     .build());
+
             notificationMetrics.recordEmailDeliverySucceededTotal();
             notificationMetrics.recordEmailWithAttachmentSentTotal();
             log.info("Email with attachment delivered via SES (template={}, recipient={})", notification.getTemplate(), notification.getTo());

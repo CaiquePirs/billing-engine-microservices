@@ -28,7 +28,9 @@ public class InvoiceS3Service {
                     .build();
 
             ResponseBytes<GetObjectResponse> response = s3Client.getObjectAsBytes(request);
+
             log.info("Invoice PDF downloaded from S3 (s3Key={})", s3Key);
+
             return response.asByteArray();
 
         } catch (Exception e) {

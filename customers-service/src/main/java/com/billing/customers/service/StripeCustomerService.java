@@ -31,6 +31,7 @@ public class StripeCustomerService {
                     .build();
 
             Customer customer = Customer.create(params);
+
             log.info("Stripe customer created (stripeCustomerId={})", customer.getId());
             return customer.getId();
 

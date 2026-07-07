@@ -85,6 +85,7 @@ public class BillingSubscriptionService {
             subscription.getAuditLog().setUpdatedAt(LocalDateTime.now());
 
             billingSubscriptionRepository.save(subscription);
+
             billingSubscriptionMetrics.recordSubscriptionActivatedTotal();
             log.info("Subscription activated (subscriptionId={}, customerId={})", subscription.getId(), subscription.getCustomerId());
 
@@ -109,6 +110,7 @@ public class BillingSubscriptionService {
 
             billingSubscriptionMetrics.recordSubscriptionCancelledTotal();
             log.info("Subscription cancelled (subscriptionId={}, customerId={})", subscription.getId(), subscription.getCustomerId());
+
         }else {
             log.info("Subscription already cancelled, skipping cancellation (subscriptionId={})", event.subscriptionId());
             return;

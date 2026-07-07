@@ -29,6 +29,7 @@ public class PaymentEventConsumer {
                     );
 
             paymentService.processPayment(event);
+
             paymentMetrics.recordProcessPaymentQueueMessageConsumedTotal();
             log.info("Payment event consumed from SQS (subscriptionId={})", event.subscriptionId());
 

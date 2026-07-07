@@ -31,6 +31,7 @@ public class SubscriptionEventPublisher {
                     .build();
 
             snsClient.publish(request);
+
             billingSubscriptionMetrics.recordSubscriptionCreatedSnsPublishedTotal();
             log.info("Published subscription-created event to SNS (subscriptionId={})", subscriptionCreatedEvent.subscriptionId());
 

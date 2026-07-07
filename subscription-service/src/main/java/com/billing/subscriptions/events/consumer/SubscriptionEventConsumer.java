@@ -29,6 +29,7 @@ public class SubscriptionEventConsumer {
                     SubscriptionPaymentEvent.class
             );
             subscriptionService.activeSubscription(event);
+
             billingSubscriptionMetrics.recordActiveSubscriptionQueueMessageConsumedTotal();
             log.info("Activate-subscription event consumed from SQS (subscriptionId={})", event.subscriptionId());
 
@@ -47,6 +48,8 @@ public class SubscriptionEventConsumer {
                     SubscriptionPaymentEvent.class
             );
             subscriptionService.cancelSubscription(event);
+
+            billingSubscriptionMetrics.recordDeactivateSubscriptionQueueConsumedTotal();
             log.info("Deactivate-subscription event consumed from SQS (subscriptionId={})", event.subscriptionId());
 
         } catch (Exception e) {

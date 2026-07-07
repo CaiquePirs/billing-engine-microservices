@@ -27,8 +27,7 @@ public class PlanController {
     @PreAuthorize("hasAuthority('ROLE_TENANT')")
     public ResponseEntity<PlanResponseDTO> createPlan(@Valid @RequestBody PlanRequestDTO planRequestDTO) {
         Plan plan = planService.createPlan(planRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(planMapper.toResponse(plan));
+        return ResponseEntity.status(HttpStatus.CREATED).body(planMapper.toResponse(plan));
     }
 
 }

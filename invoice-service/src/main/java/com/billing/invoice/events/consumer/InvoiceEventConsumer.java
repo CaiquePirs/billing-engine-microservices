@@ -28,6 +28,7 @@ public class InvoiceEventConsumer {
                     SubscriptionPaymentEvent.class);
 
             invoiceService.generateInvoice(event);
+
             invoiceMetrics.recordGenerateInvoiceQueueMessageConsumedTotal();
             log.info("Invoice generation event consumed from SQS (subscriptionId={})", event.subscriptionId());
 

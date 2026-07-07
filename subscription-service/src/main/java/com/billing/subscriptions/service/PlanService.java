@@ -9,10 +9,12 @@ import com.billing.subscriptions.repository.PlanRepository;
 import io.micrometer.core.instrument.distribution.Histogram;
 import io.micrometer.core.instrument.distribution.HistogramGauges;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class PlanService {
@@ -33,7 +35,9 @@ public class PlanService {
         plan.setStripePriceId(stripePriceId);
 
         Plan planCreated = planRepository.save(plan);
+
         billingSubscriptionMetrics.recordPlanCreatedTotal(planCreated.getName());
+        log.info("Plan created (planId={}, stripePriceId={})", plan.getId(), stripePriceId);
 
         return planCreated;
     }

@@ -41,6 +41,7 @@ public class PaymentEventPublisher {
                     .build();
 
             snsClient.publish(request);
+
             paymentMetrics.recordPaymentOutcomeSnsPublishedTotal(true);
             log.info("Published payment-approved event to SNS (subscriptionId={})", event.subscriptionId());
 
@@ -59,6 +60,7 @@ public class PaymentEventPublisher {
                     .build();
 
             snsClient.publish(request);
+
             paymentMetrics.recordPaymentOutcomeSnsPublishedTotal(false);
             log.info("Published payment-failed event to SNS (subscriptionId={})", event.subscriptionId());
 
@@ -79,6 +81,7 @@ public class PaymentEventPublisher {
                     .build();
 
             sqsClient.sendMessage(request);
+
             paymentMetrics.recordPaymentDlqMessageSentTotal();
             log.warn("Forwarded subscription to DLQ after payment processing failure (subscriptionId={})", event.subscriptionId());
 

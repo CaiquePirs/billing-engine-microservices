@@ -30,6 +30,7 @@ public class NotificationEventConsumer {
                     SubscriptionCreatedEvent.class);
 
             notificationService.sendNewSubscriptionNotification(event);
+
             notificationMetrics.recordNewSubscriptionQueueMessageConsumedTotal();
             log.info("New-subscription notification event consumed from SQS (subscriptionId={})", event.subscriptionId());
 
@@ -48,6 +49,7 @@ public class NotificationEventConsumer {
                     SubscriptionPaymentEvent.class);
 
             notificationService.sendPaymentApprovedNotification(event);
+
             notificationMetrics.recordPaymentApprovedQueueMessageConsumedTotal();
             log.info("Payment-approved notification event consumed from SQS (subscriptionId={})", event.subscriptionId());
 
@@ -66,6 +68,7 @@ public class NotificationEventConsumer {
                     SubscriptionPaymentEvent.class);
 
             notificationService.sendPaymentFailedNotification(event);
+
             notificationMetrics.recordPaymentFailedQueueMessageConsumedTotal();
             log.info("Payment-failed notification event consumed from SQS (subscriptionId={})", event.subscriptionId());
 
@@ -84,6 +87,7 @@ public class NotificationEventConsumer {
                             InvoiceCreatedEvent.class);
 
             notificationService.sendInvoiceCreatedNotification(event);
+
             notificationMetrics.recordInvoiceCreatedQueueMessageConsumedTotal();
             log.info("Invoice-created notification event consumed from SQS (invoiceId={})", event.invoiceId());
 

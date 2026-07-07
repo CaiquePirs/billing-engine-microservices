@@ -1,5 +1,6 @@
 package com.billing.invoice.service;
 
+import com.billing.invoice.advice.exceptions.InvoiceGenerationException;
 import com.billing.invoice.events.data.SubscriptionPaymentEvent;
 import com.billing.invoice.events.publisher.InvoiceEventPublisher;
 import com.billing.invoice.mapper.InvoiceMapper;
@@ -36,12 +37,14 @@ public class InvoiceService {
 
             invoice = invoiceMapper.buildInvoice(invoiceId, event, s3Key);
             invoiceRepository.save(invoice);
+
             invoiceMetrics.recordInvoiceGeneratedTotal();
             log.info("Invoice generated (invoiceId={}, paymentId={}, s3Key={})", invoiceId, event.paymentId(), s3Key);
 
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             invoiceMetrics.recordInvoiceGenerationFailedTotal();
-            throw e;
+            throw new InvoiceGenerationException(
+                    "Failed to generate invoice for paymentId: " + event.paymentId(), e);
         }
 
         invoiceEventPublisher.publishInvoiceCreatedEvent(invoice, event);

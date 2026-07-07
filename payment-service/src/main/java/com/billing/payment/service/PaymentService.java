@@ -39,6 +39,7 @@ public class PaymentService {
         paymentRepository.save(payment);
 
         stripeSubscriptionService.createSubscription(subscriptionEvent);
+
         paymentMetrics.recordStripeSubscriptionChargeSubmittedTotal();
         log.info("Payment charge submitted to Stripe (subscriptionId={})", subscriptionEvent.subscriptionId());
     }

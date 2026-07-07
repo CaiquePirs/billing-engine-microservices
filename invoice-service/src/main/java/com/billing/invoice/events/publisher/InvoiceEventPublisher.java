@@ -41,6 +41,7 @@ public class InvoiceEventPublisher {
 
             invoice.setInvoiceStatus(InvoiceStatus.SENT);
             invoiceRepository.save(invoice);
+
             invoiceMetrics.recordInvoiceCreatedQueueMessageSentTotal();
             log.info("Published invoice-created event to SQS (invoiceId={})", invoice.getId());
 

@@ -67,6 +67,15 @@ public class BillingSubscriptionMetrics {
                 .increment();
     }
 
+    public void recordDeactivateSubscriptionQueueConsumedTotal() {
+        Counter.builder("billing.subscriptions.sqs.received.total")
+                .description("Total messages successfully consumed from the deactivate-subscription SQS queue")
+                .tag("status", "success")
+                .tag("queue", "deactivate-subscription-queue")
+                .register(meterRegistry)
+                .increment();
+    }
+
     public void recordDeactivateSubscriptionQueueMessageFailedTotal() {
         Counter.builder("billing.subscriptions.sqs.failure.total")
                 .description("Total messages that failed to be consumed from the deactivate-subscription SQS queue")

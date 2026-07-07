@@ -37,6 +37,8 @@ public class StripePlanService {
                     .build();
 
             Price price = Price.create(params);
+            log.info("Plan created on Stripe (stripePriceId={}, planName={})", price.getId(), request.name());
+
             return price.getId();
 
         } catch (StripeException e) {

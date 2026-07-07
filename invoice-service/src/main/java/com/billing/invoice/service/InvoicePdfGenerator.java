@@ -28,6 +28,7 @@ public class InvoicePdfGenerator {
         try {
             String template = loadTemplate();
             String html = populateTemplate(template, invoiceId, event);
+
             return renderToPdf(html);
         } catch (Exception e) {
             throw new InternalErrorException("Failed to generate invoice PDF for invoiceId: " + invoiceId, e);

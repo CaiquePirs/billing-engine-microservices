@@ -1,5 +1,6 @@
 package com.billing.invoice.service;
 
+import com.billing.invoice.advice.exceptions.InvoiceGenerationException;
 import com.billing.invoice.events.data.CustomerAddressResponse;
 import com.billing.invoice.events.data.CustomerClientResponse;
 import com.billing.invoice.events.data.PlanResponseDTO;
@@ -98,8 +99,9 @@ class InvoiceServiceTest {
                 .thenThrow(new RuntimeException("PDF generation failed"));
 
         assertThatThrownBy(() -> invoiceService.generateInvoice(event))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("PDF generation failed");
+                .isInstanceOf(InvoiceGenerationException.class)
+                .hasMessageContaining("Failed to generate invoice")
+                .hasRootCauseMessage("PDF generation failed");
 
         verify(invoiceRepository, never()).save(any());
         verify(invoiceEventPublisher, never()).publishInvoiceCreatedEvent(any(), any());
@@ -116,8 +118,9 @@ class InvoiceServiceTest {
                 .thenThrow(new RuntimeException("S3 upload failed"));
 
         assertThatThrownBy(() -> invoiceService.generateInvoice(event))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("S3 upload failed");
+                .isInstanceOf(InvoiceGenerationException.class)
+                .hasMessageContaining("Failed to generate invoice")
+                .hasRootCauseMessage("S3 upload failed");
 
         verify(invoiceRepository, never()).save(any());
         verify(invoiceEventPublisher, never()).publishInvoiceCreatedEvent(any(), any());
