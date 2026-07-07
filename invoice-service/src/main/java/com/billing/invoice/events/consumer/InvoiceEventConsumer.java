@@ -29,6 +29,7 @@ public class InvoiceEventConsumer {
 
             invoiceService.generateInvoice(event);
             invoiceMetrics.recordGenerateInvoiceQueueMessageConsumedTotal();
+            log.info("Invoice generation event consumed from SQS (subscriptionId={})", event.subscriptionId());
 
         } catch (Exception e) {
             log.error("Failed to process invoice generation event from SQS. Raw message: {}", snsMessage.Message(), e);

@@ -35,6 +35,7 @@ public class InvoiceStorageService {
 
             s3Client.putObject(request, RequestBody.fromBytes(pdfBytes));
             invoiceMetrics.recordInvoicePdfUploadedToS3Total();
+            log.info("Invoice PDF uploaded to S3 (invoiceId={}, s3Key={})", invoiceId, s3Key);
 
             return s3Key;
 

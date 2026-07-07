@@ -37,6 +37,7 @@ public class InvoiceService {
             invoice = invoiceMapper.buildInvoice(invoiceId, event, s3Key);
             invoiceRepository.save(invoice);
             invoiceMetrics.recordInvoiceGeneratedTotal();
+            log.info("Invoice generated (invoiceId={}, paymentId={}, s3Key={})", invoiceId, event.paymentId(), s3Key);
 
         } catch (RuntimeException e) {
             invoiceMetrics.recordInvoiceGenerationFailedTotal();
