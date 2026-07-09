@@ -3,6 +3,7 @@ package com.billing.payment.events.publisher;
 import com.billing.payment.controller.advice.exceptions.InternalErrorException;
 import com.billing.payment.events.data.SubscriptionCreatedEvent;
 import com.billing.payment.events.data.SubscriptionPaymentEvent;
+import com.billing.payment.events.tracing.MessagingTracing;
 import com.billing.payment.metrics.PaymentMetrics;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,9 @@ import software.amazon.awssdk.services.sns.model.PublishRequest;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -23,6 +27,7 @@ public class PaymentEventPublisher {
     private final SnsClient snsClient;
     private final ObjectMapper objectMapper;
     private final PaymentMetrics paymentMetrics;
+    private final MessagingTracing messagingTracing;
 
     @Value("${aws.sqs.queue.payment-processing-dlq}")
     private String dlqQueue;
@@ -38,6 +43,7 @@ public class PaymentEventPublisher {
             PublishRequest request = PublishRequest.builder()
                     .topicArn(snsTopicPaymentApproved)
                     .message(objectMapper.writeValueAsString(event))
+                    .messageAttributes(snsTraceAttributes())
                     .build();
 
             snsClient.publish(request);
@@ -57,6 +63,7 @@ public class PaymentEventPublisher {
             PublishRequest request = PublishRequest.builder()
                     .topicArn(snsTopicPaymentFailed)
                     .message(objectMapper.writeValueAsString(event))
+                    .messageAttributes(snsTraceAttributes())
                     .build();
 
             snsClient.publish(request);
@@ -78,6 +85,7 @@ public class PaymentEventPublisher {
             SendMessageRequest request = SendMessageRequest.builder()
                     .queueUrl(dlqQueue)
                     .messageBody(eventMessage)
+                    .messageAttributes(sqsTraceAttributes())
                     .build();
 
             sqsClient.sendMessage(request);
@@ -90,6 +98,22 @@ public class PaymentEventPublisher {
             paymentMetrics.recordPaymentDlqMessageSendFailedTotal();
             throw new InternalErrorException("Failed to forward subscription ID: " + event.subscriptionId() + " to DLQ after payment processing failure");
         }
+    }
+
+    private Map<String, software.amazon.awssdk.services.sns.model.MessageAttributeValue> snsTraceAttributes() {
+        return messagingTracing.currentTraceHeaders().entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> software.amazon.awssdk.services.sns.model.MessageAttributeValue.builder()
+                                .dataType("String").stringValue(e.getValue()).build()));
+    }
+
+    private Map<String, software.amazon.awssdk.services.sqs.model.MessageAttributeValue> sqsTraceAttributes() {
+        return messagingTracing.currentTraceHeaders().entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> software.amazon.awssdk.services.sqs.model.MessageAttributeValue.builder()
+                                .dataType("String").stringValue(e.getValue()).build()));
     }
 
 }

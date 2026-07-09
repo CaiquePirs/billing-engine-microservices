@@ -6,6 +6,7 @@ import com.billing.invoice.events.data.CustomerClientResponse;
 import com.billing.invoice.events.data.InvoiceCreatedEvent;
 import com.billing.invoice.events.data.PlanResponseDTO;
 import com.billing.invoice.events.data.SubscriptionPaymentEvent;
+import com.billing.invoice.events.tracing.MessagingTracing;
 import com.billing.invoice.mapper.InvoiceMapper;
 import com.billing.invoice.metrics.InvoiceMetrics;
 import com.billing.invoice.model.Invoice;
@@ -24,6 +25,7 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +41,7 @@ class InvoiceEventPublisherTest {
     @Mock private InvoiceRepository invoiceRepository;
     @Mock private SqsClient sqsClient;
     @Mock private InvoiceMetrics invoiceMetrics;
+    @Mock private MessagingTracing messagingTracing;
 
     @InjectMocks
     private InvoiceEventPublisher invoiceEventPublisher;
@@ -47,6 +50,7 @@ class InvoiceEventPublisherTest {
     void setUp() {
         ReflectionTestUtils.setField(invoiceEventPublisher, "invoiceCreatedQueue",
                 "https://sqs.us-east-1.amazonaws.com/000000000000/invoice-created-queue");
+        lenient().when(messagingTracing.currentTraceHeaders()).thenReturn(Map.of("traceparent", "00-abc-def-01"));
     }
 
     private Invoice buildInvoice() {

@@ -5,6 +5,7 @@ import com.billing.payment.events.data.CustomerClientResponse;
 import com.billing.payment.events.data.PlanResponseDTO;
 import com.billing.payment.events.data.SubscriptionCreatedEvent;
 import com.billing.payment.events.data.SubscriptionPaymentEvent;
+import com.billing.payment.events.tracing.MessagingTracing;
 import com.billing.payment.metrics.PaymentMetrics;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,7 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -34,6 +36,7 @@ class PaymentEventPublisherTest {
     @Mock private SnsClient snsClient;
     @Mock private ObjectMapper objectMapper;
     @Mock private PaymentMetrics paymentMetrics;
+    @Mock private MessagingTracing messagingTracing;
 
     @InjectMocks
     private PaymentEventPublisher paymentEventPublisher;
@@ -43,6 +46,7 @@ class PaymentEventPublisherTest {
         ReflectionTestUtils.setField(paymentEventPublisher, "dlqQueue", "https://sqs.us-east-1.amazonaws.com/000000000000/dlq");
         ReflectionTestUtils.setField(paymentEventPublisher, "snsTopicPaymentApproved", "arn:aws:sns:us-east-1:000000000000:payment-approved");
         ReflectionTestUtils.setField(paymentEventPublisher, "snsTopicPaymentFailed", "arn:aws:sns:us-east-1:000000000000:payment-failed");
+        lenient().when(messagingTracing.currentTraceHeaders()).thenReturn(Map.of("traceparent", "00-abc-def-01"));
     }
 
     private SubscriptionPaymentEvent buildPaymentEvent() {

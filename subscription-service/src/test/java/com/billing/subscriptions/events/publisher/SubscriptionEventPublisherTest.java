@@ -2,6 +2,7 @@ package com.billing.subscriptions.events.publisher;
 
 import com.billing.subscriptions.controller.advice.exception.ExternalServiceException;
 import com.billing.subscriptions.events.data.SubscriptionCreatedEvent;
+import com.billing.subscriptions.events.tracing.MessagingTracing;
 import com.billing.subscriptions.metrics.BillingSubscriptionMetrics;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sns.model.PublishRequest;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -27,6 +29,7 @@ class SubscriptionEventPublisherTest {
     @Mock private SnsClient snsClient;
     @Mock private ObjectMapper objectMapper;
     @Mock private BillingSubscriptionMetrics billingSubscriptionMetrics;
+    @Mock private MessagingTracing messagingTracing;
 
     @InjectMocks
     private SubscriptionEventPublisher subscriptionEventPublisher;
@@ -51,6 +54,7 @@ class SubscriptionEventPublisherTest {
     void publisherSubscriptionCreated_shouldPublishEvent_whenSerializationSucceeds() throws Exception {
         SubscriptionCreatedEvent event = buildEvent();
         when(objectMapper.writeValueAsString(event)).thenReturn("{\"subscriptionId\":\"some-id\"}");
+        when(messagingTracing.currentTraceHeaders()).thenReturn(Map.of("traceparent", "00-abc-def-01"));
 
         subscriptionEventPublisher.publisherSubscriptionCreated(event);
 
@@ -73,6 +77,7 @@ class SubscriptionEventPublisherTest {
     void publisherSubscriptionCreated_shouldThrowExternalServiceException_whenSnsClientFails() throws Exception {
         SubscriptionCreatedEvent event = buildEvent();
         when(objectMapper.writeValueAsString(event)).thenReturn("{\"subscriptionId\":\"some-id\"}");
+        when(messagingTracing.currentTraceHeaders()).thenReturn(Map.of());
         when(snsClient.publish(any(PublishRequest.class))).thenThrow(new RuntimeException("SNS unavailable"));
 
         assertThatThrownBy(() -> subscriptionEventPublisher.publisherSubscriptionCreated(event))

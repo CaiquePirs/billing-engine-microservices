@@ -3,6 +3,7 @@ package com.billing.invoice.events.consumer;
 import com.billing.invoice.advice.exceptions.InternalErrorException;
 import com.billing.invoice.events.data.SnsMessage;
 import com.billing.invoice.events.data.SubscriptionPaymentEvent;
+import com.billing.invoice.events.tracing.MessagingTracing;
 import com.billing.invoice.metrics.InvoiceMetrics;
 import com.billing.invoice.service.InvoiceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,23 +20,26 @@ public class InvoiceEventConsumer {
     private final ObjectMapper objectMapper;
     private final InvoiceService invoiceService;
     private final InvoiceMetrics invoiceMetrics;
+    private final MessagingTracing messagingTracing;
 
     @SqsListener("${aws.sqs.queue.generate-invoice}")
     public void generateNewInvoiceQueue(SnsMessage snsMessage) {
-        try {
-            SubscriptionPaymentEvent event = objectMapper.readValue(
-                    snsMessage.Message(),
-                    SubscriptionPaymentEvent.class);
+        messagingTracing.traceConsume("generate-invoice process", snsMessage, () -> {
+            try {
+                SubscriptionPaymentEvent event = objectMapper.readValue(
+                        snsMessage.Message(),
+                        SubscriptionPaymentEvent.class);
 
-            invoiceService.generateInvoice(event);
+                invoiceService.generateInvoice(event);
 
-            invoiceMetrics.recordGenerateInvoiceQueueMessageConsumedTotal();
-            log.info("Invoice generation event consumed from SQS (subscriptionId={})", event.subscriptionId());
+                invoiceMetrics.recordGenerateInvoiceQueueMessageConsumedTotal();
+                log.info("Invoice generation event consumed from SQS (subscriptionId={})", event.subscriptionId());
 
-        } catch (Exception e) {
-            log.error("Failed to process invoice generation event from SQS. Raw message: {}", snsMessage.Message(), e);
-            invoiceMetrics.recordGenerateInvoiceQueueMessageConsumptionFailedTotal();
-            throw new InternalErrorException("Failed to generate invoice from incoming payment-approved SQS event.", e);
-        }
+            } catch (Exception e) {
+                log.error("Failed to process invoice generation event from SQS. Raw message: {}", snsMessage.Message(), e);
+                invoiceMetrics.recordGenerateInvoiceQueueMessageConsumptionFailedTotal();
+                throw new InternalErrorException("Failed to generate invoice from incoming payment-approved SQS event.", e);
+            }
+        });
     }
 }
