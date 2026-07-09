@@ -15,6 +15,7 @@ services:
       - prometheus
       - otel-collector
       - loki
+      - tempo
     networks:
       - billing-network
 
@@ -28,6 +29,7 @@ services:
       - "9090:9090"
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.enable-remote-write-receiver'
     networks:
       - billing-network
 
@@ -54,6 +56,19 @@ services:
     volumes:
       - ./observability/loki/loki-config.yml:/etc/loki/loki-config.yml
       - loki_data:/loki
+    networks:
+      - billing-network
+
+  tempo:
+    image: grafana/tempo:2.6.1
+    container_name: tempo
+    restart: unless-stopped
+    command: [ "-config.file=/etc/tempo/tempo-config.yml" ]
+    ports:
+      - "3200:3200"
+    volumes:
+      - ./observability/tempo/tempo-config.yml:/etc/tempo/tempo-config.yml
+      - tempo_data:/var/tempo
     networks:
       - billing-network
 
@@ -175,6 +190,8 @@ volumes:
   grafana_data:
     driver: local
   loki_data:
+    driver: local
+  tempo_data:
     driver: local
 
 networks:
