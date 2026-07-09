@@ -33,7 +33,7 @@ public class PaymentService {
     private final PaymentMetrics paymentMetrics;
 
     public void processPayment(SubscriptionCreatedEvent subscriptionEvent) {
-        paymentValidator.validateIdempotencyKey(subscriptionEvent);
+        paymentValidator.validateIdempotencyKeyBySubscriptionId(subscriptionEvent);
 
         Payment payment = paymentMapper.toEntity(subscriptionEvent);
         paymentRepository.save(payment);
@@ -46,6 +46,10 @@ public class PaymentService {
 
     @Transactional
     public void handlerPaymentEvent(Event event, String payload) {
+        if (paymentValidator.validateIdempotencyKeyByStripeEvent(event)) {
+            return;
+        }
+
         switch (event.getType()) {
             case "invoice.paid" -> {
                 try {

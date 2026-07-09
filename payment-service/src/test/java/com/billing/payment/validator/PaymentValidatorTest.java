@@ -4,10 +4,12 @@ import com.billing.payment.controller.advice.exceptions.InternalErrorException;
 import com.billing.payment.events.data.CustomerClientResponse;
 import com.billing.payment.events.data.PlanResponseDTO;
 import com.billing.payment.events.data.SubscriptionCreatedEvent;
+import com.billing.payment.metrics.PaymentMetrics;
 import com.billing.payment.model.AuditLog;
 import com.billing.payment.model.Payment;
 import com.billing.payment.model.enums.PaymentStatus;
 import com.billing.payment.repository.PaymentRepository;
+import com.stripe.model.Event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,14 +21,19 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentValidatorTest {
 
     @Mock private PaymentRepository paymentRepository;
+    @Mock private PaymentMetrics paymentMetrics;
 
     @InjectMocks
     private PaymentValidator paymentValidator;
@@ -58,7 +65,7 @@ class PaymentValidatorTest {
         SubscriptionCreatedEvent event = buildEvent(subscriptionId);
         when(paymentRepository.findBySubscriptionId(subscriptionId)).thenReturn(Optional.empty());
 
-        assertThatCode(() -> paymentValidator.validateIdempotencyKey(event))
+        assertThatCode(() -> paymentValidator.validateIdempotencyKeyBySubscriptionId(event))
                 .doesNotThrowAnyException();
     }
 
@@ -69,7 +76,7 @@ class PaymentValidatorTest {
         Payment pendingPayment = buildPayment(subscriptionId, PaymentStatus.PENDING);
         when(paymentRepository.findBySubscriptionId(subscriptionId)).thenReturn(Optional.of(pendingPayment));
 
-        assertThatCode(() -> paymentValidator.validateIdempotencyKey(event))
+        assertThatCode(() -> paymentValidator.validateIdempotencyKeyBySubscriptionId(event))
                 .doesNotThrowAnyException();
     }
 
@@ -80,7 +87,7 @@ class PaymentValidatorTest {
         Payment approvedPayment = buildPayment(subscriptionId, PaymentStatus.APPROVED);
         when(paymentRepository.findBySubscriptionId(subscriptionId)).thenReturn(Optional.of(approvedPayment));
 
-        assertThatThrownBy(() -> paymentValidator.validateIdempotencyKey(event))
+        assertThatThrownBy(() -> paymentValidator.validateIdempotencyKeyBySubscriptionId(event))
                 .isInstanceOf(InternalErrorException.class)
                 .hasMessageContaining("Duplicate payment detected");
     }
@@ -92,8 +99,32 @@ class PaymentValidatorTest {
         Payment failedPayment = buildPayment(subscriptionId, PaymentStatus.FAILED);
         when(paymentRepository.findBySubscriptionId(subscriptionId)).thenReturn(Optional.of(failedPayment));
 
-        assertThatThrownBy(() -> paymentValidator.validateIdempotencyKey(event))
+        assertThatThrownBy(() -> paymentValidator.validateIdempotencyKeyBySubscriptionId(event))
                 .isInstanceOf(InternalErrorException.class)
                 .hasMessageContaining("Duplicate payment detected");
+    }
+
+    @Test
+    void validateIdempotencyKeyByStripeEvent_shouldReturnTrueAndRecordMetric_whenEventIdAlreadyProcessed() {
+        Event event = mock(Event.class);
+        when(event.getId()).thenReturn("evt_duplicate");
+        when(paymentRepository.existsByStripeEventId("evt_duplicate")).thenReturn(true);
+
+        boolean duplicate = paymentValidator.validateIdempotencyKeyByStripeEvent(event);
+
+        assertThat(duplicate).isTrue();
+        verify(paymentMetrics).recordStripeWebhookDuplicateIgnoredTotal();
+    }
+
+    @Test
+    void validateIdempotencyKeyByStripeEvent_shouldReturnFalse_whenEventIdNotProcessedYet() {
+        Event event = mock(Event.class);
+        when(event.getId()).thenReturn("evt_new");
+        when(paymentRepository.existsByStripeEventId("evt_new")).thenReturn(false);
+
+        boolean duplicate = paymentValidator.validateIdempotencyKeyByStripeEvent(event);
+
+        assertThat(duplicate).isFalse();
+        verify(paymentMetrics, never()).recordStripeWebhookDuplicateIgnoredTotal();
     }
 }

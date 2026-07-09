@@ -137,4 +137,12 @@ public class PaymentMetrics {
                 .increment();
     }
 
+    public void recordStripeWebhookDuplicateIgnoredTotal() {
+        Counter.builder("billing.payments.stripe.webhook.duplicate.total")
+                .description("Total Stripe webhook events skipped because they were already processed (idempotency)")
+                .tag("status", "duplicate")
+                .register(meterRegistry)
+                .increment();
+    }
+
 }

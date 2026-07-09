@@ -77,14 +77,14 @@ class PaymentServiceTest {
         SubscriptionCreatedEvent event = buildSubscriptionEvent();
         Payment payment = buildPayment(event.subscriptionId(), PaymentStatus.PENDING);
 
-        doNothing().when(paymentValidator).validateIdempotencyKey(event);
+        doNothing().when(paymentValidator).validateIdempotencyKeyBySubscriptionId(event);
         when(paymentMapper.toEntity(event)).thenReturn(payment);
         when(paymentRepository.save(payment)).thenReturn(payment);
         doNothing().when(stripeSubscriptionService).createSubscription(event);
 
         paymentService.processPayment(event);
 
-        verify(paymentValidator).validateIdempotencyKey(event);
+        verify(paymentValidator).validateIdempotencyKeyBySubscriptionId(event);
         verify(paymentRepository).save(payment);
         verify(stripeSubscriptionService).createSubscription(event);
     }
@@ -92,7 +92,7 @@ class PaymentServiceTest {
     @Test
     void processPayment_shouldNotCreateStripeSubscription_whenValidationFails() {
         SubscriptionCreatedEvent event = buildSubscriptionEvent();
-        doThrow(new RuntimeException("Duplicate payment")).when(paymentValidator).validateIdempotencyKey(event);
+        doThrow(new RuntimeException("Duplicate payment")).when(paymentValidator).validateIdempotencyKeyBySubscriptionId(event);
 
         assertThatThrownBy(() -> paymentService.processPayment(event))
                 .isInstanceOf(RuntimeException.class);
@@ -141,6 +141,18 @@ class PaymentServiceTest {
 
         assertThat(payment.getPaymentStatus()).isEqualTo(PaymentStatus.FAILED);
         verify(paymentEventPublisher).publisherPaymentFailed(paymentEvent);
+    }
+
+    @Test
+    void handlerPaymentEvent_shouldSkipProcessing_whenEventIsDuplicate() {
+        Event stripeEvent = mock(Event.class);
+        when(paymentValidator.validateIdempotencyKeyByStripeEvent(stripeEvent)).thenReturn(true);
+
+        paymentService.handlerPaymentEvent(stripeEvent, "{\"type\":\"invoice.paid\"}");
+
+        verify(paymentUtils, never()).getInternalSubscriptionId(any());
+        verify(paymentEventPublisher, never()).publisherPaymentApproved(any());
+        verify(paymentEventPublisher, never()).publisherPaymentFailed(any());
     }
 
     @Test
