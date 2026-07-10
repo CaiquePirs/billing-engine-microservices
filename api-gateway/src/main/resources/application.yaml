@@ -5,7 +5,3 @@ spring:
     import: "optional:configserver:"
   profiles:
     active: dev
-
-security:
-  jwt:
-    secret-key: ${SECRET_KEY}
