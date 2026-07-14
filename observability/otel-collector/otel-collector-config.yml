@@ -12,6 +12,10 @@ processors:
 exporters:
   prometheus:
     endpoint: 0.0.0.0:8889
+    # Copy OTLP resource attributes (e.g. service.name) onto each metric series
+    # as labels, so dashboards can filter/group by service_name.
+    resource_to_telemetry_conversion:
+      enabled: true
   otlp_http/loki:
     endpoint: http://loki:3100/otlp
   otlp/tempo:

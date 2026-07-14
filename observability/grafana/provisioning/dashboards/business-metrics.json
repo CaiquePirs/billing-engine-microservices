@@ -1,0 +1,183 @@
+{
+  "uid": "billing-business-metrics",
+  "title": "Billing Engine · Business Metrics",
+  "tags": ["billing-engine", "business", "domain"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "editable": true,
+  "templating": { "list": [] },
+  "panels": [
+    {
+      "type": "row", "title": "Authentication", "id": 100, "collapsed": true,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "panels": [
+        {
+          "type": "timeseries", "title": "Signups & logins (rate/s)", "id": 101,
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 1 },
+          "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "showPoints": "auto" } }, "overrides": [] },
+          "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }, "tooltip": { "mode": "multi" } },
+          "targets": [
+            { "refId": "A", "expr": "sum(rate(authentication_signup_total[$__rate_interval]))", "legendFormat": "signups" },
+            { "refId": "B", "expr": "sum by (result) (rate(authentication_login_total[$__rate_interval]))", "legendFormat": "login {{result}}" }
+          ]
+        },
+        {
+          "type": "piechart", "title": "Login outcome (total)", "id": 102,
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 1 },
+          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+          "options": { "legend": { "displayMode": "table", "placement": "right", "values": ["value"] }, "pieType": "donut", "reduceOptions": { "calcs": ["lastNotNull"], "values": false } },
+          "targets": [ { "refId": "A", "expr": "sum by (result) (authentication_login_total)", "legendFormat": "{{result}}" } ]
+        }
+      ]
+    },
+    {
+      "type": "row", "title": "Subscription", "id": 110, "collapsed": true,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 1 },
+      "panels": [
+        {
+          "type": "timeseries", "title": "Subscription lifecycle (rate/s)", "id": 111,
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 2 },
+          "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "showPoints": "auto" } }, "overrides": [] },
+          "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }, "tooltip": { "mode": "multi" } },
+          "targets": [ { "refId": "A", "expr": "sum by (status) (rate(billing_subscription_status_total[$__rate_interval]))", "legendFormat": "{{status}}" } ]
+        },
+        {
+          "type": "timeseries", "title": "Plans created (rate/s)", "id": 112,
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 2 },
+          "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "showPoints": "auto" } }, "overrides": [] },
+          "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }, "tooltip": { "mode": "multi" } },
+          "targets": [ { "refId": "A", "expr": "sum by (plan) (rate(billing_plan_created_total[$__rate_interval]))", "legendFormat": "{{plan}}" } ]
+        },
+        {
+          "type": "timeseries", "title": "SNS/SQS (rate/s)", "id": 113,
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 2 },
+          "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "showPoints": "auto" } }, "overrides": [] },
+          "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }, "tooltip": { "mode": "multi" } },
+          "targets": [
+            { "refId": "A", "expr": "sum(rate(billing_subscriptions_sns_published_total[$__rate_interval]))", "legendFormat": "sns published" },
+            { "refId": "B", "expr": "sum(rate(billing_subscriptions_sns_failure_total[$__rate_interval]))", "legendFormat": "sns failure" },
+            { "refId": "C", "expr": "sum by (queue) (rate(billing_subscriptions_sqs_received_total[$__rate_interval]))", "legendFormat": "sqs recv {{queue}}" },
+            { "refId": "D", "expr": "sum(rate(billing_subscriptions_sqs_failure_total[$__rate_interval]))", "legendFormat": "sqs failure" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "row", "title": "Payment", "id": 120, "collapsed": true,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 2 },
+      "panels": [
+        {
+          "type": "timeseries", "title": "Payment outcomes (rate/s)", "id": 121,
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 3 },
+          "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "showPoints": "auto" } }, "overrides": [ { "matcher": { "id": "byName", "options": "failed" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } } ] } ] },
+          "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }, "tooltip": { "mode": "multi" } },
+          "targets": [
+            { "refId": "A", "expr": "sum(rate(billing_payments_approved_total[$__rate_interval]))", "legendFormat": "approved" },
+            { "refId": "B", "expr": "sum(rate(billing_payments_failed_total[$__rate_interval]))", "legendFormat": "failed" },
+            { "refId": "C", "expr": "sum(rate(billing_payments_stripe_processing_total[$__rate_interval]))", "legendFormat": "stripe charges" }
+          ]
+        },
+        {
+          "type": "timeseries", "title": "Stripe webhooks (rate/s)", "id": 122,
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 3 },
+          "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "showPoints": "auto" } }, "overrides": [] },
+          "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }, "tooltip": { "mode": "multi" } },
+          "targets": [
+            { "refId": "A", "expr": "sum(rate(billing_payments_stripe_webhook_received_total[$__rate_interval]))", "legendFormat": "received" },
+            { "refId": "B", "expr": "sum(rate(billing_payments_stripe_webhook_failed_total[$__rate_interval]))", "legendFormat": "failed" },
+            { "refId": "C", "expr": "sum(rate(billing_payments_stripe_webhook_duplicate_total[$__rate_interval]))", "legendFormat": "duplicate (idempotent)" }
+          ]
+        },
+        {
+          "type": "timeseries", "title": "Messaging SNS/SQS/DLQ (rate/s)", "id": 123,
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 3 },
+          "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "showPoints": "auto" } }, "overrides": [] },
+          "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }, "tooltip": { "mode": "multi" } },
+          "targets": [
+            { "refId": "A", "expr": "sum by (topic) (rate(billing_payments_sns_published_total[$__rate_interval]))", "legendFormat": "sns {{topic}}" },
+            { "refId": "B", "expr": "sum(rate(billing_payments_sqs_received_total[$__rate_interval]))", "legendFormat": "sqs received" },
+            { "refId": "C", "expr": "sum(rate(billing_payments_sqs_failure_total[$__rate_interval]))", "legendFormat": "sqs failure" },
+            { "refId": "D", "expr": "sum(rate(billing_payment_dlq_published_total[$__rate_interval]))", "legendFormat": "dlq published" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "row", "title": "Invoice", "id": 130, "collapsed": true,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 3 },
+      "panels": [
+        {
+          "type": "timeseries", "title": "Invoices generated (rate/s)", "id": 131,
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 4 },
+          "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "showPoints": "auto" } }, "overrides": [] },
+          "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }, "tooltip": { "mode": "multi" } },
+          "targets": [ { "refId": "A", "expr": "sum by (status) (rate(invoice_generated_total[$__rate_interval]))", "legendFormat": "{{status}}" } ]
+        },
+        {
+          "type": "timeseries", "title": "S3 PDF uploads (rate/s)", "id": 132,
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 4 },
+          "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "showPoints": "auto" } }, "overrides": [] },
+          "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }, "tooltip": { "mode": "multi" } },
+          "targets": [ { "refId": "A", "expr": "sum by (status) (rate(invoice_s3_upload_total[$__rate_interval]))", "legendFormat": "{{status}}" } ]
+        },
+        {
+          "type": "timeseries", "title": "Invoice SQS in/out (rate/s)", "id": 133,
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 4 },
+          "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "showPoints": "auto" } }, "overrides": [] },
+          "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }, "tooltip": { "mode": "multi" } },
+          "targets": [
+            { "refId": "A", "expr": "sum by (status) (rate(invoice_sqs_received_total[$__rate_interval]))", "legendFormat": "received {{status}}" },
+            { "refId": "B", "expr": "sum by (status) (rate(invoice_sqs_published_total[$__rate_interval]))", "legendFormat": "published {{status}}" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "row", "title": "Notification", "id": 140, "collapsed": true,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 4 },
+      "panels": [
+        {
+          "type": "timeseries", "title": "Emails sent by event (rate/s)", "id": 141,
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 5 },
+          "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "showPoints": "auto" } }, "overrides": [] },
+          "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }, "tooltip": { "mode": "multi" } },
+          "targets": [ { "refId": "A", "expr": "sum by (event) (rate(notification_email_sent_total[$__rate_interval]))", "legendFormat": "{{event}}" } ]
+        },
+        {
+          "type": "timeseries", "title": "Email delivery outcome (rate/s)", "id": 142,
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 5 },
+          "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "showPoints": "auto" } }, "overrides": [ { "matcher": { "id": "byName", "options": "failure" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } } ] } ] },
+          "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }, "tooltip": { "mode": "multi" } },
+          "targets": [
+            { "refId": "A", "expr": "sum by (status) (rate(notification_email_delivery_total[$__rate_interval]))", "legendFormat": "{{status}}" },
+            { "refId": "B", "expr": "sum(rate(notification_email_attachment_sent_total[$__rate_interval]))", "legendFormat": "with attachment" }
+          ]
+        },
+        {
+          "type": "timeseries", "title": "SQS consumed by queue (rate/s)", "id": 143,
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 5 },
+          "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "showPoints": "auto" } }, "overrides": [] },
+          "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }, "tooltip": { "mode": "multi" } },
+          "targets": [ { "refId": "A", "expr": "sum by (queue, status) (rate(notification_sqs_received_total[$__rate_interval]))", "legendFormat": "{{queue}} {{status}}" } ]
+        }
+      ]
+    }
+  ]
+}
