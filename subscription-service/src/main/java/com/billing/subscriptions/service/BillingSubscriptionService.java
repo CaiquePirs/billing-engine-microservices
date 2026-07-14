@@ -2,6 +2,7 @@ package com.billing.subscriptions.service;
 
 import com.billing.subscriptions.client.dto.CustomerClientResponse;
 import com.billing.subscriptions.controller.advice.exception.NotFoundException;
+import com.billing.subscriptions.controller.advice.exception.UserUnauthorizedException;
 import com.billing.subscriptions.controller.dto.BillingSubscriptionRequestDTO;
 import com.billing.subscriptions.events.data.SubscriptionCreatedEvent;
 import com.billing.subscriptions.events.data.SubscriptionPaymentEvent;
@@ -35,6 +36,7 @@ public class BillingSubscriptionService {
     private final SubscriptionEventPublisher subscriptionEventPublisher;
     private final SubscriptionValidator subscriptionValidator;
     private final BillingSubscriptionMetrics billingSubscriptionMetrics;
+    private final SecurityService securityService;
 
     @Transactional
     public void createSubscription(BillingSubscriptionRequestDTO subscriptionRequest) {
@@ -71,6 +73,18 @@ public class BillingSubscriptionService {
                     log.warn("Subscription lookup failed: no subscription found (subscriptionId={})", subscriptionId);
                     return new NotFoundException("No subscription found with ID: " + subscriptionId);
                 });
+    }
+
+    public BillingSubscription findOwnedSubscription(UUID subscriptionId) {
+        UUID authenticatedCustomerId = securityService.getLoggedInAdmin();
+        BillingSubscription subscription = findSubscriptionById(subscriptionId);
+
+        if (!subscription.getCustomerId().equals(authenticatedCustomerId)) {
+            log.warn("Subscription access denied: subscription does not belong to the authenticated customer (subscriptionId={}, customerId={})",
+                    subscriptionId, authenticatedCustomerId);
+            throw new UserUnauthorizedException("You are not allowed to access this subscription");
+        }
+        return subscription;
     }
 
     public void activeSubscription(SubscriptionPaymentEvent event) {

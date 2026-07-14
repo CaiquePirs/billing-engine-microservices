@@ -1,7 +1,12 @@
 package com.billing.subscriptions.controller;
 
 import com.billing.subscriptions.config.SecurityConfig;
+import com.billing.subscriptions.controller.advice.exception.UserUnauthorizedException;
 import com.billing.subscriptions.controller.dto.BillingSubscriptionRequestDTO;
+import com.billing.subscriptions.controller.dto.BillingSubscriptionResponseDTO;
+import com.billing.subscriptions.mapper.BillingSubscriptionMapper;
+import com.billing.subscriptions.model.BillingSubscription;
+import com.billing.subscriptions.model.enums.SubscriptionStatus;
 import com.billing.subscriptions.service.BillingSubscriptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -21,6 +26,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -42,6 +48,7 @@ class BillingSubscriptionControllerIT {
     @Autowired private ObjectMapper objectMapper;
 
     @MockitoBean private BillingSubscriptionService billingSubscriptionService;
+    @MockitoBean private BillingSubscriptionMapper billingSubscriptionMapper;
 
     private static final String BASE_URL = "/api/v1/subscriptions";
 
@@ -94,5 +101,55 @@ class BillingSubscriptionControllerIT {
                 .andExpect(status().isUnprocessableEntity());
 
         verify(billingSubscriptionService, never()).createSubscription(any());
+    }
+
+    @Test
+    void getSubscription_shouldReturn200WithSubscription_whenOwnedByAuthenticatedCustomer() throws Exception {
+        UUID subscriptionId = UUID.randomUUID();
+        BillingSubscription subscription = mock(BillingSubscription.class);
+        BillingSubscriptionResponseDTO response = BillingSubscriptionResponseDTO.builder()
+                .id(subscriptionId)
+                .customerId(UUID.randomUUID())
+                .subscriptionStatus(SubscriptionStatus.ACTIVE)
+                .build();
+
+        when(billingSubscriptionService.findOwnedSubscription(subscriptionId)).thenReturn(subscription);
+        when(billingSubscriptionMapper.toResponse(subscription)).thenReturn(response);
+
+        mockMvc.perform(get(BASE_URL + "/" + subscriptionId)
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_CUSTOMER"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(subscriptionId.toString()))
+                .andExpect(jsonPath("$.subscriptionStatus").value("ACTIVE"));
+
+        verify(billingSubscriptionService).findOwnedSubscription(subscriptionId);
+    }
+
+    @Test
+    void getSubscription_shouldReturn401_whenSubscriptionBelongsToAnotherCustomer() throws Exception {
+        UUID subscriptionId = UUID.randomUUID();
+        when(billingSubscriptionService.findOwnedSubscription(subscriptionId))
+                .thenThrow(new UserUnauthorizedException("You are not allowed to access this subscription"));
+
+        mockMvc.perform(get(BASE_URL + "/" + subscriptionId)
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_CUSTOMER"))))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void getSubscription_shouldReturn403_whenAuthenticatedAsTenant() throws Exception {
+        mockMvc.perform(get(BASE_URL + "/" + UUID.randomUUID())
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_TENANT"))))
+                .andExpect(status().isForbidden());
+
+        verify(billingSubscriptionService, never()).findOwnedSubscription(any());
+    }
+
+    @Test
+    void getSubscription_shouldReturn401_whenNotAuthenticated() throws Exception {
+        mockMvc.perform(get(BASE_URL + "/" + UUID.randomUUID()))
+                .andExpect(status().isUnauthorized());
+
+        verify(billingSubscriptionService, never()).findOwnedSubscription(any());
     }
 }

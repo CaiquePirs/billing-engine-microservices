@@ -2,6 +2,7 @@ package com.billing.subscriptions.service;
 
 import com.billing.subscriptions.client.dto.CustomerClientResponse;
 import com.billing.subscriptions.controller.advice.exception.NotFoundException;
+import com.billing.subscriptions.controller.advice.exception.UserUnauthorizedException;
 import com.billing.subscriptions.controller.dto.BillingSubscriptionRequestDTO;
 import com.billing.subscriptions.events.data.SubscriptionCreatedEvent;
 import com.billing.subscriptions.events.data.SubscriptionPaymentEvent;
@@ -44,6 +45,7 @@ class BillingSubscriptionServiceTest {
     @Mock private SubscriptionEventPublisher subscriptionEventPublisher;
     @Mock private SubscriptionValidator subscriptionValidator;
     @Mock private BillingSubscriptionMetrics billingSubscriptionMetrics;
+    @Mock private SecurityService securityService;
 
     @InjectMocks
     private BillingSubscriptionService billingSubscriptionService;
@@ -142,6 +144,46 @@ class BillingSubscriptionServiceTest {
         assertThatThrownBy(() -> billingSubscriptionService.findSubscriptionById(subscriptionId))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("No subscription found with ID");
+    }
+
+    @Test
+    void findOwnedSubscription_shouldReturnSubscription_whenBelongsToAuthenticatedCustomer() {
+        UUID subscriptionId = UUID.randomUUID();
+        UUID authenticatedCustomerId = UUID.randomUUID();
+        BillingSubscription subscription = buildSubscription(subscriptionId, SubscriptionStatus.ACTIVE);
+        subscription.setCustomerId(authenticatedCustomerId);
+
+        when(securityService.getLoggedInAdmin()).thenReturn(authenticatedCustomerId);
+        when(billingSubscriptionRepository.findById(subscriptionId)).thenReturn(Optional.of(subscription));
+
+        BillingSubscription result = billingSubscriptionService.findOwnedSubscription(subscriptionId);
+
+        assertThat(result.getId()).isEqualTo(subscriptionId);
+        assertThat(result.getCustomerId()).isEqualTo(authenticatedCustomerId);
+    }
+
+    @Test
+    void findOwnedSubscription_shouldThrowUserUnauthorizedException_whenBelongsToAnotherCustomer() {
+        UUID subscriptionId = UUID.randomUUID();
+        BillingSubscription subscription = buildSubscription(subscriptionId, SubscriptionStatus.ACTIVE);
+        subscription.setCustomerId(UUID.randomUUID());
+
+        when(securityService.getLoggedInAdmin()).thenReturn(UUID.randomUUID());
+        when(billingSubscriptionRepository.findById(subscriptionId)).thenReturn(Optional.of(subscription));
+
+        assertThatThrownBy(() -> billingSubscriptionService.findOwnedSubscription(subscriptionId))
+                .isInstanceOf(UserUnauthorizedException.class);
+    }
+
+    @Test
+    void findOwnedSubscription_shouldThrowNotFoundException_whenSubscriptionDoesNotExist() {
+        UUID subscriptionId = UUID.randomUUID();
+
+        when(securityService.getLoggedInAdmin()).thenReturn(UUID.randomUUID());
+        when(billingSubscriptionRepository.findById(subscriptionId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> billingSubscriptionService.findOwnedSubscription(subscriptionId))
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
