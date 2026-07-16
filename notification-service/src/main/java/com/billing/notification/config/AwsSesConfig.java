@@ -7,11 +7,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ses.SesAsyncClient;
-import software.amazon.awssdk.services.ses.SesAsyncClientBuilder;
 import software.amazon.awssdk.services.ses.SesClient;
-import software.amazon.awssdk.services.ses.SesClientBuilder;
-
-import java.net.URI;
 
 @Configuration
 public class AwsSesConfig {
@@ -25,31 +21,20 @@ public class AwsSesConfig {
     @Value("${aws.secret-key}")
     private String secretKey;
 
-    @Value("${aws.endpoint:}")
-    private String endpoint;
-
     @Bean
     public SesClient sesClient() {
-        SesClientBuilder builder = SesClient.builder()
+        return SesClient.builder()
                 .region(Region.of(region))
-                .credentialsProvider(credentialsProvider());
-
-        if (!endpoint.isBlank()) {
-            builder.endpointOverride(URI.create(endpoint));
-        }
-        return builder.build();
+                .credentialsProvider(credentialsProvider())
+                .build();
     }
 
     @Bean
     public SesAsyncClient sesAsyncClient() {
-        SesAsyncClientBuilder builder = SesAsyncClient.builder()
+        return SesAsyncClient.builder()
                 .region(Region.of(region))
-                .credentialsProvider(credentialsProvider());
-
-        if (!endpoint.isBlank()) {
-            builder.endpointOverride(URI.create(endpoint));
-        }
-        return builder.build();
+                .credentialsProvider(credentialsProvider())
+                .build();
     }
 
     private StaticCredentialsProvider credentialsProvider() {

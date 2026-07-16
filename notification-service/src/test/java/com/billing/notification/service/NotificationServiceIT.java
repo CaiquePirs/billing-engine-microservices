@@ -33,7 +33,6 @@ import static org.mockito.Mockito.*;
         "aws.access-key=test",
         "aws.secret-key=test",
         "aws.region=us-east-1",
-        "aws.endpoint=http://localhost:4566",
         "aws.s3.bucket=test-bucket"
 })
 class NotificationServiceIT {
