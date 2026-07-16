@@ -47,7 +47,7 @@ public class InvoicePdfGenerator {
         CustomerAddressResponse address = customer.address();
         PlanResponseDTO plan = event.plan();
 
-        String customerName = customer.name() + " " + customer.lastName();
+        String customerName = customer.name();
         String formattedPrice = String.format("%.2f", plan.price().divide(new java.math.BigDecimal(100)));
         String issueDate = LocalDate.now().format(DATE_FORMATTER);
 
