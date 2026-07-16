@@ -6,6 +6,7 @@ spring:
       server:
         git:
           uri: https://github.com/CaiquePirs/billing-engine-config-service.git
+          search-paths: '{profile}'
 server:
   port: 8888
 
