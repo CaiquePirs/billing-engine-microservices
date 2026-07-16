@@ -7,47 +7,54 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ses.SesAsyncClient;
+import software.amazon.awssdk.services.ses.SesAsyncClientBuilder;
 import software.amazon.awssdk.services.ses.SesClient;
+import software.amazon.awssdk.services.ses.SesClientBuilder;
+
+import java.net.URI;
 
 @Configuration
 public class AwsSesConfig {
 
-    @Value("${aws.production.region}")
+    @Value("${aws.region}")
     private String region;
 
-    @Value("${aws.production.access-key}")
+    @Value("${aws.access-key}")
     private String accessKey;
 
-    @Value("${aws.production.secret-key}")
+    @Value("${aws.secret-key}")
     private String secretKey;
+
+    @Value("${aws.endpoint:}")
+    private String endpoint;
 
     @Bean
     public SesClient sesClient() {
-        return SesClient.builder()
+        SesClientBuilder builder = SesClient.builder()
                 .region(Region.of(region))
-                .credentialsProvider(
-                        StaticCredentialsProvider.create(
-                                AwsBasicCredentials.create(
-                                        accessKey,
-                                        secretKey
-                                )
-                        )
-                )
-                .build();
+                .credentialsProvider(credentialsProvider());
+
+        if (!endpoint.isBlank()) {
+            builder.endpointOverride(URI.create(endpoint));
+        }
+        return builder.build();
     }
 
     @Bean
     public SesAsyncClient sesAsyncClient() {
-        return SesAsyncClient.builder()
+        SesAsyncClientBuilder builder = SesAsyncClient.builder()
                 .region(Region.of(region))
-                .credentialsProvider(
-                        StaticCredentialsProvider.create(
-                                AwsBasicCredentials.create(
-                                        accessKey,
-                                        secretKey
-                                )
-                        )
-                )
-                .build();
+                .credentialsProvider(credentialsProvider());
+
+        if (!endpoint.isBlank()) {
+            builder.endpointOverride(URI.create(endpoint));
+        }
+        return builder.build();
+    }
+
+    private StaticCredentialsProvider credentialsProvider() {
+        return StaticCredentialsProvider.create(
+                AwsBasicCredentials.create(accessKey, secretKey)
+        );
     }
 }

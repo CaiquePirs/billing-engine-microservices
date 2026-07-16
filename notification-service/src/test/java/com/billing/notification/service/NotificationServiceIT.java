@@ -30,13 +30,10 @@ import static org.mockito.Mockito.*;
         "eureka.client.enabled=false",
         "spring.cloud.aws.sqs.enabled=false",
         "notification.sender-email=noreply@billing.test",
-        "aws.localstack.access-key=test",
-        "aws.localstack.secret-key=test",
-        "aws.localstack.region=us-east-1",
-        "aws.localstack.endpoint=http://localhost:4566",
-        "aws.production.access-key=test",
-        "aws.production.secret-key=test",
-        "aws.production.region=us-east-1",
+        "aws.access-key=test",
+        "aws.secret-key=test",
+        "aws.region=us-east-1",
+        "aws.endpoint=http://localhost:4566",
         "aws.s3.bucket=test-bucket"
 })
 class NotificationServiceIT {

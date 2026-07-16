@@ -1,8 +1,5 @@
 services:
 
-################### Billing Engine Services ##############################
-
-  # --- Config Server ---
   config-service:
     container_name: config-service
     build: ./config-service
@@ -13,18 +10,9 @@ services:
       - EUREKA_CLIENT_ENABLED=false
       - OTLP_METRICS_EXPORT_URL=${OTLP_METRICS_EXPORT_URL}
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
-    healthcheck:
-      test: [ "CMD-SHELL", "wget -qO- http://localhost:8888/actuator/health | grep -q UP || exit 1" ]
-      interval: 15s
-      timeout: 5s
-      retries: 10
-      start_period: 40s
     networks:
       - billing-network
-    profiles:
-      - app
 
-  # --- Service Registry ---
   eureka-service:
     container_name: eureka-service
     build: ./eureka-service
@@ -36,21 +24,11 @@ services:
       - OTLP_METRICS_EXPORT_URL=${OTLP_METRICS_EXPORT_URL}
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
-    healthcheck:
-      test: [ "CMD-SHELL", "wget -qO- http://localhost:8761/actuator/health | grep -q UP || exit 1" ]
-      interval: 15s
-      timeout: 5s
-      retries: 10
-      start_period: 40s
     depends_on:
-      config-service:
-        condition: service_healthy
+      - config-service
     networks:
       - billing-network
-    profiles:
-      - app
 
-  # --- Edge / API Gateway ---
   api-gateway:
     container_name: api-gateway
     build: ./api-gateway
@@ -65,16 +43,11 @@ services:
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
     depends_on:
-      config-service:
-        condition: service_healthy
-      eureka-service:
-        condition: service_healthy
+      - config-service
+      - eureka-service
     networks:
       - billing-network
-    profiles:
-      - app
 
-  # --- Authentication Service ---
   authentication-service:
     container_name: authentication-service
     build: ./authentication-service
@@ -92,18 +65,11 @@ services:
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
     depends_on:
-      config-service:
-        condition: service_healthy
-      eureka-service:
-        condition: service_healthy
-      authentication-postgres:
-        condition: service_healthy
+      - config-service
+      - eureka-service
     networks:
       - billing-network
-    profiles:
-      - app
 
-  # --- Customers Service ---
   customers-service:
     container_name: customers-service
     build: ./customers-service
@@ -121,18 +87,11 @@ services:
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
     depends_on:
-      config-service:
-        condition: service_healthy
-      eureka-service:
-        condition: service_healthy
-      customers-postgres:
-        condition: service_healthy
+      - config-service
+      - eureka-service
     networks:
       - billing-network
-    profiles:
-      - app
 
-  # --- Subscription Service ---
   subscription-service:
     container_name: subscription-service
     build: ./subscription-service
@@ -159,20 +118,12 @@ services:
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
     depends_on:
-      config-service:
-        condition: service_healthy
-      eureka-service:
-        condition: service_healthy
-      subscriptions-postgres:
-        condition: service_healthy
-      localstack:
-        condition: service_started
+      - config-service
+      - eureka-service
+      - localstack
     networks:
       - billing-network
-    profiles:
-      - app
 
-  # --- Payment Service ---
   payment-service:
     container_name: payment-service
     build: ./payment-service
@@ -198,20 +149,12 @@ services:
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
     depends_on:
-      config-service:
-        condition: service_healthy
-      eureka-service:
-        condition: service_healthy
-      payments-postgres:
-        condition: service_healthy
-      localstack:
-        condition: service_started
+      - config-service
+      - eureka-service
+      - localstack
     networks:
       - billing-network
-    profiles:
-      - app
 
-  # --- Invoice Service ---
   invoice-service:
     container_name: invoice-service
     build: ./invoice-service
@@ -227,9 +170,6 @@ services:
       - AWS_URI=${AWS_URI}
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_KEY=${AWS_SECRET_KEY}
-      - AWS_REGION_PRODUCTION=${AWS_REGION_PRODUCTION}
-      - AWS_ACCESS_KEY_PRODUCTION=${AWS_ACCESS_KEY_PRODUCTION}
-      - AWS_SECRET_KEY_PRODUCTION=${AWS_SECRET_KEY_PRODUCTION}
       - AWS_S3_BUCKET=${AWS_S3_BUCKET}
       - GENERATE_NEW_INVOICE_QUEUE=${GENERATE_NEW_INVOICE_QUEUE}
       - INVOICE_CREATED_QUEUE=${INVOICE_CREATED_QUEUE}
@@ -237,20 +177,12 @@ services:
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
     depends_on:
-      config-service:
-        condition: service_healthy
-      eureka-service:
-        condition: service_healthy
-      invoices-postgres:
-        condition: service_healthy
-      localstack:
-        condition: service_started
+      - config-service
+      - eureka-service
+      - localstack
     networks:
       - billing-network
-    profiles:
-      - app
 
-  # --- Notification Service ---
   notification-service:
     container_name: notification-service
     build: ./notification-service
@@ -262,9 +194,6 @@ services:
       - AWS_URI=${AWS_URI}
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_KEY=${AWS_SECRET_KEY}
-      - AWS_REGION_PRODUCTION=${AWS_REGION_PRODUCTION}
-      - AWS_ACCESS_KEY_PRODUCTION=${AWS_ACCESS_KEY_PRODUCTION}
-      - AWS_SECRET_KEY_PRODUCTION=${AWS_SECRET_KEY_PRODUCTION}
       - AWS_S3_BUCKET=${AWS_S3_BUCKET}
       - INTERNAL_SERVICE_EMAIL=${INTERNAL_SERVICE_EMAIL}
       - NOTIFY_SUBSCRIPTION_QUEUE=${NOTIFY_SUBSCRIPTION_QUEUE}
@@ -275,19 +204,12 @@ services:
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
     depends_on:
-      config-service:
-        condition: service_healthy
-      eureka-service:
-        condition: service_healthy
-      localstack:
-        condition: service_started
+      - config-service
+      - eureka-service
+      - localstack
     networks:
       - billing-network
-    profiles:
-      - app
 
-
-################### Billing Engine Profile Infra ##############################
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -305,8 +227,6 @@ services:
       - otel-collector
       - loki
       - tempo
-    profiles:
-      - infra
     networks:
       - billing-network
 
@@ -321,8 +241,6 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--web.enable-remote-write-receiver'
-    profiles:
-      - infra
     networks:
       - billing-network
 
@@ -336,8 +254,6 @@ services:
       - "4317:4317"
       - "4318:4318"
       - "8889:8889"
-    profiles:
-      - infra
     networks:
       - billing-network
 
@@ -351,8 +267,6 @@ services:
     volumes:
       - ./observability/loki/loki-config.yml:/etc/loki/loki-config.yml
       - loki_data:/loki
-    profiles:
-      - infra
     networks:
       - billing-network
 
@@ -366,8 +280,6 @@ services:
     volumes:
       - ./observability/tempo/tempo-config.yml:/etc/tempo/tempo-config.yml
       - tempo_data:/var/tempo
-    profiles:
-      - infra
     networks:
       - billing-network
 
@@ -381,157 +293,10 @@ services:
       - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN}
     volumes:
       - "./init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh"
-    profiles:
-      - infra
-    networks:
-      - billing-network
-
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: billing-pgadmin
-    restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
-    ports:
-      - "5050:80"
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-    profiles:
-      - infra
-    networks:
-      - billing-network
-
-  invoices-postgres:
-    image: postgres:16.0
-    container_name: invoices-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${INVOICE_DB}
-      POSTGRES_USER: ${INVOICE_USER}
-      POSTGRES_PASSWORD: ${INVOICE_PASSWORD}
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${INVOICE_USER} -d ${INVOICE_DB}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    ports:
-      - "5436:5432"
-    volumes:
-      - invoices_postgres_data:/var/lib/postgresql/data
-    profiles:
-      - infra
-    networks:
-      - billing-network
-
-  payments-postgres:
-    image: postgres:16.0
-    container_name: payments-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${PAYMENT_DB}
-      POSTGRES_USER: ${PAYMENT_USER}
-      POSTGRES_PASSWORD: ${PAYMENT_PASSWORD}
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${PAYMENT_USER} -d ${PAYMENT_DB}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    ports:
-      - "5435:5432"
-    volumes:
-      - payment_postgres_data:/var/lib/postgresql/data
-    profiles:
-      - infra
-    networks:
-      - billing-network
-
-  subscriptions-postgres:
-    image: postgres:16.0
-    container_name: subscriptions-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${SUBSCRIPTION_DB}
-      POSTGRES_USER: ${SUBSCRIPTION_USER}
-      POSTGRES_PASSWORD: ${SUBSCRIPTION_PASSWORD}
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${SUBSCRIPTION_USER} -d ${SUBSCRIPTION_DB}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    ports:
-      - "5434:5432"
-    volumes:
-      - subscription_postgres_data:/var/lib/postgresql/data
-    profiles:
-      - infra
-    networks:
-      - billing-network
-
-  customers-postgres:
-    image: postgres:16.0
-    container_name: customers-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${CUSTOMERS_DB}
-      POSTGRES_USER: ${CUSTOMERS_USER}
-      POSTGRES_PASSWORD: ${CUSTOMERS_PASSWORD}
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${CUSTOMERS_USER} -d ${CUSTOMERS_DB}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    profiles:
-      - infra
-    networks:
-      - billing-network
-
-  authentication-postgres:
-    image: postgres:16.0
-    container_name: authentication-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${AUTHENTICATION_DB}
-      POSTGRES_USER: ${AUTHENTICATION_USER}
-      POSTGRES_PASSWORD: ${AUTHENTICATION_PASSWORD}
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${AUTHENTICATION_USER} -d ${AUTHENTICATION_DB}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    ports:
-      - "5433:5432"
-    volumes:
-      - authentication_postgres_data:/var/lib/postgresql/data
-    profiles:
-      - infra
     networks:
       - billing-network
 
 volumes:
-  postgres_data:
-    driver: local
-  authentication_postgres_data:
-    driver: local
-  subscription_postgres_data:
-    driver: local
-  payment_postgres_data:
-    driver: local
-  invoices_postgres_data:
-    driver: local
-  pgadmin_data:
-    driver: local
   grafana_data:
     driver: local
   loki_data:

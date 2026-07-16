@@ -7,6 +7,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3ClientBuilder;
 
 import java.net.URI;
 
@@ -22,20 +23,23 @@ public class AwsS3Config {
     @Value("${aws.s3.secret-key}")
     private String secretKey;
 
-    @Value("${aws.s3.endpoint-override}")
+    @Value("${aws.s3.endpoint-override:}")
     private String endpointOverride;
 
     @Bean
     public S3Client s3Client() {
-        return S3Client.builder()
+        S3ClientBuilder builder = S3Client.builder()
                 .region(Region.of(region))
-                .endpointOverride(URI.create(endpointOverride))
                 .credentialsProvider(
                         StaticCredentialsProvider.create(
                                 AwsBasicCredentials.create(accessKey, secretKey)
                         )
-                )
-                .forcePathStyle(true) // necessário para LocalStack e compatibilidade S3
-                .build();
+                );
+
+        if (!endpointOverride.isBlank()) {
+            builder.endpointOverride(URI.create(endpointOverride))
+                    .forcePathStyle(true); // necessário para LocalStack
+        }
+        return builder.build();
     }
 }
