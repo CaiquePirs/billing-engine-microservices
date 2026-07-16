@@ -33,10 +33,8 @@ public class PaymentService {
     private final PaymentMetrics paymentMetrics;
 
     public void processPayment(SubscriptionCreatedEvent subscriptionEvent) {
-        paymentValidator.validateIdempotencyKeyBySubscriptionId(subscriptionEvent);
-
-        Payment payment = paymentMapper.toEntity(subscriptionEvent);
-        paymentRepository.save(payment);
+        paymentValidator.validateIdempotencyKeyBySubscriptionId(subscriptionEvent)
+                .orElseGet(() -> paymentRepository.save(paymentMapper.toEntity(subscriptionEvent)));
 
         stripeSubscriptionService.createSubscription(subscriptionEvent);
 

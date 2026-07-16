@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -60,24 +59,23 @@ class PaymentValidatorTest {
     }
 
     @Test
-    void validateIdempotencyKey_shouldNotThrow_whenNoPaymentExistsForSubscription() {
+    void validateIdempotencyKey_shouldReturnEmpty_whenNoPaymentExistsForSubscription() {
         UUID subscriptionId = UUID.randomUUID();
         SubscriptionCreatedEvent event = buildEvent(subscriptionId);
         when(paymentRepository.findBySubscriptionId(subscriptionId)).thenReturn(Optional.empty());
 
-        assertThatCode(() -> paymentValidator.validateIdempotencyKeyBySubscriptionId(event))
-                .doesNotThrowAnyException();
+        assertThat(paymentValidator.validateIdempotencyKeyBySubscriptionId(event)).isEmpty();
     }
 
     @Test
-    void validateIdempotencyKey_shouldNotThrow_whenExistingPaymentIsPending() {
+    void validateIdempotencyKey_shouldReturnExistingPayment_whenExistingPaymentIsPending() {
         UUID subscriptionId = UUID.randomUUID();
         SubscriptionCreatedEvent event = buildEvent(subscriptionId);
         Payment pendingPayment = buildPayment(subscriptionId, PaymentStatus.PENDING);
         when(paymentRepository.findBySubscriptionId(subscriptionId)).thenReturn(Optional.of(pendingPayment));
 
-        assertThatCode(() -> paymentValidator.validateIdempotencyKeyBySubscriptionId(event))
-                .doesNotThrowAnyException();
+        assertThat(paymentValidator.validateIdempotencyKeyBySubscriptionId(event))
+                .contains(pendingPayment);
     }
 
     @Test

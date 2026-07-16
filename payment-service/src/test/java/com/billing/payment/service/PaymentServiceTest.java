@@ -77,7 +77,7 @@ class PaymentServiceTest {
         SubscriptionCreatedEvent event = buildSubscriptionEvent();
         Payment payment = buildPayment(event.subscriptionId(), PaymentStatus.PENDING);
 
-        doNothing().when(paymentValidator).validateIdempotencyKeyBySubscriptionId(event);
+        when(paymentValidator.validateIdempotencyKeyBySubscriptionId(event)).thenReturn(Optional.empty());
         when(paymentMapper.toEntity(event)).thenReturn(payment);
         when(paymentRepository.save(payment)).thenReturn(payment);
         doNothing().when(stripeSubscriptionService).createSubscription(event);
@@ -86,6 +86,20 @@ class PaymentServiceTest {
 
         verify(paymentValidator).validateIdempotencyKeyBySubscriptionId(event);
         verify(paymentRepository).save(payment);
+        verify(stripeSubscriptionService).createSubscription(event);
+    }
+
+    @Test
+    void processPayment_shouldReusePendingPaymentWithoutSaving_whenMessageIsRedelivered() {
+        SubscriptionCreatedEvent event = buildSubscriptionEvent();
+        Payment pendingPayment = buildPayment(event.subscriptionId(), PaymentStatus.PENDING);
+
+        when(paymentValidator.validateIdempotencyKeyBySubscriptionId(event)).thenReturn(Optional.of(pendingPayment));
+        doNothing().when(stripeSubscriptionService).createSubscription(event);
+
+        paymentService.processPayment(event);
+
+        verify(paymentRepository, never()).save(any());
         verify(stripeSubscriptionService).createSubscription(event);
     }
 
