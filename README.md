@@ -1,6 +1,6 @@
 # 💳 Subscription Billing Engine — Microservices
 
-> 🚧 **Work in progress.** This is a personal learning project, built and evolved incrementally — some services/features described below are still partial or being actively reworked. See [Project Status](#-project-status) before assuming everything is production-ready.
+> 🚧 **Work in progress.** This is a personal learning project, built and evolved incrementally — some services/features described below are still partial or being actively reworked.
 
 This project simulates the real-world workflow of a subscription billing engine using a microservices architecture. It's being built to deepen my hands-on knowledge of **AWS**, **distributed systems design**, **resilience patterns**, and **microservices** in general — using Spring Boot, event-driven communication, and Stripe as the payment provider.
 
@@ -43,22 +43,6 @@ payment-failed-topic (SNS)
 
 Consumers use `@SqsListener`; producers publish JSON-serialized events through `SnsClient` (AWS SDK v2).
 
-## 🔐 Security
-
-- All services except `authentication-service` are stateless OAuth2 resource servers, validating HMAC256 JWTs.
-- Service-to-service calls (via OpenFeign) are authenticated with short-lived internal JWTs.
-- User tokens expire in 15 minutes; internal service tokens in 30 minutes.
-
-## 💰 Payments
-
-`subscription-service`, `payment-service`, and `customers-service` integrate with **Stripe**: subscription creation, products/prices, and webhook-driven payment outcomes.
-
-## 📊 Observability
-
-A metrics pipeline (Micrometer → OpenTelemetry Collector → Prometheus) is being rolled out service by service.
-
-**Status:** `authentication-service`, `subscription-service`, `payment-service`, `invoice-service`, and `notification-service` are instrumented with custom business metrics. `customers-service` (and the infrastructure services) are still pending. Logs (Loki) and traces (Tempo) are planned but not implemented yet — see `OBSERVABILITY-PLAN.md` for the full rollout notes and debugging guide.
-
 ## 🛠️ Tech Stack
 
 - Java 21 / Spring Boot 3.5
@@ -68,30 +52,3 @@ A metrics pipeline (Micrometer → OpenTelemetry Collector → Prometheus) is be
 - Stripe API
 - Micrometer + OpenTelemetry Collector + Prometheus
 - Docker Compose for local infrastructure
-
-## ▶️ Running locally
-
-```bash
-# 1. Start infrastructure (LocalStack, PostgreSQL databases, PgAdmin, Prometheus, OTel Collector)
-docker compose up -d
-
-# 2. Start services in order (each in its own terminal)
-cd eureka-service && mvn spring-boot:run
-cd config-service && mvn spring-boot:run
-# then the remaining services, in any order
-
-# 3. Run tests for a single service
-cd <service-name> && mvn test
-```
-
-> ⚠️ Startup order matters: `eureka-service` → `config-service` → everything else. The API gateway resolves service names through Eureka.
-
-## 📌 Project Status
-
-This project is under active, incremental development. Expect:
-- Observability coverage still expanding (`customers-service` not instrumented yet).
-- Ongoing rework of business-metric naming/instrumentation across services.
-- Logs and distributed tracing not implemented yet (planned next phases).
-- Architecture diagrams that may lag slightly behind the latest code changes.
-
-Contributions, suggestions, and issue reports are welcome — but keep in mind this is primarily a learning/portfolio project, not a maintained production system.
