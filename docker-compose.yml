@@ -20,6 +20,7 @@ services:
     ports:
       - "8761:8761"
     environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
       - SPRING_CONFIG_IMPORT=optional:configserver:${CONFIG_SERVER_URL}
       - OTLP_METRICS_EXPORT_URL=${OTLP_METRICS_EXPORT_URL}
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
@@ -36,6 +37,7 @@ services:
     ports:
       - "8080:8080"
     environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
       - SPRING_CONFIG_IMPORT=optional:configserver:${CONFIG_SERVER_URL}
       - EUREKA_ZONE_URL=${EUREKA_ZONE_URL}
       - SECRET_KEY=${SECRET_KEY}
@@ -53,6 +55,7 @@ services:
     build: ./authentication-service
     restart: unless-stopped
     environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
       - SPRING_CONFIG_IMPORT=optional:configserver:${CONFIG_SERVER_URL}
       - EUREKA_ZONE_URL=${EUREKA_ZONE_URL}
       - SECRET_KEY=${SECRET_KEY}
@@ -61,6 +64,8 @@ services:
       - BILLING_ENGINE_DB_PASSWORD=${BILLING_ENGINE_DB_PASSWORD}
       - AUTHENTICATION_SERVICE_CLIENT_ID=${AUTHENTICATION_SERVICE_CLIENT_ID}
       - AUTHENTICATION_SERVICE_SECRET=${AUTHENTICATION_SERVICE_SECRET}
+      - SUBSCRIPTION_SERVICE_CLIENT_ID=${SUBSCRIPTION_SERVICE_CLIENT_ID}
+      - SUBSCRIPTION_SERVICE_SECRET=${SUBSCRIPTION_SERVICE_SECRET}
       - OTLP_METRICS_EXPORT_URL=${OTLP_METRICS_EXPORT_URL}
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
@@ -75,6 +80,7 @@ services:
     build: ./customers-service
     restart: unless-stopped
     environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
       - SPRING_CONFIG_IMPORT=optional:configserver:${CONFIG_SERVER_URL}
       - EUREKA_ZONE_URL=${EUREKA_ZONE_URL}
       - SECRET_KEY=${SECRET_KEY}
@@ -97,6 +103,7 @@ services:
     build: ./subscription-service
     restart: unless-stopped
     environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
       - SPRING_CONFIG_IMPORT=optional:configserver:${CONFIG_SERVER_URL}
       - EUREKA_ZONE_URL=${EUREKA_ZONE_URL}
       - SECRET_KEY=${SECRET_KEY}
@@ -120,7 +127,6 @@ services:
     depends_on:
       - config-service
       - eureka-service
-      - localstack
     networks:
       - billing-network
 
@@ -129,6 +135,7 @@ services:
     build: ./payment-service
     restart: unless-stopped
     environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
       - SPRING_CONFIG_IMPORT=optional:configserver:${CONFIG_SERVER_URL}
       - EUREKA_ZONE_URL=${EUREKA_ZONE_URL}
       - SECRET_KEY=${SECRET_KEY}
@@ -151,7 +158,6 @@ services:
     depends_on:
       - config-service
       - eureka-service
-      - localstack
     networks:
       - billing-network
 
@@ -160,6 +166,7 @@ services:
     build: ./invoice-service
     restart: unless-stopped
     environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
       - SPRING_CONFIG_IMPORT=optional:configserver:${CONFIG_SERVER_URL}
       - EUREKA_ZONE_URL=${EUREKA_ZONE_URL}
       - SECRET_KEY=${SECRET_KEY}
@@ -179,7 +186,6 @@ services:
     depends_on:
       - config-service
       - eureka-service
-      - localstack
     networks:
       - billing-network
 
@@ -188,6 +194,7 @@ services:
     build: ./notification-service
     restart: unless-stopped
     environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
       - SPRING_CONFIG_IMPORT=optional:configserver:${CONFIG_SERVER_URL}
       - EUREKA_ZONE_URL=${EUREKA_ZONE_URL}
       - AWS_REGION=${AWS_REGION}
@@ -206,7 +213,6 @@ services:
     depends_on:
       - config-service
       - eureka-service
-      - localstack
     networks:
       - billing-network
 
@@ -280,19 +286,6 @@ services:
     volumes:
       - ./observability/tempo/tempo-config.yml:/etc/tempo/tempo-config.yml
       - tempo_data:/var/tempo
-    networks:
-      - billing-network
-
-  localstack:
-    image: localstack/localstack
-    ports:
-      - "4566:4566"
-    environment:
-      - SERVICES=sqs,sns,ses,s3
-      - DEFAULT_REGION=us-east-1
-      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN}
-    volumes:
-      - "./init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh"
     networks:
       - billing-network
 

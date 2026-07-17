@@ -2,6 +2,6 @@ spring:
   application:
     name: eureka-service
   config:
-    import: "optional:configserver:http://localhost:8888"
+    import: "optional:configserver:"
   profiles:
     active: ${SPRING_PROFILES_ACTIVE}
