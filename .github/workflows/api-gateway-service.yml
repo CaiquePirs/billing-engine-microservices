@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'api-gateway/**'
-      - '.github/workflows/'
+      - '.github/workflows/api-gateway-service.yml'
 jobs:
   build:
     runs-on: ubuntu-latest

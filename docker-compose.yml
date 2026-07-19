@@ -1,5 +1,4 @@
 services:
-
   config-service:
     container_name: config-service
     build: ./config-service
