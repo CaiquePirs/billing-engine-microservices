@@ -13,7 +13,7 @@ services:
       - billing-network
 
   eureka-service:
-    container_name: eureka-service
+    container_name: eureka-service.yml
     build: ./eureka-service
     restart: unless-stopped
     ports:
