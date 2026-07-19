@@ -9,6 +9,12 @@ services:
       - EUREKA_CLIENT_ENABLED=false
       - OTLP_METRICS_EXPORT_URL=${OTLP_METRICS_EXPORT_URL}
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:8888/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 40s
     networks:
       - billing-network
 
@@ -25,7 +31,14 @@ services:
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
     depends_on:
-      - config-service
+      config-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:8761/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 40s
     networks:
       - billing-network
 
@@ -44,8 +57,10 @@ services:
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
     depends_on:
-      - config-service
-      - eureka-service
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
     networks:
       - billing-network
 
@@ -69,8 +84,10 @@ services:
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
     depends_on:
-      - config-service
-      - eureka-service
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
     networks:
       - billing-network
 
@@ -92,8 +109,10 @@ services:
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
     depends_on:
-      - config-service
-      - eureka-service
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
     networks:
       - billing-network
 
@@ -124,8 +143,10 @@ services:
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
     depends_on:
-      - config-service
-      - eureka-service
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
     networks:
       - billing-network
 
@@ -155,8 +176,10 @@ services:
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
     depends_on:
-      - config-service
-      - eureka-service
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
     networks:
       - billing-network
 
@@ -183,8 +206,10 @@ services:
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
     depends_on:
-      - config-service
-      - eureka-service
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
     networks:
       - billing-network
 
@@ -210,8 +235,10 @@ services:
       - OTLP_LOGGING_EXPORT_URL=${OTLP_LOGGING_EXPORT_URL}
       - OTLP_TRACING_EXPORT_URL=${OTLP_TRACING_EXPORT_URL}
     depends_on:
-      - config-service
-      - eureka-service
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
     networks:
       - billing-network
 
