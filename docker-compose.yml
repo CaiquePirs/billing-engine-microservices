@@ -1,7 +1,7 @@
 services:
   config-service:
     container_name: config-service
-    build: ./config-service
+    image: caiquepirs/config-service
     restart: unless-stopped
     ports:
       - "8888:8888"
@@ -14,7 +14,7 @@ services:
 
   eureka-service:
     container_name: eureka-service.yml
-    build: ./eureka-service
+    image: caiquepirs/eureka-service
     restart: unless-stopped
     ports:
       - "8761:8761"
@@ -31,7 +31,7 @@ services:
 
   api-gateway:
     container_name: api-gateway
-    build: ./api-gateway
+    image: caiquepirs/api-gateway
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -51,7 +51,7 @@ services:
 
   authentication-service:
     container_name: authentication-service
-    build: ./authentication-service
+    image: caiquepirs/authentication-service
     restart: unless-stopped
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
@@ -76,7 +76,7 @@ services:
 
   customers-service:
     container_name: customers-service
-    build: ./customers-service
+    image: caiquepirs/customers-service
     restart: unless-stopped
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
@@ -99,7 +99,7 @@ services:
 
   subscription-service:
     container_name: subscription-service
-    build: ./subscription-service
+    image: caiquepirs/subscription-service
     restart: unless-stopped
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
@@ -131,7 +131,7 @@ services:
 
   payment-service:
     container_name: payment-service
-    build: ./payment-service
+    image: caiquepirs/payment-service
     restart: unless-stopped
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
@@ -162,7 +162,7 @@ services:
 
   invoice-service:
     container_name: invoice-service
-    build: ./invoice-service
+    image: caiquepirs/invoice-service
     restart: unless-stopped
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
@@ -190,7 +190,7 @@ services:
 
   notification-service:
     container_name: notification-service
-    build: ./notification-service
+    image: caiquepirs/notification-service
     restart: unless-stopped
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
