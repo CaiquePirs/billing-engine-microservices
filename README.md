@@ -9,6 +9,7 @@
 </p>
 
 A subscription billing platform built as nine Spring Boot microservices. It models the full lifecycle of a SaaS subscription — customer onboarding, plan subscription, payment processing through Stripe, PDF invoice generation and transactional email — coordinated asynchronously through **AWS SNS/SQS**. Each service owns its database, is discovered through **Eureka**, pulls configuration from a central **Config Server**, and reports metrics, logs and distributed traces through **OpenTelemetry**. The system is containerized and deployed to **AWS EC2** through per-service CI/CD pipelines.
+
 ![Architecture — success flow](architecture-flow-billing-engine.png)
 
 ## Table of Contents
@@ -60,11 +61,6 @@ All external traffic enters through a single **API Gateway**, which validates th
 | Resilience | Resilience4j circuit breaker + retry (payment ↔ Stripe) |
 | Observability | Micrometer + OpenTelemetry (OTLP) → Collector → Prometheus / Loki / Tempo → Grafana |
 
-### C4 container diagram — Billing Engine:
-<p align="center">
-  <img src="architecture(c4)-billing-engine.png" alt="C4 container diagram — Billing Engine" width="100%" />
-</p>
-
 * * *
 
 ## Services
@@ -76,8 +72,8 @@ All external traffic enters through a single **API Gateway**, which validates th
 | `api-gateway` | `8080` | Edge routing (Spring Cloud Gateway) + JWT validation |
 | `authentication-service` | — | JWT issuance (HMAC256), user registration, internal service tokens |
 | `customers-service` | — | Customer CRUD, Stripe customer creation |
-| `subscription-service` | — | Plans, subscription lifecycle, Stripe subscription creation |
-| `payment-service` | — | Stripe webhook handling, payment processing, event publishing |
+| `subscription-service` | — | Plans (with Stripe price), subscription lifecycle |
+| `payment-service` | — | Stripe subscription creation, webhook handling, payment processing, event publishing |
 | `invoice-service` | — | PDF invoice generation (openhtmltopdf) + S3 storage |
 | `notification-service` | — | Transactional emails via AWS SES (HTML templates) |
 
@@ -239,9 +235,9 @@ Patterns applied in the codebase (each is used, not aspirational):
 | Language / runtime | Java 21 |
 | Framework | Spring Boot 3.5.0, Spring Cloud 2025.0.0 |
 | Cloud patterns | Eureka (discovery), Config Server, Spring Cloud Gateway, OpenFeign |
-| Security | Spring Security OAuth2 Resource Server, HMAC256 JWT (Nimbus) |
+| Security | Spring Security (OAuth2 Resource Server); HMAC256 JWT — issued with auth0 java-jwt, validated by the resource servers |
 | Persistence | PostgreSQL per service (AWS RDS), Flyway 10.20.1, Spring Data JPA |
-| Messaging | AWS SNS + SQS (AWS SDK v2, `spring-cloud-aws-starter-sqs`); LocalStack for local dev |
+| Messaging | AWS SNS + SQS (AWS SDK v2, `spring-cloud-aws-starter-sqs`) |
 | Payments | Stripe (`stripe-java` 26.1.0) + webhooks |
 | Documents & email | openhtmltopdf (PDF), AWS S3 (storage), AWS SES (email) |
 | Resilience | Resilience4j (circuit breaker + retry) |
@@ -326,13 +322,13 @@ The four HTML email templates are in `notification-service/src/main/resources/te
 
 ## Running the Stack
 
-The committed `docker-compose.yml` is the deployment topology: it pulls the published `caiquepirs/*` images from Docker Hub, connects the services to AWS RDS (databases) and real AWS (SNS/SQS/S3/SES), and runs the observability stack locally (Grafana, Prometheus, OTel Collector, Loki, Tempo) plus pgAdmin.
+The committed `docker-compose.yml` is the deployment topology: it pulls the published `caiquepirs/*` images from Docker Hub, connects the services to AWS RDS (databases) and real AWS (SNS/SQS/S3/SES), and runs the observability stack locally (Grafana, Prometheus, OTel Collector, Loki, Tempo).
 
 ### Prerequisites
 
 - Docker and Docker Compose
 - A `.env` file at the repository root (see below)
-- For a fully local run without an AWS account: LocalStack, provisioned by `init-aws.sh` (creates the SNS topics, SQS queues and S3 bucket), with the services pointed at the `dev` profile
+- An AWS account with the backing resources provisioned: RDS (a PostgreSQL database per service), the SNS topics and SQS queues, an S3 bucket, and SES for email
 
 ### 1. Environment variables
 
@@ -363,13 +359,6 @@ docker compose logs -f api-gateway
 
 Startup is ordered: every service `depends_on` `config-service` and `eureka-service` reporting healthy, so no service boots before its configuration source is reachable.
 
-### 3. (Local only) provision AWS resources on LocalStack
-
-```bash
-# creates 3 SNS topics, 8 SQS queues + a DLQ, and the S3 bucket
-./init-aws.sh
-```
-
 ### Endpoints
 
 | Component | URL |
@@ -378,7 +367,6 @@ Startup is ordered: every service `depends_on` `config-service` and `eureka-serv
 | Eureka dashboard | http://localhost:8761 |
 | Config Server | http://localhost:8888 |
 | Grafana | http://localhost:3000 |
-| pgAdmin | http://localhost:5050 |
 
 ### Build a single service from source
 
@@ -393,9 +381,43 @@ mvn test                        # tests
 
 ## API Walkthrough
 
-All requests go through the gateway at `http://localhost:8080`.
+All requests go through the gateway at `http://localhost:8080`. The flow has two actors: a **tenant** (`ROLE_TENANT`), who owns the catalog and creates plans, and a **customer** (`ROLE_CUSTOMER`), who subscribes. Both register through the same public `signup` endpoint — which also creates their record in `customers-service` via an internal Feign call — differing only by `role`.
 
-**1. Sign up (public).** Registers the auth user and creates the matching customer (through an internal Feign call to `customers-service`).
+### Tenant — create the plan first
+
+**1. Sign up as a tenant** (`"role": "TENANT"`) and log in.
+
+```bash
+curl -X POST http://localhost:8080/api/v1/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Acme", "lastName": "Billing",
+    "email": "owner@acme.com", "password": "S3curePass!",
+    "phone": "+353830000000", "taxNumber": "IE1234567T",
+    "dateOfBirth": "1985-03-10", "role": "TENANT",
+    "address": { "street": "O'\''Connell Street", "number": "12",
+      "city": "Dublin", "state": "Leinster", "county": "Dublin", "eircode": "D01F5P2" }
+  }'
+
+curl -X POST http://localhost:8080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{ "email": "owner@acme.com", "password": "S3curePass!" }'
+# -> { "access_token": "<TENANT_JWT>" }
+```
+
+**2. Create a plan** (`ROLE_TENANT`). Also creates the matching Stripe price and records the tenant as the plan owner; the returned plan `id` is used by the customer below.
+
+```bash
+curl -X POST http://localhost:8080/api/v1/plans \
+  -H "Authorization: Bearer $TENANT_JWT" -H "Content-Type: application/json" \
+  -d '{ "name": "Premium Plan", "description": "Full access",
+        "price": 49.90, "currency": "EUR", "interval": "MONTHLY" }'
+# -> 201 Created (plan id -> <PLAN_UUID>)
+```
+
+### Customer — subscribe and access
+
+**3. Sign up as a customer** (`"role": "CUSTOMER"`) and log in.
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/signup \
@@ -403,39 +425,34 @@ curl -X POST http://localhost:8080/api/v1/auth/signup \
   -d '{
     "name": "Jane", "lastName": "Doe",
     "email": "jane.doe@example.com", "password": "S3curePass!",
-    "phone": "+353830000000", "taxNumber": "IE1234567T",
+    "phone": "+353830000001", "taxNumber": "IE7654321T",
     "dateOfBirth": "1990-05-20", "role": "CUSTOMER",
-    "address": { "street": "O'\''Connell Street", "number": "12",
-      "city": "Dublin", "state": "Leinster", "county": "Dublin", "eircode": "D01F5P2" }
+    "address": { "street": "Grafton Street", "number": "5",
+      "city": "Dublin", "state": "Leinster", "county": "Dublin", "eircode": "D02XY45" }
   }'
-```
 
-**2. Log in and get a JWT.**
-
-```bash
 curl -X POST http://localhost:8080/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{ "email": "jane.doe@example.com", "password": "S3curePass!" }'
-# -> { "access_token": "eyJhbGciOiJIUzI1NiJ9..." }
+# -> { "access_token": "<CUSTOMER_JWT>" }
 ```
 
-**3. Subscribe to a plan** (`ROLE_CUSTOMER`). Persists the subscription as `PENDING` and publishes `subscription-created`; the asynchronous flow takes over from here.
+**4. Subscribe to the plan** (`ROLE_CUSTOMER`). Persists the subscription as `PENDING` and publishes `subscription-created`; the asynchronous flow takes over from here.
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/subscriptions \
-  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
-  -d '{ "planId": "<PLAN_UUID>", "customerId": "<CUSTOMER_UUID>", "paymentMethodId": "pm_card_visa" }'
+  -H "Authorization: Bearer $CUSTOMER_JWT" -H "Content-Type: application/json" \
+  -d '{ "planId": "<PLAN_UUID>", "customerId": "<CUSTOMER_UUID>", "paymentMethodId": "<PAYMENT_METHOD_ID>" }'
+# <PAYMENT_METHOD_ID>: pm_... id of a registered Stripe test card — see "Testing Payments — Approved and Declined"
 ```
 
-**4. Access the purchased subscription** (`ROLE_CUSTOMER`).
+**5. Access the purchased subscription** (`ROLE_CUSTOMER`, owner-checked).
 
 ```bash
 curl http://localhost:8080/api/v1/subscriptions/<SUBSCRIPTION_UUID> \
-  -H "Authorization: Bearer $TOKEN"
+  -H "Authorization: Bearer $CUSTOMER_JWT"
 # -> subscription with status ACTIVE (approved) or CANCELED (declined)
 ```
-
-Plans (`POST /api/v1/plans`) are created under the internal `SCOPE_INTERNAL_SERVICE` scope (the call also creates the corresponding Stripe product/price), so plan IDs are seeded ahead of the customer flow.
 
 Model enums: `IntervalPlan` = `MONTHLY | YEARLY` · `SubscriptionStatus` = `PENDING | ACTIVE | CANCELED | PAST_DUE | TRIALING | INCOMPLETE` · `PaymentStatus` = `PENDING | APPROVED | FAILED` · `Role` = `CUSTOMER | TENANT`.
 
@@ -443,22 +460,20 @@ Model enums: `IntervalPlan` = `MONTHLY | YEARLY` · `SubscriptionStatus` = `PEND
 
 ## Testing Payments — Approved and Declined
 
-The subscribe request carries a Stripe test payment method ID, which deterministically drives the outcome. Use Stripe test-mode keys.
+The payment outcome is driven entirely by the Stripe **test-mode** payment method sent as `paymentMethodId`. Register one of Stripe's test cards as a payment method in Stripe (test mode), then send the resulting `pm_...` id in the subscribe request — an approving card produces a successful payment, a declining card produces a failure.
 
-| Outcome | `paymentMethodId` | Result |
+| Outcome | Stripe test card | Result |
 |---|---|---|
-| Approved | `pm_card_visa` | Payment succeeds → `payment-approved-topic` → invoice + emails + subscription `ACTIVE` |
-| Declined (generic) | `pm_card_chargeDeclined` | Declined → `payment-failed-topic` → failed email + subscription `CANCELED` |
-| Insufficient funds | `pm_card_chargeDeclinedInsufficientFunds` | Declined variant |
-| Lost card | `pm_card_chargeDeclinedLostCard` | Declined variant |
+| Approved | `4242 4242 4242 4242` | Payment succeeds → `payment-approved-topic` → invoice + emails + subscription `ACTIVE` |
+| Declined | `4000 0000 0000 0002` | Payment declined → `payment-failed-topic` → failed email + subscription `CANCELED` |
 
 To demonstrate the full flow:
 
-1. Subscribe with `pm_card_visa` — observe the payment-approved email, the invoice-ready email, the generated PDF in S3, and `GET /subscriptions/{id}` returning `ACTIVE`.
-2. Subscribe again with `pm_card_chargeDeclined` — observe the payment-failed email and the subscription ending in `CANCELED`.
+1. Subscribe with the approving payment method — observe the payment-approved email, the invoice-ready email, the generated PDF in S3, and `GET /subscriptions/{id}` returning `ACTIVE`.
+2. Subscribe again with the declining payment method — observe the payment-failed email and the subscription ending in `CANCELED`.
 3. Open Grafana to see both runs on the business-metrics dashboard, and Tempo to follow a single request across all services.
 
-These are Stripe's shared test tokens — see the [Stripe testing docs](https://docs.stripe.com/testing). Do not use live keys.
+Use Stripe test-mode keys, never live keys — see the [Stripe testing docs](https://docs.stripe.com/testing).
 
 * * *
 
@@ -497,42 +512,12 @@ billing-engine-microservices/
 ├── invoice-service/             # PDF invoices (openhtmltopdf) + S3
 ├── notification-service/        # Transactional emails via AWS SES
 ├── observability/               # OTel Collector, Prometheus, Loki, Tempo, Grafana dashboards
-├── docs/images/                 # README screenshots (see checklist)
-├── init-aws.sh                  # LocalStack: SNS topics + SQS queues + S3 bucket
-├── docker-compose.yml           # Full stack (images + observability + pgAdmin)
+├── docs/images/                 # README screenshots
+├── docker-compose.yml           # Full stack (images + observability)
 └── architecture-*.png           # Architecture and flow diagrams
 ```
 
 Configuration lives in a separate repository: [billing-engine-config-service](https://github.com/CaiquePirs/billing-engine-config-service) (`dev/` and `prod/` profiles).
-
-* * *
-
-## Screenshot Checklist
-
-All README screenshots are embedded (assets in `docs/images/`):
-
-- [x] C4 container diagram — `architecture(c4)-billing-engine.png`
-- [x] Golden Signals dashboard — `golden-signals-metrics.png`
-- [x] Business Metrics dashboard — `billing-dashboards-metrics.png` (top) + `billing-dashboard-metrics.png` (bottom)
-- [x] Tempo distributed trace — `tempo-distributed-trace.png`
-- [x] Stripe dashboard — `stripe-dashboards.png`
-- [x] New subscription email — `email-confirmation-subscription.png`
-- [x] Payment approved email — `email-payment-approved.png`
-- [x] Payment failed email — `email-payment-failed.png`
-- [x] Invoice ready email — `email-invoice-created.png`
-- [x] Generated invoice — `invoice-generated.png` (converted from `invoice-generated.pdf`)
-
-The Mermaid diagrams above render natively on GitHub — no image needed for those.
-
-* * *
-
-## Roadmap
-
-- [ ] Per-service `README.md` (endpoints, data model, events, configuration) for the six business services
-- [ ] Update the UML class diagram to match the current model
-- [ ] Add a `LICENSE` file
-- [ ] Capture and embed the screenshots listed above
-- [ ] Record an end-to-end demo (approved and declined payment)
 
 * * *
 
