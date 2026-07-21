@@ -280,7 +280,9 @@ Trace context is propagated through the SNS/SQS messages, so a single subscripti
 
 ![Grafana — Business Metrics: Payment and Notification](docs/images/billing-dashboard-metrics.png)
 
-> SCREENSHOT — a single trace in Tempo spanning multiple services (subscription → payment → invoice/notification), to show tracing across the async boundary. Save as `docs/images/tempo-distributed-trace.png`
+**Distributed trace (Tempo)** — a single `POST /api/v1/subscriptions` request followed across four services, including the asynchronous payment step:
+
+![Tempo — distributed trace across services](docs/images/tempo-distributed-trace.png)
 
 | Tool | Local URL |
 |---|---|
@@ -507,12 +509,12 @@ Configuration lives in a separate repository: [billing-engine-config-service](ht
 
 ## Screenshot Checklist
 
-Images embedded so far (in `docs/images/`). Only one capture is still missing:
+All README screenshots are embedded (assets in `docs/images/`):
 
 - [x] C4 container diagram — `architecture(c4)-billing-engine.png`
 - [x] Golden Signals dashboard — `golden-signals-metrics.png`
 - [x] Business Metrics dashboard — `billing-dashboards-metrics.png` (top) + `billing-dashboard-metrics.png` (bottom)
-- [ ] Tempo distributed trace — `tempo-distributed-trace.png` *(still to capture)*
+- [x] Tempo distributed trace — `tempo-distributed-trace.png`
 - [x] Stripe dashboard — `stripe-dashboards.png`
 - [x] New subscription email — `email-confirmation-subscription.png`
 - [x] Payment approved email — `email-payment-approved.png`
