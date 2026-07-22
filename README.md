@@ -345,6 +345,12 @@ Secrets and environment-specific values are injected through `.env` (not committ
 | Observability | `OTLP_METRICS_EXPORT_URL`, `OTLP_LOGGING_EXPORT_URL`, `OTLP_TRACING_EXPORT_URL` |
 | Platform | `SPRING_PROFILES_ACTIVE`, `CONFIG_SERVER_URL`, `EUREKA_ZONE_URL` |
 
+A template with every required variable (empty values) is committed as [`.env.example`](.env.example). Copy it to `.env` and fill in the values before starting the stack:
+
+```bash
+cp .env.example .env
+```
+
 The full, annotated list is documented in the configuration repository: [billing-engine-config-service](https://github.com/CaiquePirs/billing-engine-config-service).
 
 ### 2. Start the stack
