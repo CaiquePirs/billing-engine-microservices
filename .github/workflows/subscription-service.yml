@@ -1,4 +1,4 @@
-name: Subscription Service CI/CD Build and Deploy.
+name: Subscription Service CI/CD Build and Deploy
 
 on:
   push:
